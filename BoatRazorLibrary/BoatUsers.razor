@@ -1,0 +1,45 @@
+﻿
+<h3 class="mt-4 mb-4 w-100 bg-info p-2 ">BoatUsersLogin</h3>
+<div class="container bg-light border-2 border-dark rounded-2">
+<EditForm Model="@boatUser" OnValidSubmit="@AddUsers">
+
+    <div class="pt-2 mt-2 mb-2">
+    <label>UserName:</label>
+    <InputText class="form-control" @bind-Value=boatUser.BoatUserName type="text" name="ususername" />
+    </div>
+    <div class="mt-2 mb-2">
+    <label class="">UserPassword:</label>
+    <InputText class="form-control" @bind-Value=boatUser.BoatUserPassword type="text" name="uspassword" />
+    <div>
+    <button class="mt-2 mb-2 btn btn-danger text-center mx-5" type="submit">Submit</button>
+    </div>
+    </div>
+
+</EditForm>
+</div>
+@if(allBoatUsers.Count == 0){
+
+    <div>Loading To Display Data...</div>
+}
+else{
+
+    foreach (var item in allBoatUsers)
+    {
+        <div>@item.BoatUserName</div>
+        <div>@item.BoatUserPassword</div>
+    }
+}
+
+
+@code {
+
+
+    List<BoatUsersLoginModel> allBoatUsers = new List<BoatUsersLoginModel>();
+    BoatUsersLoginModel boatUser = new BoatUsersLoginModel();
+
+    public void AddUsers(){
+
+        allBoatUsers.Add(boatUser);
+        boatUser = new();
+    }
+}
