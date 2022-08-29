@@ -4,9 +4,9 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatMauiBlazor", "BoatMauiBlazor\BoatMauiBlazor.csproj", "{A3BCF54E-44EF-4BB5-917E-5857E74C800B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoatBlazorServer", "BoatBlazorServer\BoatBlazorServer.csproj", "{F49E9D75-86F2-422D-BCB9-F3050B80A766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatBlazorServer", "BoatBlazorServer\BoatBlazorServer.csproj", "{F49E9D75-86F2-422D-BCB9-F3050B80A766}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoatRazorLibrary", "BoatRazorLibrary\BoatRazorLibrary.csproj", "{DA3B5000-16A3-42C0-895B-B0C869CD7381}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatRazorLibrary", "BoatRazorLibrary\BoatRazorLibrary.csproj", "{DA3B5000-16A3-42C0-895B-B0C869CD7381}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

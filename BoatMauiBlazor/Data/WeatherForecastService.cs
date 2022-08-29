@@ -1,5 +1,5 @@
 namespace BoatMauiBlazor.Data;
-
+using BoatRazorLibrary.Models;
 public class WeatherForecastService
 {
 	private static readonly string[] Summaries = new[]
