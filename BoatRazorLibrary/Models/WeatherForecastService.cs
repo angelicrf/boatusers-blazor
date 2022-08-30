@@ -1,6 +1,4 @@
-using BoatRazorLibrary.Models;
-
-namespace BoatBlazorServer.Data
+namespace BoatRazorLibrary.Models
 {
     public class WeatherForecastService
     {

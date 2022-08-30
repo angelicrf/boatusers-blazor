@@ -2,7 +2,7 @@
 
 <PageTitle>Weather forecast</PageTitle>
 
-@using BoatBlazorServer.Data
+@using BoatRazorLibrary.Models
 @inject WeatherForecastService ForecastService
 
 <h1>Weather forecast</h1>
@@ -40,6 +40,9 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+
+    //MTI1ZTUxdWlk313324368034E660810695C659D04F94E5270FA0EBF9E26F8FD9E027EC4310CE61A996667BB70DE8
+    //https://shelly-48-eu.shelly.cloud
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,6 +1,4 @@
-using BoatBlazorServer.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using BoatRazorLibrary.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
