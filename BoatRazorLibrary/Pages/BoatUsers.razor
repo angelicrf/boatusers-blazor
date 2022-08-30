@@ -1,49 +1,81 @@
 ﻿
 <h3 class="mt-4 mb-4 w-100 bg-info p-2 ">BoatUsersLogin</h3>
-<div class="container bg-light border-2 border-dark rounded-2">
 
-    <EditForm Model="@boatUser" OnValidSubmit="@AddUsers">
+@if (allBoatUsers.Count == 0 && string.IsNullOrEmpty(BUUserName))
+{
+    <div class="container bg-light border-2 border-dark rounded-2">
 
-        <div class="pt-2 mt-2 mb-2">
-            <label>UserName:</label>
-            <InputText class="form-control" @bind-Value=boatUser.BoatUserName type="text" name="ususername" />
-        </div>
-        <div class="mt-2 mb-2">
-            <label class="">UserPassword:</label>
-            <InputText class="form-control" @bind-Value=boatUser.BoatUserPassword type="text" name="uspassword" />
-            <div>
-                <button class="mt-2 mb-2 btn btn-danger text-center mx-5" type="submit">Submit</button>
+        <EditForm Model="@boatUser" OnValidSubmit="@AddUsers">
+
+            <div class="pt-2 mt-2 mb-2">
+                <label>UserName:</label>
+                <InputText class="form-control" @bind-Value=boatUser.UserName type="text" name="ususername" />
             </div>
-        </div>
+            <div class="mt-2 mb-2">
+                <label class="">UserPassword:</label>
+                <InputText class="form-control" @bind-Value=boatUser.Password type="text" name="uspassword" />
+                <div>
+                    <button class="mt-2 mb-2 btn btn-danger text-center mx-5" type="submit">Submit</button>
+                </div>
+            </div>
 
-    </EditForm>
-</div>
-@if (allBoatUsers.Count == 0)
-{
+        </EditForm>
+    </div>
 
-    <div>Loading To Display Data...</div>
 }
-else
+@if (allBoatUsers.Count > 0 && !string.IsNullOrEmpty(BUUserName))
 {
+    <div class="bg-danger">Welcome @BUUserName</div>
 
     foreach (var item in allBoatUsers)
     {
-        <div>@item.BoatUserName</div>
-        <div>@item.BoatUserPassword</div>
+        
+        <div>@item.IsLogedIn</div>
+        <div>@item.UserName</div>
+        <div>@item.Password</div>
+        <div>@item.Timestamp</div>
     }
 }
-
-
 @code {
 
 
-    List<BoatUsersLoginModel> allBoatUsers = new List<BoatUsersLoginModel>();
-    BoatUsersLoginModel boatUser = new BoatUsersLoginModel();
+    List<BULoginModel> allBoatUsers = new List<BULoginModel>();
+    BULoginModel boatUser = new BULoginModel();
+    AzureBUDB azureDb = new();
+
+    private string BUUserName { get; set; }
+
 
     public void AddUsers()
     {
 
         allBoatUsers.Add(boatUser);
-        boatUser = new();
+
+
+        azureDb.BUCreateTable("busrlogin").Wait();
+        if (allBoatUsers != null)
+        {
+            if (allBoatUsers.Count > 0)
+            {
+                allBoatUsers[0].IsLogedIn = true;
+                string rowKey = Guid.NewGuid().ToString("N");
+                var getUserName = azureDb.BUGetDataByQuery("busrlogin", allBoatUsers[0].UserName, allBoatUsers[0].Password);
+                //
+                if (!string.IsNullOrEmpty(getUserName.Result.UserName))
+                {
+                    BUUserName = getUserName.Result.UserName.ToString();
+                    Console.Write("found");
+                
+                }
+                else
+                {
+                    azureDb.BUInsertData("busrlogin", rowKey, "client-boatusers-login", allBoatUsers[0].UserName, allBoatUsers[0].Password, allBoatUsers[0].IsLogedIn).Wait();
+                }
+
+            }
+            boatUser = new();
+
+        }
     }
+
 }
