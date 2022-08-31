@@ -1,19 +1,24 @@
 ﻿@page "/counter"
 
-<PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<h1>Call Counter </h1>
 
-<p role="status">Current count: @currentCount</p>
+<div class="mt-5 mb-5">@countElement</div>
+<button class="btn btn-primary" @onclick="IncrementInt">Count</button>
+@code
+{
+    private int countElement;
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<div class="bg-danger mt-3 mb-2">Angelique Blazor Server</div>
-@code {
- 
-    private int currentCount = 0;
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
 
-    private void IncrementCount()
+    //    if (firstRender)
+    //    {
+
+    //    }
+    //}
+    private void IncrementInt()
     {
-        currentCount += 10;
+        countElement += 10;
     }
 }

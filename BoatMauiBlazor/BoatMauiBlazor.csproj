@@ -59,4 +59,10 @@
       <Folder Include="Shared\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="wwwroot\mapInfo.js">
+        <SubType>Code</SubType>
+      </Content>
+    </ItemGroup>
+
 </Project>

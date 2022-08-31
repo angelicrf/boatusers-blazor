@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Models\Data\" />
-    <Folder Include="Models\JS\" />
+    <Folder Include="wwwroot\JS\" />
   </ItemGroup>
 
 </Project>

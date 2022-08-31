@@ -1,0 +1,83 @@
+﻿@page "/bumap"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<h2>User Map</h2>
+
+<div class="container bg-light border-2 border-dark rounded-2">
+
+    <EditForm Model="@mapPlaces" OnValidSubmit="@AddressConvert">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="pt-2 mt-2 mb-2">
+            <label>Address:</label>
+            <InputText class="form-control" @bind-Value=mapPlaces.Name type="text" name="name" />
+        </div>
+        <button type="submit">Submit</button>
+    </EditForm>
+</div>
+
+<div class="bg-light m-auto" style="width: 800px; height: 500px;">
+    <div class="w-75 m-auto h-100" @ref="mapElement"></div>
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary mt-3" @onclick="() => ShowAsync( 47.632693, -122.091886 )">Display Place</button>
+        </div>
+    </div>
+
+</div>
+
+@if(UserAddress != null && UserAddress != ""){
+<div>@UserAddress</div>
+}
+@code
+{
+
+    private string UserAddress { get; set; }
+    private MapPlacesModel mapPlaces = new();
+    private ElementReference mapElement;
+    private IJSObjectReference? mapModule;
+    private IJSObjectReference? mapInstance;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            mapModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BoatRazorLibrary/mapInfo.js");
+            mapInstance = await mapModule.InvokeAsync<IJSObjectReference>(
+                "addMapToElement", mapElement);
+        }
+    }
+    private void AddressConvert()
+    {
+        UserAddress = mapPlaces.Name;
+    }
+    private async Task ShowAsync(double latitude, double longitude)
+    {
+        if (mapModule is not null && mapInstance is not null)
+        {
+            //await mapModule.InvokeVoidAsync("setMapCenter", mapInstance,
+            //    latitude, longitude).AsTask();
+
+            await mapModule.InvokeVoidAsync("convertToCoord",
+            mapInstance,latitude.ToString(), longitude.ToString()).AsTask();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (mapInstance is not null)
+        {
+            await mapInstance.DisposeAsync();
+        }
+
+        if (mapModule is not null)
+        {
+            await mapModule.DisposeAsync();
+        }
+    }
+
+}
