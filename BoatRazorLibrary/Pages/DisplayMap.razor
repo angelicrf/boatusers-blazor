@@ -6,7 +6,7 @@
 
 <div class="container bg-light border-2 border-dark rounded-2">
 
-    <EditForm Model="@mapPlaces" OnValidSubmit="@AddressConvert">
+    <EditForm Model="@mapPlaces" OnValidSubmit="@FindPlace">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -22,7 +22,10 @@
     <div class="w-75 m-auto h-100" @ref="mapElement"></div>
     <div class="row">
         <div class="col text-center">
-            <button class="btn btn-primary mt-3" @onclick="() => ShowAsync( 47.632693, -122.091886 )">Display Place</button>
+            <button class="btn btn-primary mt-3" @onclick="() => ShowAsync()">This Place</button>
+        </div>
+        <div class="col text-center">
+            <button class="btn btn-info mt-3" @onclick="() => ShowCurrentLocation()">Current Place</button>
         </div>
     </div>
 
@@ -51,22 +54,32 @@
                 "addMapToElement", mapElement);
         }
     }
-    private void AddressConvert()
-    {
-        UserAddress = mapPlaces.Name;
-    }
-    private async Task ShowAsync(double latitude, double longitude)
+
+    private async Task ShowAsync()
     {
         if (mapModule is not null && mapInstance is not null)
         {
-            //await mapModule.InvokeVoidAsync("setMapCenter", mapInstance,
-            //    latitude, longitude).AsTask();
-
-            await mapModule.InvokeVoidAsync("convertToCoord",
-            mapInstance,latitude.ToString(), longitude.ToString()).AsTask();
+            await mapModule.InvokeVoidAsync("setMapCenter", mapElement).AsTask(); 
+        }
+    }
+    private async Task ShowCurrentLocation()
+    {
+        if (mapModule is not null && mapInstance is not null)
+        {
+            await mapModule.InvokeAsync<IJSObjectReference>(
+                "addMapToElement", mapElement);
         }
     }
 
+    private async Task FindPlace()
+    {
+        UserAddress = mapPlaces.Name;
+        if (mapModule is not null && mapInstance is not null)
+        {
+
+            await mapModule.InvokeVoidAsync("findPlace", mapInstance, UserAddress).AsTask();
+        }
+    }
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
         if (mapInstance is not null)
