@@ -4,7 +4,7 @@ import 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/ma
 export const callAlert = (thisMsg) => alert(thisMsg)
 
 let thisArray = []
-
+let markerArray = []
 mapboxgl.accessToken = 'pk.eyJ1IjoiYW5nZWxyZWYiLCJhIjoiY2w0czNxMTA2MGkzcjNqbzB5cjlkM3BkaSJ9.gpg4wdvg4dobgzcw795VQw'
 
 export const initialLocationAddMap = element => {
@@ -50,13 +50,22 @@ export const setMapMarker = (element) => {
 }
 
 export const findPlace = (map, thisPlace) => {
+
     let geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         mapboxgl: mapboxgl,
-        reverseGeocode: true
+        reverseGeocode: true,
+        getItemValue: e => {
+            return e['place_name'];
+            }
     })
     map.addControl(geocoder);
-    if (thisPlace != null && thisPlace != "") {
+    if (thisPlace != null && thisPlace != "") {      
+        geocoder.on('result', (e) => {
+            console.log(e.result.center)
+            var searchMarker = new mapboxgl.Marker({ color: "#ff3300", dragable: true, scale: 0.8 }).setLngLat([e.result.center[0], e.result.center[1]]).addTo(map)
+
+        })
         geocoder.query(thisPlace)
 
     }
