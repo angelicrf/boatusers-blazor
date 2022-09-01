@@ -13,7 +13,7 @@ public class BULoginModel : ITableEntity
 
     public string? Password { get; set; }
 
-    public bool IsLogedIn { get; set; } = false;
+    public bool IsLogedIn { get; set; }
 
     public ETag ETag { get; set; } = default!;
 

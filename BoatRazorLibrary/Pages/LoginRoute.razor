@@ -1,0 +1,12 @@
+﻿
+@inject IBULogin ibulogin
+
+@if (ibulogin.GetBULoginInfoAsync().Result.Count > 0)
+{
+
+    foreach (var item in ibulogin.ServiceLoginList)
+    {
+        <div class="mb-2 bg-info">Welcome @item.UserName, You are Logged In</div>
+    }
+}
+
