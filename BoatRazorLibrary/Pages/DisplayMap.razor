@@ -6,94 +6,71 @@
 
 <div class="container bg-light border-2 border-dark rounded-2">
 
-    <EditForm Model="@mapPlaces" OnValidSubmit="@FindPlace">
+    <EditForm Model="@mapFunc.mapPlaces" OnValidSubmit="@mapFunc.FindPlace">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
         <div class="pt-2 mt-4 mb-3">
             <label class="mt-3 mb-2">Address:</label>
-            <InputText class="form-control" @bind-Value=mapPlaces.Name type="text" name="name" />
+            <InputText class="form-control" @bind-Value=mapFunc.mapPlaces.Name type="text" name="name" />
         </div>
         <button class="btn btn-danger" type="submit">Search</button>
     </EditForm>
 </div>
 
 <div class="bg-light m-auto" style="width: 800px; height: 500px;">
-    <div class="w-75 m-auto h-100" @ref="mapElement"></div>
+    <div class="w-75 m-auto h-100" @ref="mapFunc.mapElement"></div>
     <div class="row">
         <div class="col text-center">
-            <button class="btn btn-primary mt-3" @onclick="() => MarkerPlace()">Place Marker</button>
+            <button class="btn btn-primary mt-3" @onclick="() => mapFunc.MarkerPlace()">Place Marker</button>
         </div>
-   
-    </div>
-    <div class="row">
-  
-        <div class="col text-center">
-            <button class="btn btn-info mt-3" @onclick="() => ShowCurrentLocation()">Current Place</button>
-        </div>
-    </div>
 
+    </div>
+    <div class="row">
+
+        <div class="col text-center">
+            <button class="btn btn-info mt-3" @onclick="() => mapFunc.ShowCurrentLocation()">Current Place</button>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col text-center">
+            <button class="btn btn-info mt-3" @onclick="() => mapFunc.AllMarkers()">Show Saved Places</button>
+        </div>
+    </div>
 </div>
 
-@if(UserAddress != null && UserAddress != ""){
-<div>@UserAddress</div>
+@if(mapFunc.UserAddress != null && mapFunc.UserAddress != ""){
+<div>@mapFunc.UserAddress</div>
 }
 @code
 {
 
-    private string UserAddress { get; set; }
-    private MapPlacesModel mapPlaces = new();
-    private ElementReference mapElement;
-    private IJSObjectReference? mapModule;
-    private IJSObjectReference? mapInstance;
+    private MapFunctions mapFunc = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            mapModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BoatRazorLibrary/mapInfo.js");
-            mapInstance = await mapModule.InvokeAsync<IJSObjectReference>(
-                "initialLocationAddMap", mapElement);
+            mapFunc.mapModule = await JS.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/mapInfo.js");
+            mapFunc.mapInstance = await mapFunc.mapModule.InvokeAsync<IJSObjectReference>(
+            "initialLocationAddMap", mapFunc.mapElement);
         }
     }
 
-    private async Task MarkerPlace()
-    {
-        if (mapModule is not null && mapInstance is not null)
-        {
-            await mapModule.InvokeVoidAsync("setMapMarker", mapInstance).AsTask();
-        }
-    }
-    private async Task ShowCurrentLocation()
-    {
-        if (mapModule is not null && mapInstance is not null)
-        {
-            mapInstance = await mapModule.InvokeAsync<IJSObjectReference>(
-            "currentLocationAddMap", mapElement);
-        }
-    }
 
-    private async Task FindPlace()
-    {
-        UserAddress = mapPlaces.Name;
-        if (mapModule is not null && mapInstance is not null)
-        {
-
-            await mapModule.InvokeVoidAsync("findPlace", mapInstance, UserAddress).AsTask();
-        }
-    }
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (mapInstance is not null)
+        if (mapFunc.mapInstance is not null)
         {
-            await mapInstance.DisposeAsync();
+            await mapFunc.mapInstance.DisposeAsync();
         }
 
-        if (mapModule is not null)
+        if (mapFunc.mapModule is not null)
         {
-            await mapModule.DisposeAsync();
+            await mapFunc.mapModule.DisposeAsync();
         }
     }
 
