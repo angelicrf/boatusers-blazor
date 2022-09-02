@@ -1,0 +1,37 @@
+﻿@page "/cart"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+<h3>Cart</h3>
+
+@code {
+
+    public ElementReference payElement;
+    public IJSObjectReference? payModule;
+    public IJSObjectReference? payInstance;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            payModule = await JS.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+            payInstance = await payModule.InvokeAsync<IJSObjectReference>(
+            "userInfo", "angelique");
+        }
+    }
+
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (payInstance is not null)
+        {
+            await payInstance.DisposeAsync();
+        }
+
+        if (payModule is not null)
+        {
+            await payModule.DisposeAsync();
+        }
+    }
+}

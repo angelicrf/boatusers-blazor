@@ -1,0 +1,1 @@
+export const userInfo = (userName) => alert(userName)
