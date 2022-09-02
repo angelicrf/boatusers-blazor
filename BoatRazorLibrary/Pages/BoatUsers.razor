@@ -10,14 +10,15 @@
     <div class="container bg-light border-2 border-dark rounded-2">
 
         <EditForm Model="@boatUser" OnValidSubmit="@AddUsers">
-
+            <DataAnnotationsValidator />
+            <ValidationSummary />
             <div class="pt-2 mt-2 mb-2">
                 <label>UserName:</label>
                 <InputText class="form-control" @bind-Value=boatUser.UserName type="text" name="ususername" />
             </div>
             <div class="mt-2 mb-2">
                 <label class="">UserPassword:</label>
-                <InputText class="form-control" @bind-Value=boatUser.Password type="text" name="uspassword" />
+                <InputText class="form-control" @bind-Value=boatUser.Password type="password" name="uspassword" />
                 <div>
                     <button class="mt-2 mb-2 btn btn-danger text-center mx-5" type="submit">Submit</button>
                 </div>
