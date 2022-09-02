@@ -1,13 +1,13 @@
 ﻿@page "/bumenu"
-@*@page "/bumenu/{Url}"*@
+@inject IBoatsProducts boatProducts
 
 <h3>Menu</h3>
 
 <div class="container m-auto bg-light">
     <div class="row row-cols-1 row-cols-md-2 g-4">
-        @if (AllBoats.Any())
+        @if (boatProducts.ServiceBoatsList.Any())
         {
-            foreach (var item in AllBoats)
+            foreach (var item in boatProducts.ServiceBoatsList)
             {
                 <div class="col">
                     <div class="card" style="width: 18rem;">
@@ -24,26 +24,6 @@
     </div>
 </div>
 @code {
-
-    private List<BoatMenuModel> AllBoats = new List<BoatMenuModel>
-    {
-         new BoatMenuModel{BoatUrl = "https://localhost:7016/bumenu/BoatOneUrl/BoatOneDesc", BoatImgSrc = "./_content/BoatRazorLibrary/image1.png", BoatImgAlt = "imageOne", BoatDescription = "BoatOneDesc", BoatTitle = "BoatOneTitle"},
-         new BoatMenuModel{BoatUrl = "https://localhost:7016/bumenu/BoatTwoUrl/BoatTwoDesc", BoatImgSrc = "./_content/BoatRazorLibrary/image2.png", BoatImgAlt = "imageTwo", BoatDescription = "BoatTwoDesc", BoatTitle = "BoatTwoTitle"},
-         new BoatMenuModel{BoatUrl = "https://localhost:7016/bumenu/BoatThreeUrl/BoatThreeDesc", BoatImgSrc = "./_content/BoatRazorLibrary/image3.png", BoatImgAlt = "imageThree", BoatDescription = "BoatThreeDesc", BoatTitle = "BoatThreeTitle"},
-         new BoatMenuModel{BoatUrl = "https://localhost:7016/bumenu/BoatFourUrl/BoatFourDesc", BoatImgSrc = "./_content/BoatRazorLibrary/image4.png", BoatImgAlt = "imageFour", BoatDescription = "BoatFourDesc", BoatTitle = "BoatFourTitle"}
-    };
-    //[Parameter]
-    //public string? Url {get;set;}
-
-    //private void GenerateRoute()
-    //{
-    //    foreach (var item in AllBoats)
-    //    {
-    //        Url = item.BoatUrl;
-    //        // if (!item.BoatUrl.Equals(BoatOneUrl)) item.BoatUrl = BoatOneUrl;
-    //    }
-
-    //}
 
     //protected override void OnParametersSet()
     //{

@@ -1,19 +1,29 @@
-﻿@page "/bumenu/{BoatUrl}/{BoatDesc}"
+﻿@page "/bumenu/{BoatUrl}"
+@inject IBoatsProducts boatProduct
+
 
 <div class="container m-auto">
-<div class="card">
-    <h5 class="card-header">@BoatUrl</h5>
-    <div class="card-body">
-        <h5 class="card-title">@BoatUrl</h5>
-        <p class="card-text">@BoatDesc</p>
-    </div>
-</div>
-</div>
 
+    @if (boatProduct.ServiceBoatsList.Any())
+    {
+        var thisItem = boatProduct.ServiceBoatsList.Find(item => item.BoatIdentity == BoatUrl);
+
+        if (thisItem != null)
+        {
+            <div class="card">
+                <h5 class="card-header"></h5>
+                <div class="card-body">
+                    <h5 class="card-title">@thisItem.BoatTitle</h5>
+                    <p class="card-text">@thisItem.BoatImgAlt</p>
+                </div>
+            </div>
+        }
+
+    }
+</div>
 
 @code {
     [Parameter]
     public string BoatUrl { get; set; }
-    [Parameter]
-    public string BoatDesc{ get; set; }
+
 }
