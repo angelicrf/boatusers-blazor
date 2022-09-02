@@ -1,29 +1,43 @@
 ﻿@page "/bumenu/{BoatUrl}"
 @inject IBoatsProducts boatProduct
 
+<div class="container">
 
-<div class="container m-auto">
+            @if (boatProduct.ServiceBoatsList.Any())
+            {
+                var thisItem = boatProduct.ServiceBoatsList.Find(item => item.BoatIdentity == BoatUrl);
 
-    @if (boatProduct.ServiceBoatsList.Any())
-    {
-        var thisItem = boatProduct.ServiceBoatsList.Find(item => item.BoatIdentity == BoatUrl);
+                if (thisItem != null)
+                {
+                    <div class="card" style="width: 50rem;">
+                        <img src=@thisItem.BoatImgSrc class="card-img-top" alt=@thisItem.BoatImgAlt>
+                        <div class="card-body">
+                            <h5 class="card-title">@thisItem.BoatTitle</h5>
+                            <p class="card-text">@thisItem.BoatDescription</p>
+                           
+                        </div>
+                    </div>
 
-        if (thisItem != null)
-        {
-            <div class="card">
-                <h5 class="card-header"></h5>
-                <div class="card-body">
-                    <h5 class="card-title">@thisItem.BoatTitle</h5>
-                    <p class="card-text">@thisItem.BoatImgAlt</p>
-                </div>
-            </div>
+                    foreach (var access in thisItem.BoatAccessory)
+                    {
+                        <div class="mt-5">
+                            <div class="card" style="width: 18rem;">
+                                <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
+                                <div class="card-body">
+                                    <h5 class="card-title">@access.AccessoryName</h5>
+                                    <p class="card-text">@access.AccessoryDesc</p>
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+
+        @code {
+
+            [Parameter]
+            public string BoatUrl { get; set; }
+
         }
-
-    }
-</div>
-
-@code {
-    [Parameter]
-    public string BoatUrl { get; set; }
-
-}
