@@ -1,12 +1,25 @@
 ﻿
 @inject IBULogin ibulogin
 
-@if (ibulogin.GetBULoginInfoAsync().Result.Count > 0)
+@if (UserLoginList.Any())
 {
 
-    foreach (var item in ibulogin.ServiceLoginList)
+    foreach (var item in UserLoginList)
     {
         <div class="mb-2 bg-info">Welcome @item.UserName, You are Logged In</div>
     }
+}
+@code{
+
+
+    private List<BULoginModel> UserLoginList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        UserLoginList = await ibulogin.GetBULoginInfoAsync();
+    }
+
 }
 

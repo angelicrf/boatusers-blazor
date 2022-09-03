@@ -2,9 +2,9 @@
 
 <h3 class="mt-4 mb-4 w-100 bg-info p-2 ">BoatUsersLogin</h3>
 
-<div>@ibulogin.GetBULoginInfoAsync().Result.Count</div>
+<div>@UserLoginList.Count</div>
 
-@if (ibulogin.GetBULoginInfoAsync().Result.Count == 0 )
+@if (!UserLoginList.Any())
 {
 
     <div class="container bg-light border-2 border-dark rounded-2">
@@ -28,10 +28,10 @@
     </div>
 
 }
-@if (ibulogin.GetBULoginInfoAsync().Result.Count > 0 )
+@if (UserLoginList.Any())
 {
 
-    foreach (var item in ibulogin.ServiceLoginList)
+    foreach (var item in UserLoginList)
     {
 
         <div class="mb-2 bg-danger">Welcome @item.UserName, You are Logged In</div>
@@ -47,13 +47,15 @@
     //different purpose
     private string BUUserName { get; set; }
 
+    private List<BULoginModel> UserLoginList;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        //await ibulogin.AddBULoginInfoAsync(boatUser);
-        //await ibulogin.GetBULoginInfoAsync();
+
+        UserLoginList = await ibulogin.GetBULoginInfoAsync();
     }
+
     public void AddUsers()
     {
         boatUser.IsLogedIn = true;

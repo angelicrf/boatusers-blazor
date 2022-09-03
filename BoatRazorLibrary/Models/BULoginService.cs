@@ -3,7 +3,7 @@
 public class BULoginService : IBULogin
 {
 
-    public List<BULoginModel> ServiceLoginList { get; set; } = new List<BULoginModel>();
+    public static List<BULoginModel> ServiceLoginList { get; set; } = new List<BULoginModel>();
 
     public Task<List<BULoginModel>> GetBULoginInfoAsync()
     {
