@@ -21,7 +21,7 @@ public static class MauiProgram
 
 		builder.Services.AddSingleton<WeatherForecastService>();
 		builder.Services.AddSingleton<IBULogin, BULoginService>();
-		builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServicescs>();
+		builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
 
 		return builder.Build();
 	}

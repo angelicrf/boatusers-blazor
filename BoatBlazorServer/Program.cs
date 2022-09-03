@@ -7,7 +7,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IBULogin, BULoginService>();
-builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServicescs>();
+builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
 
 var app = builder.Build();
 

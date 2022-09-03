@@ -1,7 +1,7 @@
 ﻿
 namespace BoatRazorLibrary.Models;
 
-public class BoatsProductsServicescs : IBoatsProducts
+public class BoatsProductsServices : IBoatsProducts
 {
     public List<BoatMenuModel> ServiceBoatsList { get; set; } = new List<BoatMenuModel>
     {

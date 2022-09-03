@@ -2,7 +2,7 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JS
 <h3>Cart</h3>
-
+<div id="paypal-purchase"></div>
 @code {
 
     public ElementReference payElement;
@@ -17,7 +17,7 @@
             payModule = await JS.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
             payInstance = await payModule.InvokeAsync<IJSObjectReference>(
-            "userInfo", "angelique");
+            "payPalBtn");
         }
     }
 
