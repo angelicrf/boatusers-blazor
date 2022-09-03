@@ -3,7 +3,7 @@ namespace BoatRazorLibrary.Models;
 
 public class BoatsProductsServices : IBoatsProducts
 {
-    public List<BoatMenuModel> ServiceBoatsList { get; set; } = new List<BoatMenuModel>
+    public static List<BoatMenuModel> ServiceBoatsList { get; set; } = new List<BoatMenuModel>
     {
          new BoatMenuModel{BoatUrl = "https://localhost:7016/bumenu/BoatOneUrl",BoatIdentity = "BoatOneUrl",BoatImgSrc = "./_content/BoatRazorLibrary/image1.png", BoatImgAlt = "imageOne", BoatDescription = "BoatOneDesc", BoatTitle = "BoatOneTitle" , BoatAccessory = new List<BoatAccesssoriesModel>
          { new BoatAccesssoriesModel { AccessoryName = "AccessOneBoatOne", AccessoryDesc = "AccessOneDescBoatOne", AccessoryImgSrc = "./_content/BoatRazorLibrary/BoatAccess2.png" } } },
@@ -17,5 +17,17 @@ public class BoatsProductsServices : IBoatsProducts
          }
          }
     };
-    public List<BoatAccesssoriesModel> ServiceCartList { get; set; } = new List<BoatAccesssoriesModel>();
+    public static List<BoatAccesssoriesModel> ServiceCartList { get; set; } = new List<BoatAccesssoriesModel>();
+
+    public async Task<List<BoatAccesssoriesModel>> GetBoatAccessoryCartListAsync()
+    {
+        Task.Delay(200);
+        return ServiceCartList;
+    }
+
+    public async Task<List<BoatMenuModel>> GetBoatMenuListAsync()
+    {
+        Task.Delay(200);
+        return ServiceBoatsList;
+    }
 }

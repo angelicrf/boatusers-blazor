@@ -8,10 +8,10 @@
 
 <div class="container row">
 
-    @if (boatProduct.ServiceCartList.Any())
+    @if (BoatCartItems.Any())
     {
 
-        foreach (var item in boatProduct.ServiceCartList)
+        foreach (var item in BoatCartItems)
         {
         <div class="mt-5 col">
             <div class="card" style="width: 18rem;">
@@ -40,6 +40,13 @@
     public IJSObjectReference? payModule;
     public IJSObjectReference? payInstance;
 
+    private List<BoatAccesssoriesModel> BoatCartItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+     
+        BoatCartItems = await boatProduct.GetBoatAccessoryCartListAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

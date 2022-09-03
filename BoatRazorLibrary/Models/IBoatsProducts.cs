@@ -3,7 +3,8 @@ namespace BoatRazorLibrary.Models;
 
 public interface IBoatsProducts
 {
-    List<BoatMenuModel> ServiceBoatsList { get; set; }
-    List<BoatAccesssoriesModel> ServiceCartList { get; set; }
+
+    Task<List<BoatMenuModel>> GetBoatMenuListAsync();
+    Task<List<BoatAccesssoriesModel>> GetBoatAccessoryCartListAsync();
 
 }

@@ -5,9 +5,9 @@
 
 <div class="container m-auto bg-light">
     <div class="row row-cols-1 row-cols-md-2 g-4">
-        @if (boatProducts.ServiceBoatsList.Any())
+        @if (BoatItems.Any())
         {
-            foreach (var item in boatProducts.ServiceBoatsList)
+            foreach (var item in BoatItems)
             {
                 <div class="col">
                     <div class="card" style="width: 18rem;">
@@ -25,6 +25,14 @@
 </div>
 @code {
 
+    private List<BoatMenuModel> BoatItems;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        BoatItems = await boatProducts.GetBoatMenuListAsync();
+
+    }
     //protected override void OnParametersSet()
     //{
     //    GenerateRoute();

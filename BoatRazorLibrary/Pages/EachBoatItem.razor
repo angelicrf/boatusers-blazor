@@ -3,9 +3,9 @@
 
 <div class="container">
 
-            @if (boatProduct.ServiceBoatsList.Any())
+            @if (BoatItems.Any())
             {
-                var thisItem = boatProduct.ServiceBoatsList.Find(item => item.BoatIdentity == BoatUrl);
+                var thisItem = BoatItems.Find(item => item.BoatIdentity == BoatUrl);
 
                 if (thisItem != null)
                 {
@@ -39,10 +39,18 @@
 
     [Parameter]
     public string BoatUrl { get; set; }
+    private List<BoatMenuModel> BoatItems;
+    private List<BoatAccesssoriesModel> BoatCartItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BoatItems = await boatProduct.GetBoatMenuListAsync();
+        BoatCartItems = await boatProduct.GetBoatAccessoryCartListAsync();
+    }
 
     void AddToCart(string thisName, string thisImg,string thisDesc)
     {
-        boatProduct.ServiceCartList.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName });
+        BoatCartItems.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName });
     }
 
 }
