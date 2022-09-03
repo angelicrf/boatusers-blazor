@@ -6,8 +6,7 @@ const loadAsync = (url, callback) => {
     document.head.insertBefore(s, document.head.firstElementChild);
 }
 
-export const payPalBtn = () => {
-    const baseOrderAmount = '16.30';
+export const payPalBtn = (baseOrderAmount) => {
 
     loadAsync('https://www.paypal.com/sdk/js?client-id=AWTeL4kMDevIsCS-YZzuwnpA2qET4Sb6zGapzyWN1py_CdjzNjFsBKmipq-0HdZqswRBgZO7MFr2gjcW&currency=USD', () => {
 

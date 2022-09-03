@@ -5,7 +5,6 @@
 
 <h5>Items in Cart:</h5>
 
-
 <div class="container row">
 
     @if (BoatCartItems.Any())
@@ -13,25 +12,27 @@
 
         foreach (var item in BoatCartItems)
         {
-        <div class="mt-5 col">
-            <div class="card" style="width: 18rem;">
-                <img src=@item.AccessoryImgSrc class="card-img-top" alt=@item.AccessoryName>
-                <div class="card-body">
-                    <h5 class="card-title">@item.AccessoryName</h5>
-                    <p class="card-text">@item.AccessoryDesc</p>
+            Total += item.AccessoryPrice;
+            <div class="mt-5 col">
+                <div class="card" style="width: 18rem;">
+                    <img src=@item.AccessoryImgSrc class="card-img-top" alt=@item.AccessoryName>
+                    <div class="card-body">
+                        <h5 class="card-title">@item.AccessoryName</h5>
+                        <p class="card-text">@item.AccessoryDesc</p>
+                        <p class="card-text">@item.AccessoryPrice</p>
+                    </div>
                 </div>
             </div>
-        </div>
         }
 
-<div class="bg-light w-100 h-100 mt-3 border border-3 rounded" style="height:50rem;">
-    <div class="mt-4 mb-4 fw-bold fs-5 p-3">Ready to Pay</div>
-    <div class="m-auto" style="width:30rem;">
+        <div class="bg-light w-100 h-100 mt-3 border border-3 rounded" style="height:50rem;">
+            <div class="mt-4 mb-4 fw-bold fs-5 p-3">Ready to Pay @Math.Round(Total,2)</div>
+            <div class="m-auto" style="width:30rem;">
 
-        <div class="mt-2" id="paypal-purchase"></div>
+                <div class="mt-2" id="paypal-purchase"></div>
 
-    </div>
-</div>
+            </div>
+        </div>
     }
 </div>
 @code {
@@ -41,10 +42,10 @@
     public IJSObjectReference? payInstance;
 
     private List<BoatAccesssoriesModel> BoatCartItems;
-
+    private double Total { get; set; } = 0.0;
     protected override async Task OnInitializedAsync()
     {
-     
+
         BoatCartItems = await boatProduct.GetBoatAccessoryCartListAsync();
     }
 
@@ -55,7 +56,7 @@
             payModule = await JS.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
             payInstance = await payModule.InvokeAsync<IJSObjectReference>(
-            "payPalBtn");
+            "payPalBtn", Math.Round(Total, 2));
         }
     }
 

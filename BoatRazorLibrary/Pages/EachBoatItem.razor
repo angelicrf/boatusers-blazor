@@ -25,8 +25,10 @@
                                 <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
                                 <div class="card-body">
                                     <h5 class="card-title">@access.AccessoryName</h5>
+                                    <p class="card-text">@access.AccessoryId</p>
                                     <p class="card-text">@access.AccessoryDesc</p>
-                                    <button @onclick="() => AddToCart(access.AccessoryName,access.AccessoryImgSrc,access.AccessoryDesc)" class="btn btn-info">Add</button>
+                                    <p class="card-text">$ @access.AccessoryPrice</p>
+                                    <button @onclick="() => AddToCart(access.AccessoryName,access.AccessoryImgSrc,access.AccessoryDesc, access.AccessoryPrice)" class="btn btn-info">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -48,9 +50,9 @@
         BoatCartItems = await boatProduct.GetBoatAccessoryCartListAsync();
     }
 
-    void AddToCart(string thisName, string thisImg,string thisDesc)
+    void AddToCart(string? thisName, string? thisImg,string? thisDesc, double thisPrice)
     {
-        BoatCartItems.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName });
+        BoatCartItems.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName, AccessoryPrice = thisPrice });
     }
 
 }
