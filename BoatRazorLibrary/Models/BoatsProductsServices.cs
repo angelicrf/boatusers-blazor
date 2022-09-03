@@ -17,4 +17,5 @@ public class BoatsProductsServices : IBoatsProducts
          }
          }
     };
+    public List<BoatAccesssoriesModel> ServiceCartList { get; set; } = new List<BoatAccesssoriesModel>();
 }

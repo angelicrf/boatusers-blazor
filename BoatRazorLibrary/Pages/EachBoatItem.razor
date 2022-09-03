@@ -26,7 +26,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">@access.AccessoryName</h5>
                                     <p class="card-text">@access.AccessoryDesc</p>
-                                    <a href="#" class="btn btn-info">Add</a>
+                                    <button @onclick="() => AddToCart(access.AccessoryName,access.AccessoryImgSrc,access.AccessoryDesc)" class="btn btn-info">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -35,9 +35,14 @@
             }
         </div>
 
-        @code {
+@code {
 
-            [Parameter]
-            public string BoatUrl { get; set; }
+    [Parameter]
+    public string BoatUrl { get; set; }
 
-        }
+    void AddToCart(string thisName, string thisImg,string thisDesc)
+    {
+        boatProduct.ServiceCartList.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName });
+    }
+
+}
