@@ -1,40 +1,92 @@
 ﻿@page "/bumenu"
 @inject IBoatsProducts boatProducts
+@inject IJSRuntime js
+@implements IAsyncDisposable
 
 <h3>Menu</h3>
 
-<div class="container m-auto bg-light">
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        @if (BoatItems.Any())
-        {
-            foreach (var item in BoatItems)
+@if (IsMobile)
+{
+    <div class="container m-auto bg-light">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+
+            @if (BoatMauiItems.Any())
             {
-                <div class="col">
-                    <div class="card" style="width: 18rem;">
-                        <img src=@item.BoatImgSrc class="card-img-top" alt=@item.BoatImgAlt>
-                        <div class="card-body">
-                            <h5 class="card-title">@item.BoatTitle</h5>
-                            <p class="card-text">@item.BoatDescription</p>
-                            <a href=@item.BoatUrl class="btn btn-primary">Info</a>
+                foreach (var item in BoatMauiItems)
+                {
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <img src=@item.BoatImgSrc class="card-img-top" alt=@item.BoatImgAlt>
+                            <div class="card-body">
+                                <h5 class="card-title">@item.BoatTitle</h5>
+                                <p class="card-text">@item.BoatDescription</p>
+                                <a href=@item.BoatUrl class="btn btn-primary">Info</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
             }
-        }
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="container m-auto bg-light">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+
+            @if (BoatItems.Any())
+            {
+                foreach (var item in BoatItems)
+                {
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <img src=@item.BoatImgSrc class="card-img-top" alt=@item.BoatImgAlt>
+                            <div class="card-body">
+                                <h5 class="card-title">@item.BoatTitle</h5>
+                                <p class="card-text">@item.BoatDescription</p>
+                                <a href=@item.BoatUrl class="btn btn-primary">Info</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
 @code {
 
     private List<BoatMenuModel> BoatItems;
-
+    private List<BoatMenuModel> BoatMauiItems;
+    private bool IsMobile { get; set; }
+    public IJSObjectReference? funcModule;
 
     protected override async Task OnInitializedAsync()
     {
-        BoatItems = await boatProducts.GetBoatMenuListAsync();
 
+        BoatItems = await boatProducts.GetBoatMenuListAsync();
+        BoatMauiItems = await boatProducts.GetBoatMauiMenuListAsync();
     }
     //protected override void OnParametersSet()
     //{
     //    GenerateRoute();
     //}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            funcModule = await js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+
+            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+        }
+    }
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+
+        if (funcModule is not null)
+        {
+            await funcModule.DisposeAsync();
+        }
+    }
 }

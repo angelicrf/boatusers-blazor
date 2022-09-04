@@ -1,5 +1,7 @@
 export const userInfo = (userName) => alert(userName)
 
+export const isDevice = () => /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent)
+
 const loadAsync = (url, callback) => {
     var s = document.createElement('script');
     s.setAttribute('src', url); s.onload = callback;
