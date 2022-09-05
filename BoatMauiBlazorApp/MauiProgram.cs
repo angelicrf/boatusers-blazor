@@ -19,7 +19,7 @@ namespace BoatMauiBlazorApp
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
-
+            builder.Services.AddSingleton<HttpClient>();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<IWeatherForcast, WeatherForecastService>();
             builder.Services.AddSingleton<IBULogin, BULoginService>();

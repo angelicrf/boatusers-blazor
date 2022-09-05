@@ -7,7 +7,7 @@
 
 <LoginRoute />
 
-@if (ReceivedWeatherData.main == null)
+@if (ReceivedWeatherData?.main == null)
 {
     <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -27,11 +27,11 @@ else
         </thead>
         <tbody>
             <tr>
-                <td>@ReceivedWeatherData.name.ToString()</td>
-                <td>@ReceivedWeatherData.wind.speed.ToString()</td>
-                <td>@ReceivedWeatherData.main.pressure.ToString()</td>
-                <td>@ReceivedWeatherData.main.humidity.ToString()</td>
-                <td>@ReceivedWeatherData.weather[0].description.ToString()</td>
+                <td>@ReceivedWeatherData?.name?.ToString()</td>
+                <td>@ReceivedWeatherData?.wind?.speed.ToString()</td>
+                <td>@ReceivedWeatherData?.main.pressure.ToString()</td>
+                <td>@ReceivedWeatherData?.main.humidity.ToString()</td>
+                <td>@ReceivedWeatherData?.weather?[0].description?.ToString()</td>
             </tr>
             
         </tbody>
@@ -40,7 +40,7 @@ else
 
 @code {
 
-    private ResponseWeatherModel ReceivedWeatherData;
+    private ResponseWeatherModel? ReceivedWeatherData;
 
     //MTI1ZTUxdWlk313324368034E660810695C659D04F94E5270FA0EBF9E26F8FD9E027EC4310CE61A996667BB70DE8
     //https://shelly-48-eu.shelly.cloud
