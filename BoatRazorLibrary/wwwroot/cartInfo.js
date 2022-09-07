@@ -1,6 +1,9 @@
 export const userInfo = (userName) => alert(userName)
 
-export const isDevice = () => /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent)
+export const isDevice = () => {
+    let deviceValue = /android|webos|iPhone|iPad|iPod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent)
+    return deviceValue
+}
 
 const loadAsync = (url, callback) => {
     var s = document.createElement('script');

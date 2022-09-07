@@ -5,6 +5,8 @@
 
 <h3>Menu</h3>
 
+<div>@IsMobile</div>
+
 @if (IsMobile)
 {
     <div class="container m-auto bg-light">
@@ -75,11 +77,14 @@ else
     {
         if (firstRender)
         {
+            await base.OnAfterRenderAsync(firstRender);
             funcModule = await js.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
             IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+            StateHasChanged();
         }
+
     }
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

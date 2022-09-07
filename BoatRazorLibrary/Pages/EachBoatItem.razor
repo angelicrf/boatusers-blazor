@@ -1,41 +1,82 @@
 ﻿@page "/bumenu/{BoatUrl}"
 @inject IBoatsProducts boatProduct
+@inject IJSRuntime js
+@implements IAsyncDisposable
 
 <div class="container">
+    @if (IsMobile)
+    {
+        @if (BoatMauiItems.Any())
+        {
+            var thisItem = BoatMauiItems.Find(item => item.BoatIdentity == BoatUrl);
 
-            @if (BoatMauiItems.Any())
+            if (thisItem != null)
             {
-                var thisItem = BoatMauiItems.Find(item => item.BoatIdentity == BoatUrl);
+                <div class="card" style="width: 50rem;">
+                    <img src=@thisItem.BoatImgSrc class="card-img-top" alt=@thisItem.BoatImgAlt>
+                    <div class="card-body">
+                        <h5 class="card-title">@thisItem.BoatTitle</h5>
+                        <p class="card-text">@thisItem.BoatDescription</p>
 
-                if (thisItem != null)
-                {
-                    <div class="card" style="width: 50rem;">
-                        <img src=@thisItem.BoatImgSrc class="card-img-top" alt=@thisItem.BoatImgAlt>
-                        <div class="card-body">
-                            <h5 class="card-title">@thisItem.BoatTitle</h5>
-                            <p class="card-text">@thisItem.BoatDescription</p>
-                           
-                        </div>
                     </div>
+                </div>
 
-                    foreach (var access in thisItem.BoatAccessory)
-                    {
-                        <div class="mt-5">
-                            <div class="card" style="width: 18rem;">
-                                <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
-                                <div class="card-body">
-                                    <h5 class="card-title">@access.AccessoryName</h5>
-                                    <p class="card-text">@access.AccessoryId</p>
-                                    <p class="card-text">@access.AccessoryDesc</p>
-                                    <p class="card-text">$ @access.AccessoryPrice</p>
-                                    <button @onclick="() => AddToCart(access.AccessoryName,access.AccessoryImgSrc,access.AccessoryDesc, access.AccessoryPrice)" class="btn btn-info">Add</button>
-                                </div>
+                foreach (var access in thisItem.BoatAccessory)
+                {
+                    <div class="mt-5">
+                        <div class="card" style="width: 18rem;">
+                            <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
+                            <div class="card-body">
+                                <h5 class="card-title">@access.AccessoryName</h5>
+                                <p class="card-text">@access.AccessoryId</p>
+                                <p class="card-text">@access.AccessoryDesc</p>
+                                <p class="card-text">$ @access.AccessoryPrice</p>
+                                <button @onclick="() => AddToCart(access.AccessoryName, access.AccessoryImgSrc, access.AccessoryDesc, access.AccessoryPrice)" class="btn btn-info">Add</button>
                             </div>
                         </div>
-                    }
+                    </div>
                 }
             }
-        </div>
+        }
+
+
+    }
+    else
+    {
+        @if (BoatItems.Any())
+        {
+            var thisItem = BoatItems.Find(item => item.BoatIdentity == BoatUrl);
+
+            if (thisItem != null)
+            {
+                <div class="card" style="width: 50rem;">
+                    <img src=@thisItem.BoatImgSrc class="card-img-top" alt=@thisItem.BoatImgAlt>
+                    <div class="card-body">
+                        <h5 class="card-title">@thisItem.BoatTitle</h5>
+                        <p class="card-text">@thisItem.BoatDescription</p>
+
+                    </div>
+                </div>
+
+                foreach (var access in thisItem.BoatAccessory)
+                {
+                    <div class="mt-5">
+                        <div class="card" style="width: 18rem;">
+                            <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
+                            <div class="card-body">
+                                <h5 class="card-title">@access.AccessoryName</h5>
+                                <p class="card-text">@access.AccessoryId</p>
+                                <p class="card-text">@access.AccessoryDesc</p>
+                                <p class="card-text">$ @access.AccessoryPrice</p>
+                                <button @onclick="() => AddToCart(access.AccessoryName, access.AccessoryImgSrc, access.AccessoryDesc, access.AccessoryPrice)" class="btn btn-info">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    }
+</div>
 
 @code {
 
@@ -44,17 +85,37 @@
     private List<BoatMenuModel> BoatItems;
     private List<BoatMenuModel> BoatMauiItems;
     private List<BoatAccesssoriesModel> BoatCartItems;
-
+    private bool IsMobile { get; set; }
+    public IJSObjectReference? funcModule;
     protected override async Task OnInitializedAsync()
     {
         BoatItems = await boatProduct.GetBoatMenuListAsync();
         BoatMauiItems = await boatProduct.GetBoatMauiMenuListAsync();
         BoatCartItems = await boatProduct.GetBoatAccessoryCartListAsync();
+
     }
 
-    void AddToCart(string? thisName, string? thisImg,string? thisDesc, double thisPrice)
+    void AddToCart(string? thisName, string? thisImg, string? thisDesc, double thisPrice)
     {
         BoatCartItems.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName, AccessoryPrice = thisPrice });
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            funcModule = await js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
+            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+            StateHasChanged();
+        }
+    }
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+
+        if (funcModule is not null)
+        {
+            await funcModule.DisposeAsync();
+        }
+    }
 }
