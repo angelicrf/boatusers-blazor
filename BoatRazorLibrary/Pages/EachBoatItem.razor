@@ -87,6 +87,7 @@
     private List<BoatAccesssoriesModel> BoatCartItems;
     private bool IsMobile { get; set; }
     public IJSObjectReference? funcModule;
+
     protected override async Task OnInitializedAsync()
     {
         BoatItems = await boatProduct.GetBoatMenuListAsync();

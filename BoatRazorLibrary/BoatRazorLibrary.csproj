@@ -23,4 +23,8 @@
     <Folder Include="wwwroot\JS\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BoatUsersMauiLibrary\BoatUsersMauiLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

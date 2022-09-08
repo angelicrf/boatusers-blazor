@@ -50,6 +50,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BoatRazorLibrary\BoatRazorLibrary.csproj" />
+      <ProjectReference Include="..\BoatUsersMauiLibrary\BoatUsersMauiLibrary.csproj" />
     </ItemGroup>
 
 </Project>
