@@ -1,0 +1,51 @@
+﻿@page "/deviceinfo"
+@inject IJSRuntime js
+@implements IAsyncDisposable
+
+<h3>DeviceInfo</h3>
+
+@if (IsMobile)
+{
+    
+    <DeviceMauiLocationComponent />
+}
+else
+{
+    <div class="m-auto">
+        <button class="btn btn-primary" @onclick="funcDvi.CountCall">Count</button>
+    </div>
+    <div>@funcDvi.CountElement</div>
+}
+
+@code
+{
+
+    private bool IsMobile { get; set; }
+
+    private IJSObjectReference? funcModule;
+
+    FuncDeviceInfo funcDvi = new FuncDeviceInfo();
+  
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            funcModule = await js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+
+            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+            StateHasChanged();
+        }
+    }
+ 
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+
+        if (funcModule is not null)
+        {
+            await funcModule.DisposeAsync();
+        }
+    }
+
+}

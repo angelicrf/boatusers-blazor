@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatRazorLibrary", "BoatRaz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatMauiBlazorApp", "BoatMauiBlazorApp\BoatMauiBlazorApp.csproj", "{8315D077-1D44-4A03-B077-2074CD0E07A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoatUsersMauiLibrary", "BoatUsersMauiLibrary\BoatUsersMauiLibrary.csproj", "{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatUsersMauiLibrary", "BoatUsersMauiLibrary\BoatUsersMauiLibrary.csproj", "{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

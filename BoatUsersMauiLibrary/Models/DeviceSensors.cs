@@ -13,10 +13,9 @@ public class DeviceSensors
 
     public string build = AppInfo.Current.BuildString;
 
+    public Dictionary<string, double> result = new Dictionary<string, double>();
+
     public string Granted { get; set; }
-    public bool isDeviceLocation { get; set; } = false;
-    public double MyLon { get; set; }
-    public double MyLat { get; set; }
 
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
@@ -41,14 +40,34 @@ public class DeviceSensors
             Console.WriteLine(ex.Message);
         }
     }
-
+    public Dictionary<string, double> ResetLocationSates(double thisLat, double thisLng)
+    {
+        if (result.Count > 0)
+        {
+            foreach (var item in result)
+            {
+                if (!result.ContainsKey(item.Key))
+                {
+                    result.Add("lat", thisLat);
+                    result.Add("lon", thisLng);
+                    return result;
+                }
+            }
+        }
+        else
+        {
+            result.Add("lat", thisLat);
+            result.Add("lon", thisLng);
+            return result;
+        }
+        return result;
+    }
     public async void GetCurrentLocation()
     {
 
         try
         {
-
-            isDeviceLocation = !isDeviceLocation;
+            //isDeviceLocation = !isDeviceLocation;
             PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
             if (status == PermissionStatus.Granted)
@@ -61,10 +80,8 @@ public class DeviceSensors
 
             if (location.Latitude > 0)
             {
-                MyLat = location.Latitude;
-                MyLon = location.Longitude;
+                ResetLocationSates(location.Latitude, location.Longitude);
             }
-
         }
         catch (FeatureNotSupportedException fnsEx)
         {
