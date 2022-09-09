@@ -1,9 +1,11 @@
-﻿namespace BoatUsersMauiLibrary.Models;
+﻿
+
+namespace BoatUsersMauiLibrary.Models;
 
 public class DeviceSensors
 {
     public int CountElement { get; set; }
-    public Dictionary<string, double> MyCurrentLocation { get; set; }
+
 
     public string name = AppInfo.Current.Name;
 
@@ -13,8 +15,8 @@ public class DeviceSensors
 
     public string build = AppInfo.Current.BuildString;
 
-    public Dictionary<string, double> result = new Dictionary<string, double>();
-
+    public string BatteryLevel { get; set; }
+    private bool IsBatteryWatched { get; set; }
     public string Granted { get; set; }
 
     public DeviceSensors() { }
@@ -40,48 +42,20 @@ public class DeviceSensors
             Console.WriteLine(ex.Message);
         }
     }
-    public Dictionary<string, double> ResetLocationSates(double thisLat, double thisLng)
-    {
-        if (result.Count > 0)
-        {
-            foreach (var item in result)
-            {
-                if (!result.ContainsKey(item.Key))
-                {
-                    result.Add("lat", thisLat);
-                    result.Add("lon", thisLng);
-                    return result;
-                }
-            }
-        }
-        else
-        {
-            result.Add("lat", thisLat);
-            result.Add("lon", thisLng);
-            return result;
-        }
-        return result;
-    }
-    public async void GetCurrentLocation()
+    public async Task<object> GetCurrentLocation()
     {
 
         try
         {
-            //isDeviceLocation = !isDeviceLocation;
-            PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            //PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
-            if (status == PermissionStatus.Granted)
-            {
-                Granted = status.ToString();
-            }
+            //if (status == PermissionStatus.Granted)
+            //{
+            //    Granted = status.ToString();
+            //}
             var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
 
-            var location = await Geolocation.GetLocationAsync(request);
-
-            if (location.Latitude > 0)
-            {
-                ResetLocationSates(location.Latitude, location.Longitude);
-            }
+            return await Geolocation.GetLocationAsync(request);
         }
         catch (FeatureNotSupportedException fnsEx)
         {
@@ -103,5 +77,35 @@ public class DeviceSensors
 
     }
 
+    public void WatchBattery()
+    {
+
+        if (!IsBatteryWatched)
+        {
+            Battery.Default.BatteryInfoChanged += Battery_BatteryInfoChanged;
+        }
+        else
+        {
+            Battery.Default.BatteryInfoChanged -= Battery_BatteryInfoChanged;
+        }
+
+        IsBatteryWatched = !IsBatteryWatched;
+    }
+
+    private void Battery_BatteryInfoChanged(object sender, BatteryInfoChangedEventArgs e)
+    {
+        BatteryLevel = e.State switch
+        {
+            BatteryState.Charging => "Battery is currently charging",
+            BatteryState.Discharging => "Charger is not connected and the battery is discharging",
+            BatteryState.Full => "Battery is full",
+            BatteryState.NotCharging => "The battery isn't charging.",
+            BatteryState.NotPresent => "Battery is not available.",
+            BatteryState.Unknown => "Battery is unknown",
+            _ => "Battery is unknown"
+        };
+
+        BatteryLevel = $"Battery is {e.ChargeLevel * 100}% charged.";
+    }
 
 }

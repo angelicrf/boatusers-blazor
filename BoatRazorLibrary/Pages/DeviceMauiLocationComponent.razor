@@ -1,4 +1,5 @@
-﻿
+﻿@using Newtonsoft.Json;
+
 <div class="m-auto">
     <div class="row mt-3">
         <button class="btn btn-info" @onclick="() => DeviceInfoClicked()">Device Info</button>
@@ -7,7 +8,10 @@
         <button class="btn btn-danger" @onclick="() => instance.DriveToNewLocation()">Device Map</button>
     </div>
     <div class="row mt-3">
-        <button class="btn btn-primary" @onclick="() => { CallLocation(); CallFunc(); }">Device Location</button>
+        <button class="btn btn-primary" @onclick="() => { CallFunc(); CallLocation(); }">Device Location</button>
+    </div>
+    <div class="row mt-3">
+        <button class="btn btn-info" @onclick="() => { instance.WatchBattery(); DeviceBatteryClicked(); }">Device Battery</button>
     </div>
 </div>
 @if (isDeviceInfo)
@@ -18,56 +22,66 @@
     <div class="mt-3 fw-bold text-info"> App Build: <span class="text-danger">Application Build: @instance.build</span></div>
 }
 
-<div class="mt-3 mb-2 fw-bold text-info"> My Location: <span class="text-danger">@instance.result.Count</span></div>
-@if (instance.result.Count > 0)
+@if (ThisObject != null)
 {
-
-    foreach (var item in getResult)
-    {
-        if (item.Key == "lat")
-        {
-            MyLat = item.Value;
-        }
-        if (item.Key == "lng")
-        {
-            MyLon = item.Value;
-        }
-    }
-    <div class="mt-3 mb-2 fw-bold text-info"> My Location: <span class="text-danger">@MyLon and @MyLat</span></div>
-    <div class="mt-3 mb-2 fw-bold text-info"> Permission: <span class="text-danger">@instance.Granted</span></div>
+    <div class="mt-3 mb-2 fw-bold text-info"> User Location: <span class="text-danger">@UserLocationData.Latitude and  @UserLocationData.Longitude</span></div>
 }
 
+@if (!string.IsNullOrEmpty(instance.BatteryLevel))
+{
+    <div class="mt-3 mb-2 fw-bold text-info"> Device Battery: <span class="text-danger">@instance.BatteryLevel</span></div>
 
-
+}
 @code {
-    DeviceSensors instance = new DeviceSensors();
 
-    public double MyLon { get; set; } = 0.54;
-
-    public double MyLat { get; set; } = 0.74;
+        DeviceSensors instance = new DeviceSensors();
 
     private bool isDeviceLocation { get; set; } = false;
 
     private bool isDeviceInfo { get; set; } = false;
+    private bool isDeviceBattery { get; set; } = false;
 
-    private Dictionary<string, double> getResult = new Dictionary<string, double>();
+    private object ThisObject { get; set; }
+
+    private MauiDeviceLocationModel UserLocationData = new MauiDeviceLocationModel();
 
     private void CallLocation() { isDeviceLocation = !isDeviceLocation; if (isDeviceInfo) { isDeviceInfo = false; } }
 
     private void DeviceInfoClicked() { isDeviceInfo = !isDeviceInfo; if (isDeviceLocation) { isDeviceLocation = false; } }
 
-    private void CallFunc()
+    private void DeviceBatteryClicked() {
+
+        isDeviceBattery = !isDeviceBattery;
+
+        if (isDeviceLocation) { isDeviceLocation = false; }
+
+        if (isDeviceInfo) { isDeviceInfo = false; }
+    }
+
+    private async void CallFunc()
     {
-        instance.GetCurrentLocation();
 
+        ThisObject = await instance.GetCurrentLocation();
 
+        var UserDataString = JsonConvert.SerializeObject(ThisObject);
+
+        UserLocationData = JsonConvert.DeserializeObject<MauiDeviceLocationModel>(UserDataString);
 
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+
             StateHasChanged();
+            if (!isDeviceBattery)
+            {
+                CallFunc();
+            }
+            if (!isDeviceLocation)
+            {
+                DeviceBatteryClicked();
+            }
         }
     }
 }
