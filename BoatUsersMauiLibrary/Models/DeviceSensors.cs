@@ -126,6 +126,7 @@ public class DeviceSensors
     {
         string thisStr = e.Reading.ToString().Split(':')[1].Split(' ')[1];
         var thisValue = double.Parse(thisStr);
+
         DevicePressureLevel = thisValue switch
         {
             _ when thisValue > 900 && thisValue < 1050 => $"Presseure is normal {thisValue}",
@@ -133,5 +134,7 @@ public class DeviceSensors
             >= 1050 => $"Presseure is high {thisValue}",
             _ => "Presseure is unknown"
         };
+
+
     }
 }
