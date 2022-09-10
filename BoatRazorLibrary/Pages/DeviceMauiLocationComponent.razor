@@ -14,6 +14,7 @@
         <button class="btn btn-info" @onclick="() => { instance.WatchBattery(); DeviceBatteryClicked(); }">Device Battery</button>
     </div>
 </div>
+<div class="mt-3 mb-2 fw-bold text-info"> Device Battery: <span class="text-danger">@ThisString</span></div>
 @if (isDeviceInfo)
 {
     <div class="mb-2 fw-bold text-info"> App Name: <span class="text-danger"> @instance.name</span></div>
@@ -22,26 +23,28 @@
     <div class="mt-3 fw-bold text-info"> App Build: <span class="text-danger">Application Build: @instance.build</span></div>
 }
 
-@if (ThisObject != null)
+@if (ThisObject != null && isDeviceLocation)
 {
     <div class="mt-3 mb-2 fw-bold text-info"> User Location: <span class="text-danger">@UserLocationData.Latitude and  @UserLocationData.Longitude</span></div>
 }
 
-@if (!string.IsNullOrEmpty(instance.BatteryLevel))
+@if (!string.IsNullOrEmpty(instance.BatteryLevel) && isDeviceBattery)
 {
     <div class="mt-3 mb-2 fw-bold text-info"> Device Battery: <span class="text-danger">@instance.BatteryLevel</span></div>
 
 }
 @code {
 
-        DeviceSensors instance = new DeviceSensors();
+    DeviceSensors instance = new DeviceSensors();
 
     private bool isDeviceLocation { get; set; } = false;
 
     private bool isDeviceInfo { get; set; } = false;
+
     private bool isDeviceBattery { get; set; } = false;
 
     private object ThisObject { get; set; }
+    private string ThisString { get; set; }
 
     private MauiDeviceLocationModel UserLocationData = new MauiDeviceLocationModel();
 
@@ -49,7 +52,8 @@
 
     private void DeviceInfoClicked() { isDeviceInfo = !isDeviceInfo; if (isDeviceLocation) { isDeviceLocation = false; } }
 
-    private void DeviceBatteryClicked() {
+    private void DeviceBatteryClicked()
+    {
 
         isDeviceBattery = !isDeviceBattery;
 
@@ -74,14 +78,6 @@
         {
 
             StateHasChanged();
-            if (!isDeviceBattery)
-            {
-                CallFunc();
-            }
-            if (!isDeviceLocation)
-            {
-                DeviceBatteryClicked();
-            }
         }
     }
 }
