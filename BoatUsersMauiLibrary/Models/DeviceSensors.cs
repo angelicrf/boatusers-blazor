@@ -1,11 +1,8 @@
-﻿
-
-namespace BoatUsersMauiLibrary.Models;
+﻿namespace BoatUsersMauiLibrary.Models;
 
 public class DeviceSensors
 {
     public int CountElement { get; set; }
-
 
     public string name = AppInfo.Current.Name;
 
@@ -14,10 +11,10 @@ public class DeviceSensors
     public string version = AppInfo.Current.VersionString;
 
     public string build = AppInfo.Current.BuildString;
-
     public string BatteryLevel { get; set; }
     private bool IsBatteryWatched { get; set; }
     public string Granted { get; set; }
+    public string DevicePressureLevel { get; set; }
 
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
@@ -108,4 +105,33 @@ public class DeviceSensors
         BatteryLevel = $"Battery is {e.ChargeLevel * 100}% charged.";
     }
 
+    public void ToggleBarometer()
+    {
+        if (Barometer.Default.IsSupported)
+        {
+            if (!Barometer.Default.IsMonitoring)
+            {
+                Barometer.Default.ReadingChanged += Barometer_ReadingChanged;
+                Barometer.Default.Start(SensorSpeed.UI);
+            }
+            else
+            {
+                Barometer.Default.Stop();
+                Barometer.Default.ReadingChanged -= Barometer_ReadingChanged;
+            }
+        }
+    }
+
+    private void Barometer_ReadingChanged(object sender, BarometerChangedEventArgs e)
+    {
+        string thisStr = e.Reading.ToString().Split(':')[1].Split(' ')[1];
+        var thisValue = double.Parse(thisStr);
+        DevicePressureLevel = thisValue switch
+        {
+            _ when thisValue > 900 && thisValue < 1050 => $"Presseure is normal {thisValue}",
+            <= 900 => $"Presseure is low {thisValue}",
+            >= 1050 => $"Presseure is high {thisValue}",
+            _ => "Presseure is unknown"
+        };
+    }
 }

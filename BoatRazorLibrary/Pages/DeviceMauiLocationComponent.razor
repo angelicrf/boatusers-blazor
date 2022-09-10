@@ -11,7 +11,10 @@
         <button class="btn btn-primary" @onclick="() => { CallFunc(); CallLocation(); }">Device Location</button>
     </div>
     <div class="row mt-3">
-        <button class="btn btn-info" @onclick="() => { instance.WatchBattery(); DeviceBatteryClicked(); }">Device Battery</button>
+        <button class="btn btn-info" @onclick="() => { DeviceBatteryClicked(); }">Device Battery</button>
+    </div>
+    <div class="row mt-3">
+        <button class="btn btn-info" @onclick="() => { DeviceBarometerClicked(); }">Device Crash Detector</button>
     </div>
 </div>
 <div class="mt-3 mb-2 fw-bold text-info"> Device Battery: <span class="text-danger">@ThisString</span></div>
@@ -33,6 +36,10 @@
     <div class="mt-3 mb-2 fw-bold text-info"> Device Battery: <span class="text-danger">@instance.BatteryLevel</span></div>
 
 }
+@if (!string.IsNullOrEmpty(instance.DevicePressureLevel) && isDeviceBarometer)
+{
+    <div class="mt-3 mb-2 fw-bold text-info"> Device Pressure: <span class="text-danger">@instance.DevicePressureLevel</span></div>
+}
 @code {
 
     DeviceSensors instance = new DeviceSensors();
@@ -43,14 +50,39 @@
 
     private bool isDeviceBattery { get; set; } = false;
 
+    private bool isDeviceBarometer { get; set; } = false;
+
     private object ThisObject { get; set; }
+
     private string ThisString { get; set; }
 
     private MauiDeviceLocationModel UserLocationData = new MauiDeviceLocationModel();
 
-    private void CallLocation() { isDeviceLocation = !isDeviceLocation; if (isDeviceInfo) { isDeviceInfo = false; } }
+    private void CallLocation()
+    {
 
-    private void DeviceInfoClicked() { isDeviceInfo = !isDeviceInfo; if (isDeviceLocation) { isDeviceLocation = false; } }
+        isDeviceLocation = !isDeviceLocation;
+
+        if (isDeviceInfo) { isDeviceInfo = false; }
+
+        if (isDeviceBarometer) { isDeviceBarometer = false; }
+
+        if (isDeviceBattery) { isDeviceBattery = false; }
+
+    }
+
+    private void DeviceInfoClicked()
+    {
+
+        isDeviceInfo = !isDeviceInfo;
+
+        if (isDeviceLocation) { isDeviceLocation = false; }
+
+        if (isDeviceBarometer) { isDeviceBarometer = false; }
+
+        if (isDeviceBattery) { isDeviceBattery = false; }
+
+    }
 
     private void DeviceBatteryClicked()
     {
@@ -60,24 +92,42 @@
         if (isDeviceLocation) { isDeviceLocation = false; }
 
         if (isDeviceInfo) { isDeviceInfo = false; }
-    }
 
-    private async void CallFunc()
+        if (isDeviceBarometer) { isDeviceBarometer = false; }
+    }
+    private void DeviceBarometerClicked()
     {
 
-        ThisObject = await instance.GetCurrentLocation();
+        isDeviceBarometer = !isDeviceBarometer;
+
+        if (isDeviceLocation) { isDeviceLocation = false; }
+
+        if (isDeviceInfo) { isDeviceInfo = false; }
+
+        if (isDeviceBattery) { isDeviceBattery = false; }
+    }
+
+    private void CallFunc()
+    {
 
         var UserDataString = JsonConvert.SerializeObject(ThisObject);
-
         UserLocationData = JsonConvert.DeserializeObject<MauiDeviceLocationModel>(UserDataString);
 
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-
-            StateHasChanged();
-        }
+        ThisObject = await instance.GetCurrentLocation();
+        instance.WatchBattery();
+        instance.ToggleBarometer();
+        StateHasChanged();
     }
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+
+    //        StateHasChanged();
+    //    }
+    //}
+
 }
