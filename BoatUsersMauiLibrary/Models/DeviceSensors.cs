@@ -1,4 +1,6 @@
-﻿namespace BoatUsersMauiLibrary.Models;
+﻿
+
+namespace BoatUsersMauiLibrary.Models;
 
 public class DeviceSensors
 {
@@ -15,7 +17,7 @@ public class DeviceSensors
     private bool IsBatteryWatched { get; set; }
     public string Granted { get; set; }
     public string DevicePressureLevel { get; set; }
-
+    // private SensorManager sensorManager;
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
     {
@@ -79,11 +81,11 @@ public class DeviceSensors
 
         if (!IsBatteryWatched)
         {
-            Battery.Default.BatteryInfoChanged += Battery_BatteryInfoChanged;
+            Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged += Battery_BatteryInfoChanged;
         }
         else
         {
-            Battery.Default.BatteryInfoChanged -= Battery_BatteryInfoChanged;
+            Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged -= Battery_BatteryInfoChanged;
         }
 
         IsBatteryWatched = !IsBatteryWatched;
@@ -129,12 +131,24 @@ public class DeviceSensors
 
         DevicePressureLevel = thisValue switch
         {
-            _ when thisValue > 900 && thisValue < 1050 => $"Presseure is normal {thisValue}",
-            <= 900 => $"Presseure is low {thisValue}",
-            >= 1050 => $"Presseure is high {thisValue}",
+            _ when thisValue > 900 && thisValue < 1050 => $"Pressure is normal {thisValue}",
+            <= 900 => $"Pressure is low {thisValue}",
+            >= 1050 => $"Pressure is high {thisValue}",
             _ => "Presseure is unknown"
         };
+    }
+    public async Task<string> GetGeocodeReverseData(double latitude, double longitude)
+    {
+        IEnumerable<Placemark> placemarks = await Geocoding.Default.GetPlacemarksAsync(latitude, longitude);
 
+        Placemark placemark = placemarks?.FirstOrDefault();
 
+        if (placemark != null)
+        {
+            return
+               $"{placemark.FeatureName + ' ' + placemark.Locality + ", " + placemark.SubAdminArea + ",\n " + placemark.AdminArea + ", this" + placemark.PostalCode + ", " + placemark.CountryCode}";
+        }
+
+        return "";
     }
 }

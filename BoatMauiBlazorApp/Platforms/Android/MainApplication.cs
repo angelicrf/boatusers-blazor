@@ -7,6 +7,7 @@ using Android.Runtime;
 [assembly: UsesFeature("android.hardware.location", Required = false)]
 [assembly: UsesFeature("android.hardware.location.gps", Required = false)]
 [assembly: UsesFeature("android.hardware.location.network", Required = false)]
+[assembly: UsesFeature("android.hardware.sensors.ambient_temperature", Required = false)]
 [assembly: UsesPermission(Manifest.Permission.AccessBackgroundLocation)]
 [assembly: UsesPermission(Manifest.Permission.BatteryStats)]
 
@@ -21,5 +22,6 @@ namespace BoatMauiBlazorApp
         }
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+
     }
 }

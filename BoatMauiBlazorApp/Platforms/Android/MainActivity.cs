@@ -11,5 +11,6 @@ namespace BoatMauiBlazorApp
             base.OnCreate(savedInstanceState);
 
         }
+
     }
 }
