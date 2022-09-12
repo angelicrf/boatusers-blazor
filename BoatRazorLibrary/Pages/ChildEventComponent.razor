@@ -1,0 +1,18 @@
+﻿
+<p>
+    <button @onclick="OnClickCallback">
+        Component Event
+    </button>
+    <div>@ChildContent and @Title</div>
+</p>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+}

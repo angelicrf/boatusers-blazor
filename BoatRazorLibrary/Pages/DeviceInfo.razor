@@ -6,9 +6,10 @@
 
 @if (IsMobile)
 {
-    
+
     <DeviceMauiLocationComponent />
 }
+
 else
 {
     <div class="m-auto">
@@ -25,7 +26,7 @@ else
     private IJSObjectReference? funcModule;
 
     FuncDeviceInfo funcDvi = new FuncDeviceInfo();
-  
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -38,7 +39,7 @@ else
             StateHasChanged();
         }
     }
- 
+
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
 

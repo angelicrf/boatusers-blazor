@@ -10,6 +10,7 @@ using Android.Runtime;
 [assembly: UsesFeature("android.hardware.sensors.ambient_temperature", Required = false)]
 [assembly: UsesPermission(Manifest.Permission.AccessBackgroundLocation)]
 [assembly: UsesPermission(Manifest.Permission.BatteryStats)]
+[assembly: UsesPermission(Manifest.Permission.AccessNetworkState)]
 
 namespace BoatMauiBlazorApp
 {

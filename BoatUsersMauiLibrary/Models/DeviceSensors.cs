@@ -1,6 +1,4 @@
-﻿
-
-namespace BoatUsersMauiLibrary.Models;
+﻿namespace BoatUsersMauiLibrary.Models;
 
 public class DeviceSensors
 {
@@ -14,10 +12,12 @@ public class DeviceSensors
 
     public string build = AppInfo.Current.BuildString;
     public string BatteryLevel { get; set; }
+    public string ConnectionMethod { get; set; }
     private bool IsBatteryWatched { get; set; }
     public string Granted { get; set; }
     public string DevicePressureLevel { get; set; }
-    // private SensorManager sensorManager;
+    public bool IsBatteryEventFired { get; set; } = false;
+    public bool IsCrashReported { get; set; } = false;
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
     {
@@ -76,23 +76,26 @@ public class DeviceSensors
 
     }
 
-    public void WatchBattery()
+    public async Task WatchBattery()
     {
 
         if (!IsBatteryWatched)
         {
             Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged += Battery_BatteryInfoChanged;
+            await Task.CompletedTask;
         }
         else
         {
             Microsoft.Maui.Devices.Battery.Default.BatteryInfoChanged -= Battery_BatteryInfoChanged;
+            await Task.CompletedTask;
         }
 
         IsBatteryWatched = !IsBatteryWatched;
     }
 
-    private void Battery_BatteryInfoChanged(object sender, BatteryInfoChangedEventArgs e)
+    public void Battery_BatteryInfoChanged(object sender, BatteryInfoChangedEventArgs e)
     {
+        IsBatteryEventFired = true;
         BatteryLevel = e.State switch
         {
             BatteryState.Charging => "Battery is currently charging",
@@ -104,10 +107,10 @@ public class DeviceSensors
             _ => "Battery is unknown"
         };
 
-        BatteryLevel = $"Battery is {e.ChargeLevel * 100}% charged.";
+        BatteryLevel = $"Battery is {e.ChargeLevel * 100}% charged.{e.PowerSource}";
     }
 
-    public void ToggleBarometer()
+    public async Task ToggleBarometer()
     {
         if (Barometer.Default.IsSupported)
         {
@@ -115,11 +118,13 @@ public class DeviceSensors
             {
                 Barometer.Default.ReadingChanged += Barometer_ReadingChanged;
                 Barometer.Default.Start(SensorSpeed.UI);
+                await Task.CompletedTask;
             }
             else
             {
                 Barometer.Default.Stop();
                 Barometer.Default.ReadingChanged -= Barometer_ReadingChanged;
+                await Task.CompletedTask;
             }
         }
     }
@@ -131,11 +136,34 @@ public class DeviceSensors
 
         DevicePressureLevel = thisValue switch
         {
-            _ when thisValue > 900 && thisValue < 1050 => $"Pressure is normal {thisValue}",
+            _ when thisValue > 900 && thisValue < 1050 => ((Func<string>)(() =>
+            {
+                //if (!IsCrashReported) { AlertUser(); IsCrashReported = true; }
+                return $"Pressure is normal {thisValue}";
+            }))(),
             <= 900 => $"Pressure is low {thisValue}",
-            >= 1050 => $"Pressure is high {thisValue}",
+            >= 1050 => ((Func<string>)(() =>
+            {
+                if (!IsCrashReported) { AlertUser(); IsCrashReported = true; }
+                return $"Pressure is high {thisValue}";
+            }))(),
             _ => "Presseure is unknown"
         };
+    }
+    private async void AlertUser()
+    {
+        if (Sms.Default.IsComposeSupported)
+        {
+            string[] recipients = new[] { "206-321-1169" };
+            string text = "Hello, Reporting a Crash.";
+
+            var message = new SmsMessage(text, recipients);
+
+            if (PhoneDialer.Default.IsSupported)
+                PhoneDialer.Default.Open("206-321-1169");
+
+            await Sms.Default.ComposeAsync(message);
+        }
     }
     public async Task<string> GetGeocodeReverseData(double latitude, double longitude)
     {
@@ -150,5 +178,35 @@ public class DeviceSensors
         }
 
         return "";
+    }
+    public async Task DeviceConnetNetwork()
+    {
+        var current = Connectivity.NetworkAccess;
+        var profiles = Connectivity.ConnectionProfiles;
+
+        if (current == NetworkAccess.Internet)
+        {
+
+            if (profiles.Contains(ConnectionProfile.WiFi))
+            {
+                ConnectionMethod = "Active Wi-Fi connection";
+                await Task.CompletedTask;
+            }
+            if (profiles.Contains(ConnectionProfile.Ethernet))
+            {
+                ConnectionMethod = "Active Ethernet connection";
+                await Task.CompletedTask;
+            }
+            if (profiles.Contains(ConnectionProfile.Cellular))
+            {
+                ConnectionMethod = "Active Cellular connection";
+                await Task.CompletedTask;
+            }
+            if (profiles.Contains(ConnectionProfile.Bluetooth))
+            {
+                ConnectionMethod = "Active Bluetooth connection";
+                await Task.CompletedTask;
+            }
+        }
     }
 }
