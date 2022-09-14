@@ -9,9 +9,22 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.BATTERY_STATS" />
 	<uses-permission android:name="android.permission.CALL_PHONE" />
+	<uses-permission android:name="android.permission.BLUETOOTH"
+                     android:maxSdkVersion="31" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+                     android:maxSdkVersion="31" />
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<permission android:name="android.permission.BLUETOOTH" android:label="BLUETOOTH" />
+	<permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	<permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-feature android:name="android.hardware.location" />
 	<uses-feature android:name="android.hardware.location.gps" />
 	<uses-feature android:name="android.hardware.location.network" />
+	<uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 	<queries>
 		<intent>
 			<action android:name="android.intent.action.VIEW" />

@@ -1,0 +1,35 @@
+﻿@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+
+<button id="btId" class="btn btn-primary mt-4">BluetoothDevices</button>
+
+@code {
+
+    public IJSObjectReference? bTModule;
+    public IJSObjectReference? bTInstance;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            bTModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/BoatRazorLibrary/bluetoothInfo.js");
+            bTInstance = await bTModule.InvokeAsync<IJSObjectReference>("getBluetoothDevices");
+        }
+    }
+
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (bTInstance is not null)
+        {
+            await bTInstance.DisposeAsync();
+        }
+
+        if (bTModule is not null)
+        {
+            await bTModule.DisposeAsync();
+        }
+    }
+}
