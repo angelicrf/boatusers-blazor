@@ -18,6 +18,9 @@ public class DeviceSensors
     public string DevicePressureLevel { get; set; }
     public bool IsBatteryEventFired { get; set; } = false;
     public bool IsCrashReported { get; set; } = false;
+    public bool IsPermited { get; set; } = false;
+
+    //public List<BluetoothDevice> DeviceList = new List<BluetoothDevice>();
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
     {
@@ -41,17 +44,24 @@ public class DeviceSensors
             Console.WriteLine(ex.Message);
         }
     }
+    public async Task VerifyPermission()
+    {
+        PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            if (status != PermissionStatus.Granted)
+            {
+                IsPermited = true;
+                await Task.CompletedTask;
+            }
+        }
+    }
     public async Task<object> GetCurrentLocation()
     {
 
         try
         {
-            //PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-
-            //if (status == PermissionStatus.Granted)
-            //{
-            //    Granted = status.ToString();
-            //}
             var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
 
             return await Geolocation.GetLocationAsync(request);
@@ -209,4 +219,5 @@ public class DeviceSensors
             }
         }
     }
+
 }

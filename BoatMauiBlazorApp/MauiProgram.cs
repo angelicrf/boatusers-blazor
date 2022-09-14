@@ -1,9 +1,14 @@
-﻿using BoatRazorLibrary.Models;
+﻿using AntDesign.ProLayout;
+using BoatRazorLibrary.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace BoatMauiBlazorApp
 {
+
     public static class MauiProgram
     {
+        public static IConfiguration configuration;
+        public static Action<ProSettings> antSetting;
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -17,6 +22,10 @@ namespace BoatMauiBlazorApp
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddOptions<ProSettings>()
+        .Configure<IConfiguration>((options, configuration) =>
+         configuration.GetSection("ProSettings").Bind(options));
+            builder.Services.AddAntDesign();
 #endif
 
             builder.Services.AddSingleton<HttpClient>();
@@ -24,6 +33,10 @@ namespace BoatMauiBlazorApp
             builder.Services.AddSingleton<IWeatherForcast, WeatherForecastService>();
             builder.Services.AddSingleton<IBULogin, BULoginService>();
             builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
+            builder.Services.AddOptions<ProSettings>()
+           .Configure<IConfiguration>((options, configuration) =>
+            configuration.GetSection("ProSettings").Bind(options));
+            builder.Services.AddAntDesign();
             return builder.Build();
         }
     }

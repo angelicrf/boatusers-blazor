@@ -1,11 +1,10 @@
 ﻿@using Newtonsoft.Json;
 @implements IDisposable
 
+
 @if (instance.IsBatteryEventFired)
 {
-    <ChildEventComponent Title="ChildComponentTitle" OnClickCallback="ParentShowMessage">
-        Props 3 Message
-    </ChildEventComponent>
+ 
     <div>@message</div>
     <div class="m-auto">
         <div class="row mt-3">
@@ -85,8 +84,7 @@ else
         if (isDeviceBattery) { isDeviceBattery = false; }
 
     }
-
-
+ 
     private void CallFunc()
     {
 
@@ -100,6 +98,7 @@ else
         await instance.WatchBattery();
         await instance.ToggleBarometer();
         await instance.DeviceConnetNetwork();
+        await instance.VerifyPermission();
         await InvokeAsync(StateHasChanged);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)

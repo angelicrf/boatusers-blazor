@@ -30,5 +30,18 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+	</array>
+
+	<!--Description of the Bluetooth request message (required on iOS 10, deprecated)-->
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This App Needs Your Permission to Access the Device Bluetooth</string>
+
+	<!--Description of the Bluetooth request message (required on iOS 13)-->
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This App Needs Your Permission to Access the Device Bluetooth</string>
 </dict>
 </plist>

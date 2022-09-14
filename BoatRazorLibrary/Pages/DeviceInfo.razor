@@ -4,18 +4,26 @@
 
 <h3>DeviceInfo</h3>
 
+@*<Button Type="@ButtonType.Primary">Click</Button>*@
+
 @if (IsMobile)
 {
-
-    <DeviceMauiLocationComponent />
+    <div class="m-auto">
+        <DeviceMauiLocationComponent />
+        @*<DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />*@
+        <BUCalendarMaui />
+       
+    </div>
 }
-
 else
 {
-    <div class="m-auto">
-        <button class="btn btn-primary" @onclick="funcDvi.CountCall">Count</button>
-    </div>
-    <div>@funcDvi.CountElement</div>
+//#if WINDOWS
+
+<div class="m-auto">
+    <BUCalendarMaui />
+    <BUDateSelectorComponent />
+</div>
+//#endif
 }
 
 @code
@@ -27,17 +35,20 @@ else
 
     FuncDeviceInfo funcDvi = new FuncDeviceInfo();
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
         if (firstRender)
         {
+
             funcModule = await js.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
             IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
             StateHasChanged();
+
         }
+
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()

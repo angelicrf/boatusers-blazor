@@ -1,0 +1,38 @@
+﻿@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+
+<div id="calendar" style="height: 300px;width:300px;"></div>
+
+
+@code {
+
+    public IJSObjectReference? calModule;
+    public IJSObjectReference? calInstance;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            calModule = await JS.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BoatRazorLibrary/buCalender.js");
+            calInstance = await calModule.InvokeAsync<IJSObjectReference>(
+            "DisplayCalendar");
+        }
+    }
+
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (calInstance is not null)
+        {
+            await calInstance.DisposeAsync();
+        }
+
+        if (calModule is not null)
+        {
+            await calModule.DisposeAsync();
+        }
+    }
+}

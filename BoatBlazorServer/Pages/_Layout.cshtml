@@ -8,12 +8,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
+    <link rel="stylesheet" href="_content/Blazority/lib/clr/ui/clr-ui.min.css" />
+    <link rel="stylesheet" href="_content/Blazority/lib/clr/icons/clr-icons.min.css" />
+    <link rel="stylesheet" href="_content/Blazority/blazority.min.css" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css"
           rel="stylesheet" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css' type='text/css' />
     <link href="BoatBlazorServer.styles.css" rel="stylesheet" />
+    <link href="_content/AntDesign/css/ant-design-blazor.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -29,11 +34,15 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script src="_content/Blazority/lib/webcomponents/custom-elements/custom-elements.min.js"></script>
+    <script src="_content/Blazority/lib/clr/icons/clr-icons.min.js"></script>
+    <script src="_content/Blazority/blazority.min.js"></script>
     <script src="_framework/blazor.server.js"></script>
     <script src="./_content/BoatRazorLibrary/mapInfo.js" type="module"></script>
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.ie11.min.js"></script>
     @*<script src="https://www.paypal.com/sdk/js?client-id=AWTeL4kMDevIsCS-YZzuwnpA2qET4Sb6zGapzyWN1py_CdjzNjFsBKmipq-0HdZqswRBgZO7MFr2gjcW" data-sdk-integration-source="button-factory" data-namespace="paypal_sdk"></script>
-    <script src="https://www.paypalobjects.com/api/checkout.js" data-version-4></script>*@
-
-
+        <script src="https://www.paypalobjects.com/api/checkout.js" data-version-4></script>*@
+    <script src="_content/AntDesign/js/ant-design-blazor.js"></script>
+    <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
 </body>
 </html>
