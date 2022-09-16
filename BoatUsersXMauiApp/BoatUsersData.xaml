@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BoatUsersXMauiApp.BoatUsersData"
+             Title="Bluetooth">
+    <StackLayout Padding="10, 0" Margin="50">
+        <Label x:Name="name" BindingContext="{x:Reference Name=lastName}" FontSize="22" Text="{Binding Path=Text}" />
+        <Label x:Name="lastName" FontSize="22" Text="All BUsers Data" />
+        <Entry x:Name="nameInput" Placeholder="Enter text" Completed="OnTextCompleted" MaxLength="30" />
+        <Button Text="Click" Clicked="GetData"/>
+        <Label x:Name="showValue" />
+    </StackLayout>
+
+</ContentPage>

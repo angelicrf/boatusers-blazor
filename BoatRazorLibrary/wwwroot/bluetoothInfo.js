@@ -1,29 +1,38 @@
-﻿export const getBluetoothDevices = () => {
+﻿let thisElement = ""
+let isClicked = false
+let getResult = {}
+export const getBluetoothDevices = () => {
 
     try {
-       
+
         const button = document.getElementById('btId')
 
         button.addEventListener('click', async function () {
-           
-            navigator.bluetooth.requestDevice({
-                //'ShellyPlugUS-083AF200732C'
-                filters: [{ name: 'ShellyPlugUS-083AF200732C' }],   
-                optionalServices: ['0000180a-0000-1000-8000-00805f9b34fb']
-                //or acceptAllDevices: true
-            }).then(device => device.gatt.connect())
-               .then(async(server) => {
-                   let result = BluetoothUUID.getService('device_information');
-                   let getResult = await server.getPrimaryService(result);
-                   if (getResult != null) {
-                       let getCharDevice = await getResult.getCharacteristic('00002a00-0000-1000-8000-00805f9b34fb')
-                       if (getCharDevice != null) {
-                           console.log(getCharDevice)
-                           readDeviceValue(getCharDevice);
-                       }
-                   }
-                })
-            })
+
+            let device = await navigator.bluetooth.requestDevice({
+                //00002a00-0000-1000-8000-00805f9b34fb
+                //00002a29-0000-1000-8000-00805f9b34fb
+                optionalServices: ["battery_service", "device_information"],
+                acceptAllDevices: true,
+            });
+
+            let server = await device.gatt.connect()
+
+            let result = await BluetoothUUID.getService('device_information')
+            getResult = await server.getPrimaryService(result)
+            let allChars = await getResult.getCharacteristics()
+            await displayElemnts(allChars, "thisId")
+
+            //setInterval(async () => {
+            //    if (isClicked && thisElement != null) {
+            //        let getCharDevice = await getResult.getCharacteristic(thisElement)                    
+            //        readDeviceValue(getCharDevice)
+            //        startNotificationValue(getCharDevice)
+            //    }
+            //}, 10000)
+
+        })
+
     } catch (e) {
         alert(e)
     }
@@ -44,21 +53,54 @@ const startNotificationValue = async (characteristic) => {
         //await descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
         //await BluetoothGatt.writeDescriptor(descriptor);
         //console.log(descriptId)
-        //characteristic.setCharacteristicNotification(characteristic, true);
-        //let encoder = new TextEncoder('utf-8');
-        //let sendMsg = encoder.encode("On");
-        //await characteristic.writeValue(sendMsg)
+        const value = new Uint8Array([0x00, 0x00, 0x00, 0x00]);
+        await characteristic.writeValueWithoutResponse(value);
+        
         if (characteristic.properties.notify) {
             characteristic.addEventListener('characteristicvaluechanged', async (event) => {
-                alert("clicked")
                 console.log(`value: ${event.target.value}`);
             });
-
-            await characteristic.startNotifications();
-       }
+        }
+       
+       //     await characteristic.startNotifications();
+        isClicked = false
 
     } catch (e) {
         alert(e)
+        isClicked = false
     }
 }
+const displayElemnts = (thisList, thisId) => {
+
+    return new Promise(async (resolve, reject)  => {
+        var getId = document.getElementById(thisId)
+        getId.innerHTML = "Characteristics"
+        for (var i in thisList) {
+
+            let li = document.createElement("li")
+            let a = document.createElement("a")
+            a.setAttribute("href", "#")
+            a.appendChild(document.createTextNode(thisList[i]['uuid']))
+            li.appendChild(a)
+            getId.appendChild(li)
+            let getresolve = createBtn(a, thisList[i]['uuid'])
+            resolve(getresolve)
+        }
+    })
+}
+const createBtn = (a, c) => {
+    return new Promise(function (resolve, reject) {
+        a.onclick = async() => {  
+            alert(c)
+            let getCharDevice = await getResult.getCharacteristic(c) 
+            readDeviceValue(getCharDevice)
+            startNotificationValue(getCharDevice)
+            //loadElements(c)
+            //isClicked = true       
+        }
+        resolve("done")
+    })
+}
+const loadElements = (c) => thisElement = c;
+
 

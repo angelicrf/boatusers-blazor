@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace BoatRazorLibrary.Models;
 
 public class DateSelector
@@ -11,6 +10,7 @@ public class DateSelector
 
     public string ToString(DateTime? timestamp)
     {
+
         if (timestamp.HasValue)
             return $"{timestamp.Value.ToShortDateString()} {timestamp.Value.ToShortTimeString()}";
 
