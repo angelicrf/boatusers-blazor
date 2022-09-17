@@ -1,21 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
+	<application android:name="com.xyz.MainActivity" android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
-
-	<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
 	<permission android:name="android.permission.BLUETOOTH_CONNECT" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	
-	<permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 	<permission android:name="android.permission.BLUETOOTH_CONNECT" />
 	<permission android:name="android.permission.BLUETOOTH_SCAN" />
-	<uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-	<uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+	<permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	<permission android:name="android.permission.BLUETOOTH" />
+	
+	<uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
 
 </manifest>
