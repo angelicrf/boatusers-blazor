@@ -36,8 +36,11 @@ namespace BoatUsersXMauiApp
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            PermissionCheck.updateActivity(this);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
-            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.BluetoothScan) == (int)Permission.Granted &&
+            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) == (int)Permission.Granted &&
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessCoarseLocation) == (int)Permission.Granted &&
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.BluetoothScan) == (int)Permission.Granted &&
                 ContextCompat.CheckSelfPermission(this, Manifest.Permission.BluetoothConnect) == (int)Permission.Granted &&
                 ContextCompat.CheckSelfPermission(this, Manifest.Permission.Bluetooth) == (int)Permission.Granted &&
                 ContextCompat.CheckSelfPermission(this, Manifest.Permission.BluetoothAdmin) == (int)Permission.Granted)
@@ -47,11 +50,11 @@ namespace BoatUsersXMauiApp
             }
             else
             {
-                //Toast.MakeText(this, "Not Granted", ToastLength.Short).Show();
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-               .SetTitle("Permission Entry")
-               .SetMessage("nOTGranted");
-                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.BluetoothScan,
+                Toast.MakeText(this, "Not Granted", ToastLength.Short).Show();
+                // AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                //.SetTitle("Permission Entry")
+                //.SetMessage("nOTGranted");
+                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.AccessCoarseLocation,Manifest.Permission.AccessFineLocation ,Manifest.Permission.BluetoothScan,
                 Manifest.Permission.BluetoothAdmin, Manifest.Permission.Bluetooth, Manifest.Permission.BluetoothConnect}, 10);
 
             }

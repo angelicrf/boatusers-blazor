@@ -8,6 +8,8 @@ namespace BoatUsersXMauiApp;
 public partial class BoatUsersData : ContentPage
 {
     public bool IsClicked { get; set; } = false;
+    public StaticProperties AllTestViewModel { get; set; }
+
 
 #if ANDROID
     private PermissionCheck pr = new PermissionCheck();
@@ -16,7 +18,8 @@ public partial class BoatUsersData : ContentPage
     public BoatUsersData()
     {
         InitializeComponent();
-        showName.Text = StaticProperties.ShowName;
+        AllTestViewModel = new StaticProperties();
+        BindingContext = new StaticProperties();
 
     }
     //private void OnTextChanged(object sender, TextChangedEventArgs e)
@@ -25,10 +28,27 @@ public partial class BoatUsersData : ContentPage
     //}
     private void CallGetData(object sender, EventArgs e)
     {
-        GetData();
 #if ANDROID
+       GetData();
        pr.TestActivityChanges();
 #endif
+    }
+    private async void ShowDevicedata(object sender, EventArgs e)
+    {
+        if (MainThread.IsMainThread)
+        {
+#if ANDROID
+     await pr.ShowDevices();
+#endif
+
+        }
+        else
+        {
+#if ANDROID
+      MainThread.InvokeOnMainThreadAsync(async() => await pr.ShowDevices());
+#endif
+
+        }
     }
     //public partial DeviceOrientation GetOrientation() { return DeviceOrientation.Undefined; }
 
