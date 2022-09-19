@@ -1,14 +1,10 @@
-//using Android;
-//using Android.App;
-//using Android.Content.PM;
-//using AndroidX.Core.Content;
 
 namespace BoatUsersXMauiApp;
 
 public partial class BoatUsersData : ContentPage
 {
     public bool IsClicked { get; set; } = false;
-    public StaticProperties AllTestViewModel { get; set; }
+    public static StaticpropertiesList AllTestViewModel { get; set; }
 
 
 #if ANDROID
@@ -18,8 +14,9 @@ public partial class BoatUsersData : ContentPage
     public BoatUsersData()
     {
         InitializeComponent();
-        AllTestViewModel = new StaticProperties();
-        BindingContext = new StaticProperties();
+        AllTestViewModel = new StaticpropertiesList();
+        BindingContext = AllTestViewModel;
+        allPropsView.ItemsSource = AllTestViewModel.allProps;
 
     }
     //private void OnTextChanged(object sender, TextChangedEventArgs e)
@@ -50,7 +47,6 @@ public partial class BoatUsersData : ContentPage
 
         }
     }
-    //public partial DeviceOrientation GetOrientation() { return DeviceOrientation.Undefined; }
 
     private void GetData()
     {
@@ -117,4 +113,23 @@ public partial class BoatUsersData : ContentPage
         //lastName.Text = ((Entry)sender).Text;
         //showValue.Text = "newtext";
     }
+    private async void ConnectDevice(object sender, EventArgs e)
+    {
+        if (MainThread.IsMainThread)
+        {
+
+#if ANDROID
+    await pr.ConnectDevicesInfo();
+#endif
+
+        }
+        else
+        {
+#if ANDROID
+      MainThread.BeginInvokeOnMainThread(new Action (async() => await pr.ConnectDevicesInfo()));
+#endif
+
+        }
+    }
+
 }

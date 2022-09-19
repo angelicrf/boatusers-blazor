@@ -1,7 +1,9 @@
 ﻿using Android.Content;
 using Android.Widget;
 using Plugin.BLE;
+using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
+using Plugin.BLE.Abstractions.Exceptions;
 using Plugin.CurrentActivity;
 using System.Collections.ObjectModel;
 
@@ -14,11 +16,14 @@ public class PermissionCheck
     public ObservableCollection<IDevice> deviceList = new ObservableCollection<IDevice>();
 
     public PermissionCheck() { }
+
     private IBluetoothLE ble = CrossBluetoothLE.Current;
+
     private BluetoothState state;
+
     private Plugin.BLE.Abstractions.Contracts.IAdapter adapter = CrossBluetoothLE.Current.Adapter;
+
     private static Context mActivityRef;
-    private StaticProperties staticProperties = new StaticProperties();
     public void TestActivityChanges()
     {
         mn.ActivityStateChanged += AndroidActivityStateChanged;
@@ -29,11 +34,14 @@ public class PermissionCheck
     }
     public static void updateActivity(Context context)
     {
+
         mActivityRef = context;
     }
     public void MyMainThreadCode()
     {
+
         state = ble.State;
+
         ble.StateChanged += (s, e) =>
         {
             Toast.MakeText(mActivityRef, $"The bluetooth state changed to {e.NewState}", ToastLength.Short).Show();
@@ -56,14 +64,15 @@ public class PermissionCheck
 
                 if (deviceList.Count > 0)
                 {
-                    foreach (var item in deviceList)
+
+                    // BoatUsersData.AllTestViewModel.MultiplyBy2Command = new Command(() => BoatUsersData.AllTestViewModel.DeviceId = BoatUsersData.AllTestViewModel.DeviceId);
+
+                    for (int i = 0; i < deviceList.Count; i++)
                     {
-                        staticProperties.ShowName = "findItem";
-                        //item.ToString();
+
+                        BoatUsersData.AllTestViewModel.AddItems(i, new StaticProperties { ShowName = deviceList[i].ToString(), IsVisible = true });
                     }
                 }
-                //await adapter.ConnectToDeviceAsync(deviceList[0]);
-
                 //var service = await deviceList[0].GetServiceAsync(Guid.Parse("ffe0ecd2-3d16-4f8d-90de-e89e7fc396a5"));
                 //var characteristic = await service.GetCharacteristicAsync(Guid.Parse("d8de624e-140f-4a22-8594-e2216b84a5f2"));
                 //var characteristics = await service.GetCharacteristicsAsync();
@@ -93,5 +102,28 @@ public class PermissionCheck
             Console.WriteLine(en.Message);
         }
 
+    }
+    public async Task ConnectDevicesInfo()
+    {
+        try
+        {
+            ConnectParameters para = new ConnectParameters(true, true);
+            await adapter.ConnectToDeviceAsync(deviceList[0], para, new CancellationTokenSource().Token);
+            Console.WriteLine("passed Connection");
+
+            //var services = await deviceList[0].GetServicesAsync();
+            //AC:10:00:00:01
+            //UUID=ad27158f-fdba-4fd1-bc54-af16d5398220
+            //Console.WriteLine(services);
+            //var characteristics = await services[0].GetCharacteristicsAsync();
+        }
+        catch (DeviceConnectionException ex)
+        {
+            Console.Write(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex.Message);
+        }
     }
 }

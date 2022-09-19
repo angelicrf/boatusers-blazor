@@ -18,11 +18,15 @@
             </Label.FormattedText>
         </Label>
         <Button Text="Devices" Clicked="ShowDevicedata" Background="red" TextColor="Black"/>
-        <Label Text="{Binding ShowName}" TextColor="Black" >
-            <Label.BindingContext>
-                <viewModel:StaticProperties />
-            </Label.BindingContext>
-        </Label>
+        <ListView x:Name="allPropsView" ItemsSource="{Binding AllProps}" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Button IsVisible="true" Text="NewBtn" Background="Blue" TextColor="Black" />
+                    <!--<Button IsVisible="{Binding IsVisible}" Text="{Binding ShowName}" TextColor="Black" BackgroundColor="Aqua" Clicked="ConnectDevice">
+                    </Button>-->
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackLayout>
 
 </ContentPage>

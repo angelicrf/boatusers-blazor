@@ -4,7 +4,7 @@ using Java.Interop;
 
 namespace BoatUsersXMauiApp;
 
-public partial class BoatUsersData
+public partial class DeviceOrientationService
 {
 
     public partial DeviceOrientation GetOrientation()

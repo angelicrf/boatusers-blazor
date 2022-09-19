@@ -6,7 +6,7 @@
         Landscape,
         Portrait
     }
-    public partial class BoatUsersData
+    public partial class DeviceOrientationService
     {
         public partial DeviceOrientation GetOrientation();
         //{ return DeviceOrientation.Undefined; }
