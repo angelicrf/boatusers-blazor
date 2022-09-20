@@ -15,6 +15,7 @@ public class PermissionCheck
 
     public ObservableCollection<IDevice> deviceList = new ObservableCollection<IDevice>();
 
+    //private StaticpropertiesList _properties { get; set; } = new StaticpropertiesList();
     public PermissionCheck() { }
 
     private IBluetoothLE ble = CrossBluetoothLE.Current;
@@ -70,7 +71,7 @@ public class PermissionCheck
                     for (int i = 0; i < deviceList.Count; i++)
                     {
 
-                        BoatUsersData.AllTestViewModel.AddItems(i, new StaticProperties { ShowName = deviceList[i].ToString(), IsVisible = true });
+                        BoatUsersData._properties.AddItems(i, new StaticProperties { ShowName = deviceList[i].ToString(), IsVisible = true, DeviceId = i });
                     }
                 }
                 //var service = await deviceList[0].GetServiceAsync(Guid.Parse("ffe0ecd2-3d16-4f8d-90de-e89e7fc396a5"));

@@ -1,11 +1,9 @@
-
 namespace BoatUsersXMauiApp;
 
 public partial class BoatUsersData : ContentPage
 {
     public bool IsClicked { get; set; } = false;
-    public static StaticpropertiesList AllTestViewModel { get; set; }
-
+    public static StaticpropertiesList _properties { get; set; } = new StaticpropertiesList();
 
 #if ANDROID
     private PermissionCheck pr = new PermissionCheck();
@@ -13,11 +11,9 @@ public partial class BoatUsersData : ContentPage
 #endif
     public BoatUsersData()
     {
-        InitializeComponent();
-        AllTestViewModel = new StaticpropertiesList();
-        BindingContext = AllTestViewModel;
-        allPropsView.ItemsSource = AllTestViewModel.allProps;
 
+        Resources["Allprops"] = _properties.AllProps;
+        InitializeComponent();
     }
     //private void OnTextChanged(object sender, TextChangedEventArgs e)
     //{
@@ -35,14 +31,23 @@ public partial class BoatUsersData : ContentPage
         if (MainThread.IsMainThread)
         {
 #if ANDROID
-     await pr.ShowDevices();
+      await pr.ShowDevices();
+      Resources["Allprops"] = null;
+      Resources["Allprops"] = _properties.AllProps;
 #endif
 
         }
         else
         {
 #if ANDROID
-      MainThread.InvokeOnMainThreadAsync(async() => await pr.ShowDevices());
+      MainThread.InvokeOnMainThreadAsync(async() => {
+
+      await pr.ShowDevices();  
+
+      Resources["Allprops"] = null;
+      Resources["Allprops"] = _properties.AllProps;
+      
+      });
 #endif
 
         }
@@ -107,7 +112,10 @@ public partial class BoatUsersData : ContentPage
     //    _socket.OutputStream.WriteAsync(buffer, 0, buffer.Length);
 
     //}
-
+    private void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+    {
+        StaticProperties item = args.SelectedItem as StaticProperties;
+    }
     private void OnTextCompleted(object sender, EventArgs e)
     {
         //lastName.Text = ((Entry)sender).Text;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:BoatUsersXMauiApp"
              xmlns:viewModel="clr-namespace:BoatUsersXMauiApp"
              xmlns:system="clr-namespace:System;assembly=netstandard"
              x:Class="BoatUsersXMauiApp.BoatUsersData"
@@ -18,12 +19,16 @@
             </Label.FormattedText>
         </Label>
         <Button Text="Devices" Clicked="ShowDevicedata" Background="red" TextColor="Black"/>
-        <ListView x:Name="allPropsView" ItemsSource="{Binding AllProps}" >
+        <ListView  x:Name="allPropsView" ItemsSource="{DynamicResource Allprops}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Button IsVisible="true" Text="NewBtn" Background="Blue" TextColor="Black" />
-                    <!--<Button IsVisible="{Binding IsVisible}" Text="{Binding ShowName}" TextColor="Black" BackgroundColor="Aqua" Clicked="ConnectDevice">
-                    </Button>-->
+                    <ViewCell>
+                        <ViewCell.View>
+                            <StackLayout>
+                                <Button IsVisible="{Binding Value.IsVisible}" Text="{Binding Value.ShowName}" Background="Blue" TextColor="Black" />
+                            </StackLayout>
+                        </ViewCell.View>
+                    </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

@@ -21,10 +21,10 @@ public class StaticProperties : INotifyPropertyChanged
                 _DeviceId = value;
                 OnPropertyChanged("DeviceId");
 
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("DeviceId"));
-                }
+                //if (PropertyChanged != null)
+                //{
+                //    PropertyChanged(this, new PropertyChangedEventArgs("DeviceId"));
+                //}
             }
         }
     }
