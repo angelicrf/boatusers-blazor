@@ -1,5 +1,6 @@
 ﻿using Android;
 using Android.App;
+using Android.Bluetooth;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
@@ -15,27 +16,23 @@ namespace BoatUsersXMauiApp
     [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity
     {
-        /// <summary>
-        /// Gets or sets the activity.
-        /// </summary>
-        /// <value>The activity.</value>
-        public Android.App.Activity Activity { get; set; }
 
-        /// <summary>
-        /// Gets the current Application Context.
-        /// </summary>
-        /// <value>The activity.</value>
-        public Context AppContext { get; }
-
-        /// <summary>
-        /// Fires when activity state events are fired
-        /// </summary>
         public event EventHandler<ActivityEventArgs> ActivityStateChanged;
-        public MainActivity() { }
+
+        PermissionCheck receiver;
+
+        IntentFilter filter;
+        public MainActivity()
+        {
+
+        }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            PermissionCheck.bluetoothManager = (BluetoothManager)ApplicationContext.GetSystemService(BluetoothService);
+
             PermissionCheck.updateActivity(this);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) == (int)Permission.Granted &&
@@ -47,6 +44,14 @@ namespace BoatUsersXMauiApp
             {
 
                 Toast.MakeText(this, "Granted", ToastLength.Short).Show();
+                receiver = new PermissionCheck();
+                filter = new IntentFilter(BluetoothDevice.ActionFound);
+                filter.AddAction(BluetoothDevice.ActionFound);
+                filter.AddAction(BluetoothDevice.ActionBondStateChanged);
+                filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
+                filter.AddAction(BluetoothDevice.ActionUuid);
+                filter.Priority = (int)IntentFilterPriority.HighPriority;
+
             }
             else
             {
@@ -58,13 +63,24 @@ namespace BoatUsersXMauiApp
                 Manifest.Permission.BluetoothAdmin, Manifest.Permission.Bluetooth, Manifest.Permission.BluetoothConnect}, 10);
 
             }
-        }
 
+        }
+        protected override void OnResume()
+        {
+            base.OnResume();
+            receiver = new PermissionCheck();
+            RegisterReceiver(receiver, filter);
+        }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        protected void OnDestry()
+        {
+            UnregisterReceiver(receiver);
+        }
+
         public void Register()
         {
             CrossCurrentActivity.Current.ActivityStateChanged += Current_ActivityStateChanged;

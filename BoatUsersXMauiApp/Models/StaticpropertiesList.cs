@@ -19,17 +19,13 @@ public class StaticpropertiesList : INotifyPropertyChanged, INotifyCollectionCha
         set
         {
             allProps = value;
-
-            //OnCollectionChanged(AllProps);
-
-            //OnPropertyChanged("AllProps");
         }
     }
     public StaticpropertiesList()
     {
         allProps = new Dictionary<int, StaticProperties>
         {
-            { 120, new StaticProperties() {ShowName = "DefaultName", IsVisible = true, DeviceId = 120 } }
+            { 120, new StaticProperties() {ShowName = "TestBTN", IsVisible = true, DeviceId = 120 } }
         };
         AllProps = allProps;
     }

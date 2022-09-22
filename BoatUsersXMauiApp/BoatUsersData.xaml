@@ -25,7 +25,7 @@
                     <ViewCell>
                         <ViewCell.View>
                             <StackLayout>
-                                <Button IsVisible="{Binding Value.IsVisible}" Text="{Binding Value.ShowName}" Background="Blue" TextColor="Black" />
+                                <Button IsVisible="{Binding Value.IsVisible}" Text="{Binding Value.ShowName}" Background="Blue" Clicked="ConnectDevice" TextColor="Black" />
                             </StackLayout>
                         </ViewCell.View>
                     </ViewCell>

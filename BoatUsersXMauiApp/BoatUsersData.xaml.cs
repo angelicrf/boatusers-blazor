@@ -31,7 +31,9 @@ public partial class BoatUsersData : ContentPage
         if (MainThread.IsMainThread)
         {
 #if ANDROID
+
       await pr.ShowDevices();
+
       Resources["Allprops"] = null;
       Resources["Allprops"] = _properties.AllProps;
 #endif
