@@ -18,6 +18,7 @@ namespace BoatUsersXMauiApp
     {
 
         public event EventHandler<ActivityEventArgs> ActivityStateChanged;
+        private CreateScanCallBack createcl { get; set; } = new CreateScanCallBack();
 
         PermissionCheck receiver;
 
@@ -32,6 +33,7 @@ namespace BoatUsersXMauiApp
             base.OnCreate(savedInstanceState);
 
             PermissionCheck.bluetoothManager = (BluetoothManager)ApplicationContext.GetSystemService(BluetoothService);
+            // CreateScanCallBack.thisAdapter = PermissionCheck.bluetoothManager.Adapter;
 
             PermissionCheck.updateActivity(this);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
@@ -76,6 +78,7 @@ namespace BoatUsersXMauiApp
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
         protected void OnDestry()
         {
             UnregisterReceiver(receiver);

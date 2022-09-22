@@ -3,6 +3,7 @@ using Android.Bluetooth.LE;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
+using Java.Lang;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
@@ -30,12 +31,13 @@ public class PermissionCheck : BroadcastReceiver
 
     public static BluetoothManager bluetoothManager { get; set; }
 
-    private BluetoothAdapter thisAdapter = bluetoothManager.Adapter;
-    //BluetoothAdapter.DefaultAdapter;
-
     private ScanCallback mScanCallback = new CreateScanCallBack();
 
     private ObservableCollection<IDevice> connectedDevices;
+
+    private BluetoothAdapter thisAdapter = bluetoothManager.Adapter;
+    //BluetoothAdapter.DefaultAdapter;
+    public static BluetoothLeScanner bluetoothLeScanner { get; set; }
 
     private byte[] buffer;
 
@@ -78,7 +80,10 @@ public class PermissionCheck : BroadcastReceiver
 
             string deviceMCAddress = device.Address;
 
-            Toast.MakeText(mActivityRef, " ActionFound " + deviceMCAddress.ToString(), ToastLength.Short).Show();
+            int rssi = intent.GetShortExtra(BluetoothDevice.ExtraBondState, Short.MinValue);
+
+
+            Toast.MakeText(mActivityRef, " ActionFound RSSI" + rssi.ToString() + " Bond STATE " + device.BondState + " GETUUID " + device.GetUuids(), ToastLength.Short).Show();
 
             deviceList.Add(device);
 
@@ -94,6 +99,7 @@ public class PermissionCheck : BroadcastReceiver
                     // }
                 }
                 // await ConnectDevicesInfo();
+                thisAdapter.NotifyAll();
             }
         }
         else if (BluetoothAdapter.ActionDiscoveryFinished.Equals(action))
@@ -112,7 +118,7 @@ public class PermissionCheck : BroadcastReceiver
                     //ParcelUuid[] uuidExtra2 = UUID.NameUUIDFromBytes(result2.getScanRecord().getBytes()).toString();
                     Toast.MakeText(mActivityRef, $"After Action Discovery Finished {result}", ToastLength.Short).Show();
                 }
-
+                thisAdapter.NotifyAll();
             }
         }
         else if (BluetoothDevice.ActionUuid.Equals(action))
@@ -148,78 +154,80 @@ public class PermissionCheck : BroadcastReceiver
     {
         try
         {
-            var pairedDevices = thisAdapter.BondedDevices;
-
-            if (thisAdapter == null)
+            using (BluetoothAdapter thisAdapter2 = bluetoothManager.Adapter)
             {
-                Toast.MakeText(mActivityRef, "No Bluetooth adapter found.", ToastLength.Short).Show();
-                throw new System.Exception("No Bluetooth adapter found.");
-            }
+                var pairedDevices = thisAdapter2?.BondedDevices;
 
-            if (!thisAdapter.IsEnabled)
-            {
-                Toast.MakeText(mActivityRef, "Bluetooth adapter is not enabled.", ToastLength.Short).Show();
-                throw new System.Exception("Bluetooth adapter is not enabled.");
-            }
-
-            if (pairedDevices.Count > 0)
-            {
-                foreach (var item in thisAdapter.BondedDevices)
+                if (thisAdapter2 == null)
                 {
-                    Toast.MakeText(mActivityRef, "Have Paired Devices" + item.ToString(), ToastLength.Short).Show();
+                    Toast.MakeText(mActivityRef, "No Bluetooth adapter found.", ToastLength.Short).Show();
+                    throw new System.Exception("No Bluetooth adapter found.");
                 }
+
+                if (!thisAdapter2.IsEnabled)
+                {
+                    Intent enableAdapter = new Intent(BluetoothAdapter.ActionRequestEnable);
+
+                    Toast.MakeText(mActivityRef, "Bluetooth adapter is not enabled.", ToastLength.Short).Show();
+                    throw new System.Exception("Bluetooth adapter is not enabled.");
+                }
+
+                if (pairedDevices.Count > 0)
+                {
+                    foreach (var item in thisAdapter2?.BondedDevices)
+                    {
+                        Toast.MakeText(mActivityRef, "Have Paired Devices" + item.ToString(), ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    //var foundD = thisAdapter.StartDiscovery();
+                    bluetoothLeScanner = thisAdapter.BluetoothLeScanner;
+                    bluetoothLeScanner.StartScan(mScanCallback);
+
+                }
+
+                //adapter.DeviceDiscovered += (s, a) => deviceList.Add(a.Device);
+
+                //if (!ble.Adapter.IsScanning)
+                //{
+                //    await adapter.StartScanningForDevicesAsync();
+                //    await adapter.StartScanningForDevicesAsync(scanFilterOptions);
+
+                //    if (deviceList.Count > 0)
+                //    {
+
+                //        BoatUsersData.AllTestViewModel.MultiplyBy2Command = new Command(() => BoatUsersData.AllTestViewModel.DeviceId = BoatUsersData.AllTestViewModel.DeviceId);
+
+                //        for (int i = 0; i < deviceList.Count; i++)
+                //        {
+
+                //            BoatUsersData._properties.AddItems(i, new StaticProperties { ShowName = deviceList[i].ToString(), IsVisible = true, DeviceId = i });
+                //        }
+                //    }
+                //var service = await deviceList[0].GetServiceAsync(Guid.Parse("ffe0ecd2-3d16-4f8d-90de-e89e7fc396a5"));
+                //var characteristic = await service.GetCharacteristicAsync(Guid.Parse("d8de624e-140f-4a22-8594-e2216b84a5f2"));
+                //var characteristics = await service.GetCharacteristicsAsync();
+                //var bytes = await characteristic.ReadAsync();
+                //var services = await deviceList[0].GetServicesAsync();
+                //await characteristic.WriteAsync(bytes);
+                //characteristic.ValueUpdated += (o, args) =>
+                //{
+                //    var bytes = args.Characteristic.Value;
+                //};
+
+                //await characteristic.StartUpdatesAsync();
+                //var descriptors = await characteristic.GetDescriptorsAsync();
+                //var bytes2 = await descriptors[0].ReadAsync();
+                //await descriptors[0].WriteAsync(bytes);
+
+                //var systemDevices = adapter.GetSystemConnectedOrPairedDevices();
+
+                //foreach (var device in systemDevices)
+                //{
+                //    await adapter.ConnectToDeviceAsync(device);
+                //}
             }
-            else
-            {
-                //var foundD = thisAdapter.StartDiscovery();
-
-                BluetoothLeScanner bluetoothLeScanner = thisAdapter.BluetoothLeScanner;
-
-                bluetoothLeScanner.StartScan(mScanCallback);
-
-            }
-
-            //adapter.DeviceDiscovered += (s, a) => deviceList.Add(a.Device);
-
-            //if (!ble.Adapter.IsScanning)
-            //{
-            //    await adapter.StartScanningForDevicesAsync();
-            //    await adapter.StartScanningForDevicesAsync(scanFilterOptions);
-
-            //    if (deviceList.Count > 0)
-            //    {
-
-            //        BoatUsersData.AllTestViewModel.MultiplyBy2Command = new Command(() => BoatUsersData.AllTestViewModel.DeviceId = BoatUsersData.AllTestViewModel.DeviceId);
-
-            //        for (int i = 0; i < deviceList.Count; i++)
-            //        {
-
-            //            BoatUsersData._properties.AddItems(i, new StaticProperties { ShowName = deviceList[i].ToString(), IsVisible = true, DeviceId = i });
-            //        }
-            //    }
-            //var service = await deviceList[0].GetServiceAsync(Guid.Parse("ffe0ecd2-3d16-4f8d-90de-e89e7fc396a5"));
-            //var characteristic = await service.GetCharacteristicAsync(Guid.Parse("d8de624e-140f-4a22-8594-e2216b84a5f2"));
-            //var characteristics = await service.GetCharacteristicsAsync();
-            //var bytes = await characteristic.ReadAsync();
-            //var services = await deviceList[0].GetServicesAsync();
-            //await characteristic.WriteAsync(bytes);
-            //characteristic.ValueUpdated += (o, args) =>
-            //{
-            //    var bytes = args.Characteristic.Value;
-            //};
-
-            //await characteristic.StartUpdatesAsync();
-            //var descriptors = await characteristic.GetDescriptorsAsync();
-            //var bytes2 = await descriptors[0].ReadAsync();
-            //await descriptors[0].WriteAsync(bytes);
-
-            //var systemDevices = adapter.GetSystemConnectedOrPairedDevices();
-
-            //foreach (var device in systemDevices)
-            //{
-            //    await adapter.ConnectToDeviceAsync(device);
-            //}
-            // }
         }
         catch (System.Exception en)
         {

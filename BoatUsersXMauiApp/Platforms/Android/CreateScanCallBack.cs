@@ -3,19 +3,24 @@ using Android.Bluetooth;
 using Android.Bluetooth.LE;
 using Android.Runtime;
 using Android.Widget;
+using Java.Lang;
+using Java.Lang.Reflect;
 using Java.Util;
 
 namespace BoatUsersXMauiApp;
 
 public class CreateScanCallBack : ScanCallback
 {
-    public CreateScanCallBack() { }
 
+    // public static BluetoothAdapter thisAdapter { get; set; }
+
+    public CreateScanCallBack() { }
+    private BluetoothDevice btDevice { get; set; }
     public override void OnScanResult([GeneratedEnum] ScanCallbackType callbackType, ScanResult result)
     {
         base.OnScanResult(callbackType, result);
 
-        BluetoothDevice btDevice = result.Device;
+        btDevice = result.Device;
 
         UUID uuidExtra2 = UUID.NameUUIDFromBytes(result.ScanRecord.GetBytes());
 
@@ -23,9 +28,21 @@ public class CreateScanCallBack : ScanCallback
         {
             Console.WriteLine(uuidExtra2);
 
-            var _socket = btDevice.CreateRfcommSocketToServiceRecord(uuidExtra2);
+            var _socket = btDevice.CreateInsecureRfcommSocketToServiceRecord(uuidExtra2);
+            try
+            {
+                //stop scan
+                //PermissionCheck.bluetoothLeScanner.StartScan(this);
+                //bluetoothLeScanner.FlushPendingScanResults(this);
 
-            ConenctToDevice(_socket, btDevice);
+                ConenctToDevice(_socket, btDevice);
+            }
+            catch (System.Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+
         }
     }
     public override void OnBatchScanResults(IList<ScanResult> results)
@@ -48,7 +65,7 @@ public class CreateScanCallBack : ScanCallback
     {
         try
         {
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            // await Task.Delay(TimeSpan.FromSeconds(2));
             _socket.Connect();
             //var rfcommServices = await thisDevice.get();
             //if (rfcommServices.Services.Count > 0)
@@ -59,13 +76,24 @@ public class CreateScanCallBack : ScanCallback
             //await _socket.ConnectAsync(service.ConnectionHostName,
             //     service.ConnectionServiceName)
             //      .AsTask(connectionCts.Token);
-            Toast.MakeText(PermissionCheck.mActivityRef, $"Connected to Device {_socket.ConnectionType}{_socket.RemoteDevice.Name}", ToastLength.Short).Show();
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
 
             Console.WriteLine(ex.Message);
-        }
+            try
+            {
+                Method m = btDevice.Class.GetMethod("createRfcommSocket", new Class[] { Integer.Type });
+                _socket = (BluetoothSocket)m.Invoke(btDevice, 1);
+                _socket.Connect();
+                Toast.MakeText(PermissionCheck.mActivityRef, $"Connected to Device {_socket.ConnectionType}{_socket.RemoteDevice.Name}", ToastLength.Short).Show();
 
+            }
+            catch (System.Exception en)
+            {
+                Console.WriteLine($"Couldn't establish Bluetooth connection! {en.Message}");
+            }
+
+        }
     }
 }
