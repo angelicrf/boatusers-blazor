@@ -1,13 +1,27 @@
 ﻿@page "/"
 
+
 <PageTitle>Main</PageTitle>
 
 <h1>Boat Users Web App</h1>
 
 <BoatUsers />
 
-@*<BUCalendarMaui />*@
-<BluetoothDevicesInfo />
+<PlatformCheck OnDisplayChanged="DisplayChanged" />
 
+@if (OrderToDisplay)
+{
+    <BUCalendarMaui />
+}
+else
+{
+    <BluetoothDevicesInfo />
+}
 
-
+@code{
+    private bool OrderToDisplay { get; set; }
+    public async void DisplayChanged(bool thisValue)
+    {
+        OrderToDisplay = thisValue;
+    }
+}

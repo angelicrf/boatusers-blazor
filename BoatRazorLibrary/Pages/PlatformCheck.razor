@@ -1,0 +1,47 @@
+﻿@inject IJSRuntime js
+@implements IAsyncDisposable
+
+<div bind="@IsMobile"></div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<bool> OnDisplayChanged { get; set; }
+
+    private IJSObjectReference? funcModule;
+
+    private bool testBool;
+    public bool IsMobile
+    {
+        get => testBool;
+        set
+        {
+            testBool = value;
+            OnDisplayChanged.InvokeAsync(value);
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+            funcModule = await js.InvokeAsync<IJSObjectReference>("import", "./_content/BoatRazorLibrary/cartInfo.js");
+
+            IsMobile = await funcModule.InvokeAsync<bool>
+                ("isDevice");
+            StateHasChanged();
+
+        }
+
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+
+        if (funcModule is not null)
+        {
+            await funcModule.DisposeAsync();
+        }
+    }
+}
