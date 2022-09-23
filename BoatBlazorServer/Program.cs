@@ -1,5 +1,8 @@
 using AntDesign.ProLayout;
 using BoatRazorLibrary.Models;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<ShellyDevicesData>();
 builder.Services.AddSingleton<IWeatherForcast, WeatherForecastService>();
+builder.Services.AddSingleton<IShellyDevicescs, ShellyDevicesData>();
 builder.Services.AddSingleton<IBULogin, BULoginService>();
 builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
 builder.Services.AddHttpClient("WeatherApi", c =>
@@ -17,7 +22,25 @@ builder.Services.AddHttpClient("WeatherApi", c =>
 });
 builder.Services.Configure<ProSettings>(builder.Configuration.GetSection("ProSettings"));
 builder.Services.AddAntDesign();
-//builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers()
+          .AddJsonOptions(options =>
+          {
+              options.JsonSerializerOptions.WriteIndented = true;
+              options.JsonSerializerOptions.IgnoreNullValues = true;
+              options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+              options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+              options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+              options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Default;
+          });
+builder.Services.AddControllers().AddNewtonsoftJson().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.IgnoreNullValues = true;
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Default;
+});
 //builder.Services.AddControllers(options =>
 //{
 //}).AddJsonOptions(options =>

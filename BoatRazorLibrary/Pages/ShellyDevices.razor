@@ -1,0 +1,53 @@
+﻿@inject ShellyDevicesData shellyDeviceDataService
+
+<PlatformCheck OnDisplayChanged="DisplayChanged" />
+
+@if (OrderToDisplay)
+{
+
+}
+else
+{
+  
+    <button class="btn btn-primary" @onclick="GetShellyDData">Display Shelly Devices</button>
+
+    if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
+    {
+        <div class="card" style="width: 25rem;">
+            <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
+            <div class="card-body">
+                <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
+                <p class="card-text">Shelly Plug</p>
+                <button class="btn btn-info" @onclick="TurnOnShellyD">Turn On</button>
+                <button class="btn btn-danger" @onclick="TurnOnShellyD">Turn Off</button>
+            </div>
+        </div>
+    }
+
+}
+
+@code{
+    private bool OrderToDisplay { get; set; }
+
+    public void DisplayChanged(bool thisValue)
+    {
+        OrderToDisplay = thisValue;
+    }
+
+    private ShellyDeviceDataModel? shellyDeviceDataModel;
+
+
+    private async void GetShellyDData()
+    {
+        shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus();
+        StateHasChanged();
+    }
+    private async void TurnOnShellyD()
+    {
+        //workon
+    }
+    private async void TurnOffShellyD()
+    {
+        //workon
+    }
+}

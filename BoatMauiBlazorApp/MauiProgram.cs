@@ -23,20 +23,23 @@ namespace BoatMauiBlazorApp
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Services.AddOptions<ProSettings>()
-        .Configure<IConfiguration>((options, configuration) =>
-         configuration.GetSection("ProSettings").Bind(options));
+            .Configure<IConfiguration>((options, configuration) =>
+             configuration.GetSection("ProSettings").Bind(options));
             builder.Services.AddAntDesign();
 #endif
 
             builder.Services.AddSingleton<HttpClient>();
             builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<ShellyDevicesData>();
             builder.Services.AddSingleton<IWeatherForcast, WeatherForecastService>();
+            builder.Services.AddSingleton<IShellyDevicescs, ShellyDevicesData>();
             builder.Services.AddSingleton<IBULogin, BULoginService>();
             builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
             builder.Services.AddOptions<ProSettings>()
            .Configure<IConfiguration>((options, configuration) =>
             configuration.GetSection("ProSettings").Bind(options));
             builder.Services.AddAntDesign();
+
             return builder.Build();
         }
     }
