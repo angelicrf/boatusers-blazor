@@ -12,6 +12,9 @@ public class ShellyDeviceDataInfo
 {
     [JsonPropertyName("device_status")]
     public ShellyDeviceStatus? DeviceStatus { get; set; }
+
+    [JsonPropertyName("device_id")]
+    public string? DeviceResponseId { get; set; }
 }
 public class ShellyDeviceStatus
 {

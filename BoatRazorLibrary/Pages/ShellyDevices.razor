@@ -1,4 +1,6 @@
 ﻿@inject ShellyDevicesData shellyDeviceDataService
+@inject ShellyDeviceSwitchModeService shellySwitchModeService
+@inject ShellyLampModeService shellyLampModeService
 
 <PlatformCheck OnDisplayChanged="DisplayChanged" />
 
@@ -17,8 +19,8 @@ else
                 <div class="card-body">
                     <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
                     <p class="card-text">Shelly Plug</p>
-                    <button class="btn btn-info p-0" @onclick="TurnOnShellyD">Turn On</button>
-                    <button class="btn btn-danger p-0" @onclick="TurnOnShellyD">Turn Off</button>
+                    <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false;  LampBtnOff = false;LampBtnOn = false; TurnOnShellyD();  }">Turn On</button>
+                    <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false;LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
                 </div>
             </div>
         }
@@ -29,8 +31,8 @@ else
                 <div class="card-body">
                     <h5 class="card-title">Shelly Device @shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId</h5>
                     <p class="card-text">Shelly Lamp</p>
-                    <button class="btn btn-info p-0" @onclick="TurnOnShellyD">Turn On</button>
-                    <button class="btn btn-danger p-0" @onclick="TurnOnShellyD">Turn Off</button>
+                    <button class="btn btn-info p-0" @onclick="() => { LampBtnOn = true; LampBtnOff = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOnShellyD(); }">Turn On</button>
+                    <button class="btn btn-danger p-0" @onclick="() => { LampBtnOff = true; LampBtnOn = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
                 </div>
             </div>
         }
@@ -40,6 +42,14 @@ else
 
 @code{
     private bool OrderToDisplay { get; set; }
+
+    private bool SwitchBtnOn { get; set; } = false;
+
+    private bool LampBtnOn { get; set; } = false;
+
+    private bool SwitchBtnOff { get; set; } = false;
+
+    private bool LampBtnOff { get; set; } = false;
 
     public void DisplayChanged(bool thisValue)
     {
@@ -60,24 +70,53 @@ else
 
         StateHasChanged();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus("083AF200732C");
-
-            shellyModel2 = await shellyDeviceDataService.GetShellyDeviceStatus("d16fc7");
-
-            StateHasChanged();
+            ShellyUpdateStatus();
         }
 
     }
+    private async void ShellyUpdateStatus()
+    {
+        shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus("083AF200732C");
+
+        shellyModel2 = await shellyDeviceDataService.GetShellyDeviceStatus("d16fc7");
+
+        StateHasChanged();
+    }
     private async void TurnOnShellyD()
     {
-        //workon
+        if ( LampBtnOn && !SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+        {
+
+            shellyDeviceDataModel = await shellyLampModeService.ShellyDeviceChangeOrder("d16fc7", "on");
+            LampBtnOn = false;
+            ShellyUpdateStatus();
+        }
+        else if(!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id) && SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !LampBtnOn)
+        {
+
+            shellyDeviceDataModel = await shellySwitchModeService.ShellyDeviceChangeOrder("083AF200732C", "on");
+            SwitchBtnOn = false;
+            ShellyUpdateStatus();
+        }
     }
     private async void TurnOffShellyD()
     {
-        //workon
+        if (LampBtnOff && !LampBtnOn && !SwitchBtnOff && !SwitchBtnOn && !string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+        {
+            shellyDeviceDataModel = await shellyLampModeService.ShellyDeviceChangeOrder("d16fc7", "off");
+            LampBtnOff = false;
+            ShellyUpdateStatus();
+        }
+        if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id) && SwitchBtnOff && !SwitchBtnOn && !LampBtnOn && !LampBtnOff)
+        {
+            shellyDeviceDataModel = await shellySwitchModeService.ShellyDeviceChangeOrder("083AF200732C", "off");
+            SwitchBtnOff = false;
+            ShellyUpdateStatus();
+        }
     }
 }

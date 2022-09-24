@@ -11,8 +11,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<ShellyDevicesData>();
+builder.Services.AddSingleton<ShellyDeviceSwitchModeService>();
+builder.Services.AddSingleton<ShellyLampModeService>();
 builder.Services.AddSingleton<IWeatherForcast, WeatherForecastService>();
 builder.Services.AddSingleton<IShellyDevicescs, ShellyDevicesData>();
+builder.Services.AddSingleton<IshellyModeService, ShellyDeviceSwitchModeService>();
+builder.Services.AddSingleton<IShellyLampModeService, ShellyLampModeService>();
 builder.Services.AddSingleton<IBULogin, BULoginService>();
 builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
 builder.Services.AddHttpClient("WeatherApi", c =>
