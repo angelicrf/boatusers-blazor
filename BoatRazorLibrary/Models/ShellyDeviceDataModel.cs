@@ -21,6 +21,12 @@ public class ShellyDeviceStatus
 
     [JsonPropertyName("switch:0")]
     public ShellyDeviceSwich? SwitchInfo { get; set; }
+    //Lamp
+    [JsonPropertyName("getinfo")]
+    public ShellyDeviceLampGetInfo? GetInfo { get; set; }
+    //lights
+    [JsonPropertyName("lights")]
+    public List<ShellyDeviceLightSystem>? LightSystem { get; set; }
 }
 public class ShellyDeviceSwich
 {
@@ -37,4 +43,22 @@ public class ShellyDeviceTempreture
 
     [JsonPropertyName("tF")]
     public float? TemperatureDeviceFarenheit { get; set; }
+}
+public class ShellyDeviceLampGetInfo
+{
+    [JsonPropertyName("fw_info")]
+    public ShellyDeviceLampGetInfoModel ShellyDeviceLampInfoModel { get; set; }
+}
+public class ShellyDeviceLampGetInfoModel
+{
+    [JsonPropertyName("device")]
+    public string? LampDeviceId { get; set; }
+}
+public class ShellyDeviceLightSystem
+{
+    [JsonPropertyName("brightness")]
+    public int? LampBrightness { get; set; }
+
+    [JsonPropertyName("white")]
+    public int? LampWhiteness { get; set; }
 }

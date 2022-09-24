@@ -8,22 +8,34 @@
 }
 else
 {
-  
-    <button class="btn btn-primary" @onclick="GetShellyDData">Display Shelly Devices</button>
-
-    if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
-    {
-        <div class="card" style="width: 25rem;">
-            <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
-            <div class="card-body">
-                <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
-                <p class="card-text">Shelly Plug</p>
-                <button class="btn btn-info" @onclick="TurnOnShellyD">Turn On</button>
-                <button class="btn btn-danger" @onclick="TurnOnShellyD">Turn Off</button>
+<div class="container">
+    <div class="row">
+        @if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
+        {
+            <div class="card col" style="width: 15rem;">
+                <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
+                <div class="card-body">
+                    <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
+                    <p class="card-text">Shelly Plug</p>
+                    <button class="btn btn-info p-0" @onclick="TurnOnShellyD">Turn On</button>
+                    <button class="btn btn-danger p-0" @onclick="TurnOnShellyD">Turn Off</button>
+                </div>
             </div>
-        </div>
-    }
-
+        }
+        @if (!string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+        {
+            <div class="card col" style="width: 15rem;">
+                <img src="./_content/BoatRazorLibrary/shellyBulb.png" class="card-img-top m-auto" alt="ShellyPlug" style="height:20rem;width:20rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Shelly Device @shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId</h5>
+                    <p class="card-text">Shelly Lamp</p>
+                    <button class="btn btn-info p-0" @onclick="TurnOnShellyD">Turn On</button>
+                    <button class="btn btn-danger p-0" @onclick="TurnOnShellyD">Turn Off</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 }
 
 @code{
@@ -36,11 +48,29 @@ else
 
     private ShellyDeviceDataModel? shellyDeviceDataModel;
 
+    private ShellyDeviceDataModel? shellyModel2;
 
-    private async void GetShellyDData()
+    private async Task GetShellyDData()
     {
-        shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus();
+        shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus("083AF200732C");
+
+        shellyModel2 = await shellyDeviceDataService.GetShellyDeviceStatus("d16fc7");
+
+        Console.WriteLine(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId);
+
         StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            shellyDeviceDataModel = await shellyDeviceDataService.GetShellyDeviceStatus("083AF200732C");
+
+            shellyModel2 = await shellyDeviceDataService.GetShellyDeviceStatus("d16fc7");
+
+            StateHasChanged();
+        }
+
     }
     private async void TurnOnShellyD()
     {

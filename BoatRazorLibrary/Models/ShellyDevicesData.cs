@@ -3,26 +3,25 @@ using System.Text.Json;
 
 namespace BoatRazorLibrary.Models;
 
-public class ShellyDevicesData : IShellyDevicescs
+public class ShellyDevicesData : IShellyDevicescs, IDisposable
 {
-    private readonly HttpClient _httpClient;
+    private static readonly HttpClient _httpClient;
 
-    public ShellyDevicesData(HttpClient client)
+    private static string thisUri = "https://shelly-48-eu.shelly.cloud/device/status";
+    static ShellyDevicesData()
     {
-        _httpClient = client;
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(thisUri);
     }
-    public async Task<ShellyDeviceDataModel> GetShellyDeviceStatus()
+    public async Task<ShellyDeviceDataModel> GetShellyDeviceStatus(string thisId)
     {
+
         ShellyDeviceDataModel result = new ShellyDeviceDataModel();
-
-        string thisUri = "https://shelly-48-eu.shelly.cloud/device/status";
         //channel=0&turn=on&id=083AF200732C
-
         try
         {
-            _httpClient.BaseAddress = new Uri(thisUri);
 
-            using (HttpContent content = new StringContent("id=083AF200732C&auth_key=MTI1ZTUxdWlk313324368034E660810695C659D04F94E5270FA0EBF9E26F8FD9E027EC4310CE61A996667BB70DE8", Encoding.UTF8, "application/x-www-form-urlencoded"))
+            using (HttpContent content = new StringContent($"id={thisId}&auth_key=MTI1ZTUxdWlk313324368034E660810695C659D04F94E5270FA0EBF9E26F8FD9E027EC4310CE61A996667BB70DE8", Encoding.UTF8, "application/x-www-form-urlencoded"))
             using (HttpRequestMessage request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -43,9 +42,10 @@ public class ShellyDevicesData : IShellyDevicescs
                                 PropertyNameCaseInsensitive = true
 
                             };
-
                             result = System.Text.Json.JsonSerializer.Deserialize<ShellyDeviceDataModel>(resultContent.Result, options);
-                            Console.WriteLine(result.DeviceData.DeviceStatus.SwitchInfo.TemperatureDevice.TemperatureDeviceCelcius);
+
+                            //Console.WriteLine(result.DeviceData.DeviceStatus.GetInfo.ShellyDeviceLampInfoModel.LampDeviceId);
+
                         }
                 }
             }
@@ -57,5 +57,10 @@ public class ShellyDevicesData : IShellyDevicescs
         }
         return result;
     }
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+    }
+
 }
 

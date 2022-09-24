@@ -3,5 +3,5 @@ namespace BoatRazorLibrary.Models;
 
 public interface IShellyDevicescs
 {
-    Task<ShellyDeviceDataModel> GetShellyDeviceStatus();
+    Task<ShellyDeviceDataModel> GetShellyDeviceStatus(string thisId);
 }
