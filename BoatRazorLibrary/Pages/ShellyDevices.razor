@@ -6,38 +6,65 @@
 
 @if (OrderToDisplay)
 {
+    <div class="container">
 
+            @if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
+            {
+                <div class="card" style="width: 15rem;">
+                    <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
+                    <div class="card-body">
+                        <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
+                        <p class="card-text">Shelly Plug</p>
+                        <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false;  LampBtnOff = false;LampBtnOn = false; TurnOnShellyD();  }">Turn On</button>
+                        <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false;LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+            {
+                <div class="card" style="width: 15rem;">
+                    <img src="./_content/BoatRazorLibrary/shellybulb.png" class="card-img-top" alt="ShellyBulb">
+                    <div class="card-body">
+                        <h5 class="card-title">Shelly Device @shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId</h5>
+                        <p class="card-text">Shelly Lamp</p>
+                        <button class="btn btn-info p-0" @onclick="() => { LampBtnOn = true; LampBtnOff = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOnShellyD(); }">Turn On</button>
+                        <button class="btn btn-danger p-0" @onclick="() => { LampBtnOff = true; LampBtnOn = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+                    </div>
+                </div>
+            }
+
+    </div>
 }
 else
 {
-<div class="container">
-    <div class="row">
-        @if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
-        {
-            <div class="card col" style="width: 15rem;">
-                <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
-                <div class="card-body">
-                    <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
-                    <p class="card-text">Shelly Plug</p>
-                    <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false;  LampBtnOff = false;LampBtnOn = false; TurnOnShellyD();  }">Turn On</button>
-                    <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false;LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+    <div class="container">
+        <div class="row">
+            @if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
+            {
+                <div class="card col" style="width: 15rem;">
+                    <img src="./_content/BoatRazorLibrary/shellyPlug.png" class="card-img-top" alt="ShellyPlug">
+                    <div class="card-body">
+                        <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
+                        <p class="card-text">Shelly Plug</p>
+                        <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false;  LampBtnOff = false;LampBtnOn = false; TurnOnShellyD();  }">Turn On</button>
+                        <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false;LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+                    </div>
                 </div>
-            </div>
-        }
-        @if (!string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
-        {
-            <div class="card col" style="width: 15rem;">
-                <img src="./_content/BoatRazorLibrary/shellyBulb.png" class="card-img-top m-auto" alt="ShellyPlug" style="height:20rem;width:20rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Shelly Device @shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId</h5>
-                    <p class="card-text">Shelly Lamp</p>
-                    <button class="btn btn-info p-0" @onclick="() => { LampBtnOn = true; LampBtnOff = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOnShellyD(); }">Turn On</button>
-                    <button class="btn btn-danger p-0" @onclick="() => { LampBtnOff = true; LampBtnOn = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+            }
+            @if (!string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+            {
+                <div class="card col" style="width: 15rem;">
+                    <img src="./_content/BoatRazorLibrary/shellyBulb.png" class="card-img-top m-auto" alt="ShellyPlug" style="height:20rem;width:20rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Shelly Device @shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId</h5>
+                        <p class="card-text">Shelly Lamp</p>
+                        <button class="btn btn-info p-0" @onclick="() => { LampBtnOn = true; LampBtnOff = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOnShellyD(); }">Turn On</button>
+                        <button class="btn btn-danger p-0" @onclick="() => { LampBtnOff = true; LampBtnOn = false; SwitchBtnOff = false; SwitchBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
 }
 
 @code{
@@ -89,14 +116,14 @@ else
     }
     private async void TurnOnShellyD()
     {
-        if ( LampBtnOn && !SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
+        if (LampBtnOn && !SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !string.IsNullOrEmpty(shellyModel2?.DeviceData?.DeviceStatus?.GetInfo?.ShellyDeviceLampInfoModel?.LampDeviceId))
         {
 
             shellyDeviceDataModel = await shellyLampModeService.ShellyDeviceChangeOrder("d16fc7", "on");
             LampBtnOn = false;
             ShellyUpdateStatus();
         }
-        else if(!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id) && SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !LampBtnOn)
+        else if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id) && SwitchBtnOn && !SwitchBtnOff && !LampBtnOff && !LampBtnOn)
         {
 
             shellyDeviceDataModel = await shellySwitchModeService.ShellyDeviceChangeOrder("083AF200732C", "on");
