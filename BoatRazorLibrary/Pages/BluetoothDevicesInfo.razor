@@ -1,8 +1,10 @@
 ﻿@inject IJSRuntime JS
 @implements IAsyncDisposable
 
-
-<button id="btId" class="btn btn-primary mt-4">BluetoothDevices</button>
+<button id="btScan" class="btn btn-dark mt-4 text-white">Scan Bluetooth Devices</button>
+<button id="btId" class="btn btn-primary mt-4">Turn On Device</button>
+<button id="btOff" class="btn btn-danger mt-4">Turn Off Device</button>
+<button id="btDist" class="btn btn-light text-black mt-4">Disconnect Bluetooth</button>
 <div id="thisId"></div>
 
 @code {
