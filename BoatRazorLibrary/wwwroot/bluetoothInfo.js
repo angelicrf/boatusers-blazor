@@ -19,8 +19,8 @@ export const getBluetoothDevices = () => {
 
         btnOn.addEventListener('click', () => {
 
-            return (bluetoothDevice ? connectDeviceAndCacheCharacteristics() :  Promise.resolve())
-                .catch(e => console.log("Error Connect Device " + e))
+            return (bluetoothDevice ? connectDeviceAndCacheCharacteristics() : Promise.resolve(alert('No Device Found To Turn On. Scan to Pair a Device!')))
+                .catch(e => console.log(`Error To Connect ${e}`))
             //await displayElemnts(allChars, "thisId")
 
             //setInterval(async () => {
@@ -37,16 +37,15 @@ export const getBluetoothDevices = () => {
                 .catch(e => console.log(`Error To Scan ${e}`))
         })
         btnOff.addEventListener('click', async () => {
-            console.log("turnOffClicked")
-            return (bluetoothDevice ? turnOffDevice() : Promise.resolve())
-              
+            
+            return (bluetoothDevice ? turnOffDevice() : Promise.resolve(alert('No Device Found To Turn Off. Scan to Pair a Device!')))
                 .catch(e => console.log("Error Connect Device " + e))
         })
         btnDisconnect.addEventListener('click', () => {  
             disconnectDevice()
         })
     } catch (e) {
-        alert(e)
+        console.log(e)
     }
 }
 const turnOffDevice = async () => {
@@ -54,29 +53,28 @@ const turnOffDevice = async () => {
     if (blueToothConnectData != 'undefined') {
        
         if (blueToothConnectData.connected) {
+           
+            await getServicesAndCharacteristics() 
 
-            if (inboundData.length != undefined) {
+            if (inboundData.properties != undefined) {
+                inboundData.properties.writeValueWithoutResponse = true
                 try {
-                    await inboundData.writeValue(new Uint8Array([0x00000001]))
+
+                    await inboundData.writeValueWithoutResponse(new Uint8Array([0x00000001])) // writeValue is active but depreciated // writeValueWithoutResponse - writeValueWithResponse are not active
+                    await createDelay()
                     await outboundData.writeValue(new Uint8Array([0x00]))
+                    await createDelay()
                     await outboundData.writeValue(new Uint8Array([0x0000]))
+                    
                 } catch (e) {
                     console.log(`Error Turn Off ${e}`)
                 }
-            } else {
-
-                let service = await blueToothConnectData.getPrimaryService('5f6d4f53-5f52-5043-5f53-56435f49445f')
-                outboundData = await service.getCharacteristic('5f6d4f53-5f52-5043-5f64-6174615f5f5f')
-                inboundData = await service.getCharacteristic('5f6d4f53-5f52-5043-5f74-785f63746c5f')
-                await inboundData.writeValue(new Uint8Array([0x00000001])) // writevalue is depreciated
-                await outboundData.writeValue(new Uint8Array([0x00]))
-                await outboundData.writeValue(new Uint8Array([0x0000]))
             }
         }
-    }
+    } 
 }
 const requestDevice = () => {
-    console.log('Requesting any Bluetooth Device...');
+    console.log('Requesting any Bluetooth Device...')
     return navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
         optionalServices: ["battery_service", "device_information", "5f6d4f53-5f52-5043-5f53-56435f49445f"]
@@ -93,19 +91,19 @@ const connectDeviceAndCacheCharacteristics = async () => {
     if (blueToothConnectData != 'undefined' ) {
         try {
             if (blueToothConnectData.connected) {
-                //return Promise.resolve();
-
-                let service = await blueToothConnectData.getPrimaryService('5f6d4f53-5f52-5043-5f53-56435f49445f')
-                outboundData = await service.getCharacteristic('5f6d4f53-5f52-5043-5f64-6174615f5f5f')
-                inboundData = await service.getCharacteristic('5f6d4f53-5f52-5043-5f74-785f63746c5f')
-                await outboundData.writeValue(new Uint8Array([]))
-                await outboundData.readValue()
-                setTimeout(async () => {
+                console.log("inTurnOn")
+                await getServicesAndCharacteristics()
+         
+                if (inboundData.properties != undefined) {
+                    await outboundData.writeValue(new Uint8Array([]))
+                    await createDelay()
                     await outboundData.readValue()
-                }, 10000)
+                    await createDelay()
+                    await outboundData.readValue()
+                }
             }
         } catch (e) {
-            alert(e)
+            console.log(e)
         }
     }
      //specificCharacteristic = await service.getCharacteristic("5f6d4f53-5f52-5043-5f72-785f63746c5f")
@@ -113,9 +111,8 @@ const connectDeviceAndCacheCharacteristics = async () => {
     //descriptorData = await specificCharacteristic.getDescriptor("00002902-0000-1000-8000-00805f9b34fb")
 
         //let receivedValue = await specificCharacteristic.readValue()
-        //console.log("ReceivedValue ", receivedValue)
 
-        ////specificCharacteristic.characteristicvaluechanged = handleEventSpecific
+        //specificCharacteristic.characteristicvaluechanged = handleEventSpecific
 
         //if (specificCharacteristic.properties.notify) {
 
@@ -135,7 +132,26 @@ const connectDeviceAndCacheCharacteristics = async () => {
         //}
     //})
 }
-
+const createDelay = () => {
+    return new Promise(resolve =>
+        setTimeout(resolve, 10000)
+    )
+}
+const getServicesAndCharacteristics = () => {
+    return new Promise(async (resolve,reject) => {
+        let allServices = await blueToothConnectData.getPrimaryServices()
+        let service = await blueToothConnectData.getPrimaryService(allServices[0].uuid)
+        let allCharacteristics = await service.getCharacteristics()
+        allCharacteristics.filter(x => {
+            if (x.properties.write == true && x.properties.read == true) {
+                outboundData = x
+            } else if (x.properties.write == true && x.properties.read == false) {
+                inboundData = x
+                return resolve(x)
+            }
+        })
+    })
+}
 const writeDataToDevide = () => {
     try {
         return new Promise((resolve, reject) => {
@@ -208,7 +224,7 @@ const startNotificationValue = async (characteristic) => {
             characteristic.addEventListener('characteristicvaluechanged', async (event) => {
                
                 outboundData.readValue();
-                console.log(`value: ${event.target.value.getUint8(0)}`);
+                console.log(`value: ${event.target.value.getUint8(0)}`)
             });
         }      
           //await characteristic.startNotifications();
@@ -230,7 +246,7 @@ const displayElemnts = (thisList, thisId) => {
         var getId = document.getElementById(thisId)
         getId.innerHTML = "Characteristics"
         for (var i in thisList) {
-            //thisList[i].setValue(data_to_write);
+            //thisList[i].setValue(data_to_write)
             let li = document.createElement("li")
             let a = document.createElement("a")
             a.setAttribute("href", "#")
@@ -277,6 +293,6 @@ const SendCommand = async () => {
     }
 
 }
-const loadElements = (c) => thisElement = c;
+const loadElements = (c) => thisElement = c
 
 
