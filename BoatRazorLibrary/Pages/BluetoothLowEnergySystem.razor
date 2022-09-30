@@ -1,0 +1,107 @@
+﻿
+<div class="container">
+
+    <button id="btScan" class="btn btn-danger mt-4" @onclick="ScanBledevices">Scan Bluetooth Devices</button>
+    <button id="btScan" class="btn btn-info mt-4" @onclick="ConnectBledevice">Connect Device</button>
+
+    @if (BluetoothLowEnergyDevicesModel.DeviceRemove.Any())
+    {
+        foreach (var item in BluetoothLowEnergyDevicesModel.DeviceRemove)
+        {
+            <div>Bluetooth Device Remve: @item.Value</div>
+        }
+
+    }
+    @if (BluetoothLowEnergyDevicesModel.DevicesInfo.Any())
+    {
+        foreach (var item in BluetoothLowEnergyDevicesModel.DevicesInfo)
+        {
+            <div>Bluetooth Device Info: @item.Value</div>
+        }
+
+    }
+    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceWatchStop))
+    {
+
+        <div>Bluetooth Device Watch: @BluetoothLowEnergyDevicesModel.DeviceWatchStop</div>
+    }
+    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceEnumComplete))
+    {
+
+        <div>Bluetooth Device Complete: @BluetoothLowEnergyDevicesModel.DeviceEnumComplete</div>
+    }
+    @if (BluetoothLowEnergyDevicesModel.DeviceInfo.Any() && !IsCheckedInfo)
+    {
+        foreach (var item in BluetoothLowEnergyDevicesModel.DeviceInfo)
+        {
+            if (!string.IsNullOrEmpty(item.Key.ToString()))
+            {
+                if (item.Key == "System.Devices.Aep.DeviceAddress")
+                {
+                    <div>Device Address: @item.Key: @item.Value</div>
+                }
+                if (item.Key == "System.Devices.Aep.IsPaired")
+                {
+                    BluetoothLowEnergyDevicesModel.DeviceIsPair = item.Value.ToString();
+                    <div>Device Is Paired: @item.Key: @item.Value</div>
+                }
+                if (item.Key == "System.Devices.Aep.CanPair")
+                {
+                    BluetoothLowEnergyDevicesModel.DeviceIsConnected = item.Value.ToString();
+                    <div>Device Is Connected: @item.Key: @item.Value</div>
+                    IsCheckedInfo = true;
+                }
+            }
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
+    {
+        <div>Bluetooth Device ID: @BluetoothLowEnergyDevicesModel.BluetoothDId</div>
+    }
+    @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsConnected))
+    {
+        <div>Connection Status: @BluetoothLowEnergyDevicesModel.DeviceIsConnected</div>
+    }
+    @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsPair))
+    {
+        <div>Pairing Status: @BluetoothLowEnergyDevicesModel.DeviceIsPair</div>
+    }
+
+    </div>
+@code {    
+    private BluetoothLowEnergyDevicesModel bluetoothLowEnergyDevicesModel = new BluetoothLowEnergyDevicesModel();
+
+    private bool IsCheckedInfo { get; set; } = false;
+
+    private async void ScanBledevices()
+    {
+        IsCheckedInfo = false;
+
+        await bluetoothLowEnergyDevicesModel.RunScanDevice();
+
+        StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            await bluetoothLowEnergyDevicesModel.RunScanDevice();
+        }
+    }
+    //    protected override async Task OnInitializedAsync()
+    //{
+    //    base.OnInitializedAsync();
+    //    await bluetoothLowEnergyDevicesModel.RunScanDevice();
+    //}
+    private void ConnectBledevice()
+    {
+
+        bluetoothLowEnergyDevicesModel.RunConnectDevice();
+        StateHasChanged();
+        //BluetoothLE#BluetoothLEf8:b5:4d:66:a3:4f-64:6a:9d:44:66:9b
+        //0d54daa9-3114-528d-8dda-dc6934f39ed5
+
+    }
+}
