@@ -21,7 +21,7 @@ public class BluetoothLowEnergyDevicesModel
 
     public static IReadOnlyDictionary<string, object> DeviceInfo = new Dictionary<string, object>();
 
-
+    public static List<Guid> ServicesUUID = new List<Guid>();
 #if WINDOWS
 
     private BluetoothLowEnregyFuncs bluetoothLowenEnregyFuncs = new BluetoothLowEnregyFuncs();

@@ -47,7 +47,7 @@
                 }
                 if (item.Key == "System.Devices.Aep.CanPair")
                 {
-                    BluetoothLowEnergyDevicesModel.DeviceIsConnected = item.Value.ToString();
+                    BluetoothLowEnergyDevicesModel.DeviceCanPair = item.Value.ToString();
                     <div>Device Is Connected: @item.Key: @item.Value</div>
                     IsCheckedInfo = true;
                 }
@@ -55,20 +55,28 @@
         }
     }
 
-    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
-    {
-        <div>Bluetooth Device ID: @BluetoothLowEnergyDevicesModel.BluetoothDId</div>
-    }
-    @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsConnected))
+    @*@if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
+        {
+            <div>Bluetooth Device ID: @BluetoothLowEnergyDevicesModel.BluetoothDId</div>
+        }
+
+        @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsPair))
+        {
+            <div>Pairing Status: @BluetoothLowEnergyDevicesModel.DeviceIsPair</div>
+        }*@
+    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsConnected))
     {
         <div>Connection Status: @BluetoothLowEnergyDevicesModel.DeviceIsConnected</div>
     }
-    @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsPair))
+    @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
     {
-        <div>Pairing Status: @BluetoothLowEnergyDevicesModel.DeviceIsPair</div>
+        foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID)
+        {
+            <Button class="btn btn-primary">@item</Button>
+        }
     }
 
-    </div>
+</div>
 @code {    
     private BluetoothLowEnergyDevicesModel bluetoothLowEnergyDevicesModel = new BluetoothLowEnergyDevicesModel();
 
