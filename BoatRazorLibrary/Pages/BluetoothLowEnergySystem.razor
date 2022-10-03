@@ -72,7 +72,8 @@
     {
         foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID)
         {
-            <Button class="btn btn-primary">@item</Button>
+            <br />
+            <button class="btn btn-primary" @onclick="() => ServiceClicked(item)">@item</button><br />
         }
     }
 
@@ -96,6 +97,7 @@
         if (firstRender)
         {
             await bluetoothLowEnergyDevicesModel.RunScanDevice();
+           
         }
     }
     //    protected override async Task OnInitializedAsync()
@@ -110,6 +112,11 @@
         StateHasChanged();
         //BluetoothLE#BluetoothLEf8:b5:4d:66:a3:4f-64:6a:9d:44:66:9b
         //0d54daa9-3114-528d-8dda-dc6934f39ed5
+
+    }
+    private void ServiceClicked(Guid thisGuid)
+    {
+        BluetoothLowEnergyDevicesModel.DeviceGuid = thisGuid;
 
     }
 }

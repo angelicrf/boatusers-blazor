@@ -38,6 +38,8 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+	  <Capability Name="internetClient" />
+	  <DeviceCapability Name="bluetooth" />
   </Capabilities>
 
 </Package>

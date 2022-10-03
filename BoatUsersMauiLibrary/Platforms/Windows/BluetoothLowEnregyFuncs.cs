@@ -103,8 +103,6 @@ public class BluetoothLowEnregyFuncs
         {
 
             BluetoothLowEnergyDevicesModel.DeviceInfo = args.Properties;
-
-
             BluetoothLowEnergyDevicesModel.BluetoothDId = args.Id;
         }
         else
@@ -119,30 +117,42 @@ public class BluetoothLowEnregyFuncs
         {
             if (!isConnectedDv)
             {
-                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(BluetoothLowEnergyDevicesModel.BluetoothDId);
+                var pairedBleDevices = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
+                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(pairedBleDevices[0].Id);
+                //var newSession = GattSession.FromDeviceIdAsync(bluetoothLeDevice.BluetoothDeviceId);
+                //newSession.MaintainConnection = true;
                 bluetoothLeDevice.ConnectionStatusChanged += DeviceConnectionStat;
                 isConnectedDv = true;
             }
-
-            if (bluetoothLeDevice.ConnectionStatus == BluetoothConnectionStatus.Connected)
+            try
             {
                 await GetAllServices();
+                if (BluetoothLowEnergyDevicesModel.DeviceGuid != Guid.Empty)
+                {
+                    await GetAllCharacteristics(BluetoothLowEnergyDevicesModel.DeviceGuid);
+                    //hide services and display characteristics
+                    //properties = bleCharacteristics[0].CharacteristicProperties;
+                    //await ReadFromChracteristic();
+                    //await WriteInCharacteristic();
+                    //await NotifyCharacteristic();
+                }
 
-                //await GetAllCharacteristics();
-                //properties = bleCharacteristics[0].CharacteristicProperties;
-                //await ReadFromChracteristic();
-                //await WriteInCharacteristic();
-                //await NotifyCharacteristic();
             }
+            catch (Exception en)
+            {
 
+                Console.WriteLine(en.Message);
+            }
         }
 
     }
 
     private void DeviceConnectionStat(BluetoothLEDevice sender, object args)
     {
-
-        BluetoothLowEnergyDevicesModel.DeviceIsConnected = args.ToString();
+        if (args != null)
+        {
+            BluetoothLowEnergyDevicesModel.DeviceIsConnected = args.ToString();
+        }
 
     }
 
@@ -150,15 +160,17 @@ public class BluetoothLowEnregyFuncs
     {
         try
         {
-            GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
-
-            if (result.Status == GattCommunicationStatus.Success)
+            GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached);
+            if (bluetoothLeDevice != null)
             {
-                var services = result.Services;
-                foreach (var service in services)
+                if (result.Status == GattCommunicationStatus.Success)
                 {
-                    bleServices.Add(service);
-                    BluetoothLowEnergyDevicesModel.ServicesUUID.Add(service.Uuid);
+                    var services = result.Services;
+                    foreach (var service in services)
+                    {
+                        bleServices.Add(service);
+                        BluetoothLowEnergyDevicesModel.ServicesUUID.Add(service.Uuid);
+                    }
                 }
             }
         }
@@ -169,52 +181,35 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
-
-    private void EventClickedServicesHandler(object sender, EventArgs e)
-    {
-        var button = (Button)sender;
-        var btnServiceValue = button.GetValue;
-
-    }
-
-    private async Task GetAllCharacteristics()
+    private async Task GetAllCharacteristics(Guid thisUUID)
     {
         try
         {
-            var accessStatus = await bleServices[0].RequestAccessAsync();
-            if (accessStatus == DeviceAccessStatus.Allowed)
+            foreach (var item in bleServices)
             {
-                GattCharacteristicsResult result2 = await bleServices[0].GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
-                if (result2.Status == GattCommunicationStatus.Success)
+                if (item.Uuid == thisUUID)
                 {
-                    bleCharacteristics = result2.Characteristics;
-                    bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
-                    // display characteristics
-                    if (bleCharcteristicsUUID.Count > 0)
+                    var accessStatus = await item.RequestAccessAsync();
+                    if (accessStatus == DeviceAccessStatus.Allowed)
                     {
-                        foreach (var item in bleCharcteristicsUUID)
+                        GattCharacteristicsResult result2 = await item.GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
+                        if (result2.Status == GattCommunicationStatus.Success)
                         {
-                            Button newButton = new Button()
-                            {
-                                Text = $"{item}"
-                            };
-                            newButton.Clicked += EventClickedHandler;
+                            bleCharacteristics = result2.Characteristics;
+                            bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
+                            // display characteristics
+
                         }
                     }
                 }
             }
+
         }
         catch (Exception)
         {
 
             bleCharacteristics = new List<GattCharacteristic>();
         }
-    }
-    private void EventClickedHandler(object sender, EventArgs e)
-    {
-        var button = (Button)sender;
-        var btnCharacterValue = button.GetValue;
-
     }
     private async Task ReadFromChracteristic()
     {

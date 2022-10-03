@@ -14,6 +14,7 @@ public class BluetoothLowEnergyDevicesModel
     public static string DeviceIsPair { get; set; }
     public static string DeviceBLEAddress { get; set; }
     public static string DeviceIsConnected { get; set; }
+    public static Guid DeviceGuid { get; set; }
 
     public static IReadOnlyDictionary<string, object> DevicesInfo = new Dictionary<string, object>();
 
