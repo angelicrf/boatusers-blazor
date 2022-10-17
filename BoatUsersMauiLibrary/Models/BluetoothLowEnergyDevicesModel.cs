@@ -25,6 +25,11 @@ public class BluetoothLowEnergyDevicesModel
     public static List<Guid> ServicesUUID = new List<Guid>();
 
     public static List<Guid> CharacteristicsUUID = new List<Guid>();
+
+    public static bool IsCharcReadable { get; set; } = false;
+    public static bool IsCharcWritable { get; set; } = false;
+    public static bool IsCharcWritableWithoutResponse { get; set; } = false;
+    public static Guid ThisGuidCharc { get; set; }
 #if WINDOWS
 
     private BluetoothLowEnregyFuncs bluetoothLowenEnregyFuncs = new BluetoothLowEnregyFuncs();
@@ -48,6 +53,34 @@ public class BluetoothLowEnergyDevicesModel
     {
 #if WINDOWS
        await bluetoothLowenEnregyFuncs.DisplayCharcteristics();
+#endif
+
+    }
+    public void CharcteristicAbilities(Guid thisCharcGuid)
+    {
+#if WINDOWS
+        bluetoothLowenEnregyFuncs.CharacteristicAbility(thisCharcGuid);
+#endif
+
+    }
+    public async Task ReadDeviceCharcteristic()
+    {
+#if WINDOWS
+       await bluetoothLowenEnregyFuncs.ReadFromChracteristic();
+#endif
+
+    }
+    public async Task WriteDeviceCharcteristic()
+    {
+#if WINDOWS
+       await bluetoothLowenEnregyFuncs.WriteInCharacteristic();
+#endif
+
+    }
+    public async Task WriteWithoutResponseDeviceCharcteristic()
+    {
+#if WINDOWS
+       await bluetoothLowenEnregyFuncs.WriteInCharacteristic();
 #endif
 
     }

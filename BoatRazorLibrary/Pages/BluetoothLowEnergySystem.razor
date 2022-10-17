@@ -71,24 +71,48 @@
     @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
     {
         <h2>Services</h2>
-        foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID)
+        foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID.Distinct().ToList())
         {
             <br />
             <button class="btn btn-primary" @onclick="() => ServiceClicked(item)">@item</button><br />
-           // if (IsServiceClicked)
-           // {
-                if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any() && ThisGuidService == item)
+
+            if (ThisGuidService == item)
+            {
+                if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any())
                 {
+                    <h2>Characteristics</h2>
+
                     foreach (var bleChar in BluetoothLowEnergyDevicesModel.CharacteristicsUUID)
                     {
-                    <div class="text-info">@bleChar</div>
+                        <button class="btn btn-info" @onclick="() => EvaluteCharac(bleChar)">@bleChar</button><br />
+
+                        if (BluetoothLowEnergyDevicesModel.ThisGuidCharc == bleChar)
+                        {
+                            if (BluetoothLowEnergyDevicesModel.IsCharcReadable)
+                            {
+                                <button class="btn btn-danger" @onclick="() => ReadCharac(bleChar)">Read</button>
+                            }
+                            if (BluetoothLowEnergyDevicesModel.IsCharcWritable)
+                            {
+                                <button class="btn btn-danger" @onclick="() => WriteCharac(bleChar)">Write</button>
+                            }
+                            if (BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse)
+                            {
+                                <button class="btn btn-danger" @onclick="() => WriteWithoutResponseCharac(bleChar)">Write Without Response</button>
+                            }
+                            else if(!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable)
+                            {
+                                <div class="text-danger">This Charcteristic has No Ability</div>
+                            }
+                        }
                     }
                 }
                 else
                 {
-                <div class="text-secondary">No Characteristic</div>
+                    <div class="text-secondary">No Characteristic</div>
                 }
-           // }
+            }
+
         }
     }
 
@@ -100,7 +124,16 @@
 
     private bool IsServiceClicked { get; set; } = false;
 
+    private bool IsCharcClicked { get; set; } = false;
+
+    private bool IsReadCharac { get; set; } = false;
+
+    private bool IsWriteCharac { get; set; } = false;
+
+    private bool IsWriteWithoutResponseCharac { get; set; } = false;
+
     private Guid ThisGuidService { get; set; }
+
 
     private async void ScanBledevices()
     {
@@ -154,5 +187,40 @@
                 IsServiceClicked = false;
             }
         }
+    }
+    private void EvaluteCharac(Guid thisCharac)
+    {
+        IsCharcClicked = true;
+
+        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
+
+        bluetoothLowEnergyDevicesModel.CharcteristicAbilities(thisCharac);
+    }
+    private async Task ReadCharac(Guid thisCharac)
+    {
+        IsReadCharac = true;
+
+        BluetoothLowEnergyDevicesModel. ThisGuidCharc = thisCharac;
+
+        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+
+    }
+    private async Task WriteCharac(Guid thisCharac)
+    {
+        IsWriteCharac = true;
+
+        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
+
+        //await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+
+    }
+    private async Task WriteWithoutResponseCharac(Guid thisCharac)
+    {
+        IsWriteWithoutResponseCharac = true;
+
+        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
+
+        // await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+
     }
 }

@@ -211,11 +211,11 @@ public class BluetoothLowEnregyFuncs
             bleCharacteristics = new List<GattCharacteristic>();
         }
     }
-    private async Task ReadFromChracteristic()
+    public async Task ReadFromChracteristic()
     {
         try
         {
-            if (properties.HasFlag(GattCharacteristicProperties.Read))
+            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
             {
 
                 GattReadResult resultRead = await bleCharacteristics[0].ReadValueAsync();
@@ -234,11 +234,47 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
-    private async Task WriteInCharacteristic()
+
+    public void CharacteristicAbility(Guid thisCharcGuid)
     {
         try
         {
-            if (properties.HasFlag(GattCharacteristicProperties.Write))
+            if (bleCharacteristics.Any())
+            {
+                foreach (var charc in bleCharacteristics)
+                {
+                    if (charc.Uuid == thisCharcGuid)
+                    {
+
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+                        {
+                            BluetoothLowEnergyDevicesModel.IsCharcWritable = true;
+                        }
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+                        {
+                            BluetoothLowEnergyDevicesModel.IsCharcReadable = true;
+                        }
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
+                        {
+                            BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse = true;
+                        }
+                    }
+
+                }
+            }
+
+        }
+        catch (Exception en)
+        {
+
+            Console.WriteLine(en.Message);
+        }
+    }
+    public async Task WriteInCharacteristic()
+    {
+        try
+        {
+            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
             {
                 var writer = new DataWriter();
 
@@ -262,7 +298,7 @@ public class BluetoothLowEnregyFuncs
     {
         try
         {
-            if (properties.HasFlag(GattCharacteristicProperties.Notify))
+            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
             {
                 GattCommunicationStatus status = await bleCharacteristics[0].WriteClientCharacteristicConfigurationDescriptorAsync(
                         GattClientCharacteristicConfigurationDescriptorValue.Notify);
