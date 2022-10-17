@@ -23,6 +23,8 @@ public class BluetoothLowEnergyDevicesModel
     public static IReadOnlyDictionary<string, object> DeviceInfo = new Dictionary<string, object>();
 
     public static List<Guid> ServicesUUID = new List<Guid>();
+
+    public static List<Guid> CharacteristicsUUID = new List<Guid>();
 #if WINDOWS
 
     private BluetoothLowEnregyFuncs bluetoothLowenEnregyFuncs = new BluetoothLowEnregyFuncs();
@@ -39,6 +41,13 @@ public class BluetoothLowEnergyDevicesModel
     {
 #if WINDOWS
         bluetoothLowenEnregyFuncs.ConnectDevice();
+#endif
+
+    }
+    public async Task ShowDeviceCharcteristics()
+    {
+#if WINDOWS
+       await bluetoothLowenEnregyFuncs.DisplayCharcteristics();
 #endif
 
     }

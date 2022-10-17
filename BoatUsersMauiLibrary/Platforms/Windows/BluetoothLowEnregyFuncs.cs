@@ -15,7 +15,7 @@ public class BluetoothLowEnregyFuncs
 
     private IReadOnlyList<GattCharacteristic> bleCharacteristics = new List<GattCharacteristic>();
 
-    private List<Guid> bleCharcteristicsUUID = new List<Guid>();
+    public List<Guid> bleCharcteristicsUUID = new List<Guid>();
 
     private GattCharacteristicProperties properties;
 
@@ -127,15 +127,6 @@ public class BluetoothLowEnregyFuncs
             try
             {
                 await GetAllServices();
-                if (BluetoothLowEnergyDevicesModel.DeviceGuid != Guid.Empty)
-                {
-                    await GetAllCharacteristics(BluetoothLowEnergyDevicesModel.DeviceGuid);
-                    //hide services and display characteristics
-                    //properties = bleCharacteristics[0].CharacteristicProperties;
-                    //await ReadFromChracteristic();
-                    //await WriteInCharacteristic();
-                    //await NotifyCharacteristic();
-                }
 
             }
             catch (Exception en)
@@ -146,7 +137,17 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
+    public async Task DisplayCharcteristics()
+    {
 
+        await GetAllCharacteristics(BluetoothLowEnergyDevicesModel.DeviceGuid);
+        //display characteristics below each service
+        //properties = bleCharacteristics[0].CharacteristicProperties;
+        //await ReadFromChracteristic();
+        //await WriteInCharacteristic();
+        //await NotifyCharacteristic();
+
+    }
     private void DeviceConnectionStat(BluetoothLEDevice sender, object args)
     {
         if (args != null)
@@ -197,8 +198,7 @@ public class BluetoothLowEnregyFuncs
                         {
                             bleCharacteristics = result2.Characteristics;
                             bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
-                            // display characteristics
-
+                            BluetoothLowEnergyDevicesModel.CharacteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
                         }
                     }
                 }

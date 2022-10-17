@@ -70,18 +70,37 @@
     }
     @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
     {
+        <h2>Services</h2>
         foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID)
         {
             <br />
             <button class="btn btn-primary" @onclick="() => ServiceClicked(item)">@item</button><br />
+           // if (IsServiceClicked)
+           // {
+                if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any() && ThisGuidService == item)
+                {
+                    foreach (var bleChar in BluetoothLowEnergyDevicesModel.CharacteristicsUUID)
+                    {
+                    <div class="text-info">@bleChar</div>
+                    }
+                }
+                else
+                {
+                <div class="text-secondary">No Characteristic</div>
+                }
+           // }
         }
     }
 
 </div>
-@code {    
+@code {
     private BluetoothLowEnergyDevicesModel bluetoothLowEnergyDevicesModel = new BluetoothLowEnergyDevicesModel();
 
     private bool IsCheckedInfo { get; set; } = false;
+
+    private bool IsServiceClicked { get; set; } = false;
+
+    private Guid ThisGuidService { get; set; }
 
     private async void ScanBledevices()
     {
@@ -97,7 +116,7 @@
         if (firstRender)
         {
             await bluetoothLowEnergyDevicesModel.RunScanDevice();
-           
+
         }
     }
     //    protected override async Task OnInitializedAsync()
@@ -114,9 +133,26 @@
         //0d54daa9-3114-528d-8dda-dc6934f39ed5
 
     }
-    private void ServiceClicked(Guid thisGuid)
+    private async Task ServiceClicked(Guid thisGuid)
     {
+
+        IsServiceClicked = true;
+
+        BluetoothLowEnergyDevicesModel.CharacteristicsUUID = new List<Guid>();
+
+        ThisGuidService = thisGuid;
+
         BluetoothLowEnergyDevicesModel.DeviceGuid = thisGuid;
 
+        if (IsServiceClicked)
+        {
+
+            if (BluetoothLowEnergyDevicesModel.DeviceGuid != Guid.Empty)
+            {
+                await bluetoothLowEnergyDevicesModel.ShowDeviceCharcteristics();
+
+                IsServiceClicked = false;
+            }
+        }
     }
 }
