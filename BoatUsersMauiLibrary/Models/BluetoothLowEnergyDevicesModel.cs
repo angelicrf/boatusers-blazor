@@ -42,10 +42,10 @@ public class BluetoothLowEnergyDevicesModel
 #endif
 
     }
-    public void RunConnectDevice()
+    public async Task RunConnectDevice()
     {
 #if WINDOWS
-        bluetoothLowenEnregyFuncs.ConnectDevice();
+       await bluetoothLowenEnregyFuncs.ConnectDevice();
 #endif
 
     }
@@ -63,24 +63,24 @@ public class BluetoothLowEnergyDevicesModel
 #endif
 
     }
-    public async Task ReadDeviceCharcteristic()
+    public async Task ReadDeviceCharcteristic(Guid thisCharcGuid)
     {
 #if WINDOWS
-       await bluetoothLowenEnregyFuncs.ReadFromChracteristic();
+       await bluetoothLowenEnregyFuncs.ReadFromChracteristic(thisCharcGuid);
 #endif
 
     }
-    public async Task WriteDeviceCharcteristic()
+    public async Task WriteDeviceCharcteristic(Guid thisCharcGuid)
     {
 #if WINDOWS
-       await bluetoothLowenEnregyFuncs.WriteInCharacteristic();
+       await bluetoothLowenEnregyFuncs.WriteInCharacteristic(thisCharcGuid);
 #endif
 
     }
-    public async Task WriteWithoutResponseDeviceCharcteristic()
+    public async Task WriteWithoutResponseDeviceCharcteristic(Guid thisCharcGuid)
     {
 #if WINDOWS
-       await bluetoothLowenEnregyFuncs.WriteInCharacteristic();
+       await bluetoothLowenEnregyFuncs.WriteInCharacteristic(thisCharcGuid);
 #endif
 
     }

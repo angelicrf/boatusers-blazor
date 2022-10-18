@@ -90,15 +90,15 @@
                         {
                             if (BluetoothLowEnergyDevicesModel.IsCharcReadable)
                             {
-                                <button class="btn btn-danger" @onclick="() => ReadCharac(bleChar)">Read</button>
+                               <div><button class="btn btn-danger" @onclick="() => ReadCharac(bleChar)">Read</button></div>
                             }
                             if (BluetoothLowEnergyDevicesModel.IsCharcWritable)
                             {
-                                <button class="btn btn-danger" @onclick="() => WriteCharac(bleChar)">Write</button>
+                               <div><button class="btn btn-danger" @onclick="() => WriteCharac(bleChar)">Write</button></div>
                             }
                             if (BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse)
                             {
-                                <button class="btn btn-danger" @onclick="() => WriteWithoutResponseCharac(bleChar)">Write Without Response</button>
+                               <div><button class="btn btn-danger" @onclick="() => WriteWithoutResponseCharac(bleChar)">Write Without Response</button></div>
                             }
                             else if(!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable)
                             {
@@ -157,10 +157,10 @@
     //    base.OnInitializedAsync();
     //    await bluetoothLowEnergyDevicesModel.RunScanDevice();
     //}
-    private void ConnectBledevice()
+    private async Task ConnectBledevice()
     {
 
-        bluetoothLowEnergyDevicesModel.RunConnectDevice();
+        await bluetoothLowEnergyDevicesModel.RunConnectDevice();
         StateHasChanged();
         //BluetoothLE#BluetoothLEf8:b5:4d:66:a3:4f-64:6a:9d:44:66:9b
         //0d54daa9-3114-528d-8dda-dc6934f39ed5
@@ -202,7 +202,7 @@
 
         BluetoothLowEnergyDevicesModel. ThisGuidCharc = thisCharac;
 
-        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic(thisCharac);
 
     }
     private async Task WriteCharac(Guid thisCharac)
@@ -211,7 +211,7 @@
 
         BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
 
-        //await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic(thisCharac);
 
     }
     private async Task WriteWithoutResponseCharac(Guid thisCharac)
@@ -220,7 +220,7 @@
 
         BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
 
-        // await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic();
+        await bluetoothLowEnergyDevicesModel.WriteWithoutResponseDeviceCharcteristic(thisCharac);
 
     }
 }

@@ -111,7 +111,7 @@ public class BluetoothLowEnregyFuncs
             BluetoothLowEnergyDevicesModel.BluetoothDId = "Device ID Null";
         }
     }
-    async public void ConnectDevice()
+    public async Task ConnectDevice()
     {
         if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
         {
@@ -211,19 +211,28 @@ public class BluetoothLowEnregyFuncs
             bleCharacteristics = new List<GattCharacteristic>();
         }
     }
-    public async Task ReadFromChracteristic()
+    public async Task ReadFromChracteristic(Guid thisCharcGuid)
     {
         try
         {
-            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+            if (bleCharacteristics.Any())
             {
-
-                GattReadResult resultRead = await bleCharacteristics[0].ReadValueAsync();
-                if (resultRead.Status == GattCommunicationStatus.Success)
+                foreach (var charc in bleCharacteristics)
                 {
-                    var reader = DataReader.FromBuffer(resultRead.Value);
-                    byte[] input = new byte[reader.UnconsumedBufferLength];
-                    reader.ReadBytes(input);
+                    if (charc.Uuid == thisCharcGuid)
+                    {
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read))
+                        {
+
+                            GattReadResult resultRead = await charc.ReadValueAsync();
+                            if (resultRead.Status == GattCommunicationStatus.Success)
+                            {
+                                var reader = DataReader.FromBuffer(resultRead.Value);
+                                byte[] input = new byte[reader.UnconsumedBufferLength];
+                                reader.ReadBytes(input);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -270,20 +279,29 @@ public class BluetoothLowEnregyFuncs
             Console.WriteLine(en.Message);
         }
     }
-    public async Task WriteInCharacteristic()
+    public async Task WriteInCharacteristic(Guid thisCharcGuid)
     {
         try
         {
-            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+            if (bleCharacteristics.Any())
             {
-                var writer = new DataWriter();
-
-                writer.WriteByte(0x01);
-
-                GattCommunicationStatus resultWrite = await bleCharacteristics[0].WriteValueAsync(writer.DetachBuffer());
-                if (resultWrite == GattCommunicationStatus.Success)
+                foreach (var charc in bleCharacteristics)
                 {
-                    // Successfully wrote to device
+                    if (charc.Uuid == thisCharcGuid)
+                    {
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
+                        {
+                            var writer = new DataWriter();
+
+                            writer.WriteByte(0x01);
+
+                            GattCommunicationStatus resultWrite = await charc.WriteValueAsync(writer.DetachBuffer());
+                            if (resultWrite == GattCommunicationStatus.Success)
+                            {
+                                // Successfully wrote to device
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -294,17 +312,26 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
-    private async Task NotifyCharacteristic()
+    private async Task NotifyCharacteristic(Guid thisCharcGuid)
     {
         try
         {
-            if (bleCharacteristics[0].CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+            if (bleCharacteristics.Any())
             {
-                GattCommunicationStatus status = await bleCharacteristics[0].WriteClientCharacteristicConfigurationDescriptorAsync(
-                        GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                if (status == GattCommunicationStatus.Success)
+                foreach (var charc in bleCharacteristics)
                 {
-                    bleCharacteristics[0].ValueChanged += Characteristic_ValueChanged;
+                    if (charc.Uuid == thisCharcGuid)
+                    {
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                        {
+                            GattCommunicationStatus status = await charc.WriteClientCharacteristicConfigurationDescriptorAsync(
+                                    GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                            if (status == GattCommunicationStatus.Success)
+                            {
+                                charc.ValueChanged += Characteristic_ValueChanged;
+                            }
+                        }
+                    }
                 }
             }
         }
