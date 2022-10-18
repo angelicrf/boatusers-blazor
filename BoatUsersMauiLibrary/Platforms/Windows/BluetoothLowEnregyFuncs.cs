@@ -263,6 +263,10 @@ public class BluetoothLowEnregyFuncs
                         {
                             BluetoothLowEnergyDevicesModel.IsCharcReadable = true;
                         }
+                        if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                        {
+                            BluetoothLowEnergyDevicesModel.IsCharcNotify = true;
+                        }
                         if (charc.CharacteristicProperties.HasFlag(GattCharacteristicProperties.WriteWithoutResponse))
                         {
                             BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse = true;
@@ -312,7 +316,7 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
-    private async Task NotifyCharacteristic(Guid thisCharcGuid)
+    public async Task NotifyCharacteristic(Guid thisCharcGuid)
     {
         try
         {

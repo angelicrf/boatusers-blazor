@@ -1,8 +1,8 @@
 ﻿
 <div class="container">
 
-    <button id="btScan" class="btn btn-danger mt-4" @onclick="ScanBledevices">Scan Bluetooth Devices</button>
-    <button id="btScan" class="btn btn-info mt-4" @onclick="ConnectBledevice">Connect Device</button>
+    <button id="btScan" class="btn btn-danger mt-4" @onclick="blePageCode.ScanBledevices">Scan Bluetooth Devices</button>
+    <button id="btScan" class="btn btn-info mt-4" @onclick="blePageCode.ConnectBledevice">Connect Device</button>
 
     @if (BluetoothLowEnergyDevicesModel.DeviceRemove.Any())
     {
@@ -30,7 +30,7 @@
 
         <div>Bluetooth Device Complete: @BluetoothLowEnergyDevicesModel.DeviceEnumComplete</div>
     }
-    @if (BluetoothLowEnergyDevicesModel.DeviceInfo.Any() && !IsCheckedInfo)
+    @if (BluetoothLowEnergyDevicesModel.DeviceInfo.Any() && !blePageCode.IsCheckedInfo)
     {
         foreach (var item in BluetoothLowEnergyDevicesModel.DeviceInfo)
         {
@@ -49,7 +49,7 @@
                 {
                     BluetoothLowEnergyDevicesModel.DeviceCanPair = item.Value.ToString();
                     <div>Device Is Connected: @item.Key: @item.Value</div>
-                    IsCheckedInfo = true;
+                    blePageCode.IsCheckedInfo = true;
                 }
             }
         }
@@ -74,35 +74,39 @@
         foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID.Distinct().ToList())
         {
             <br />
-            <button class="btn btn-primary" @onclick="() => ServiceClicked(item)">@item</button><br />
+            <button class="btn btn-primary" @onclick="() => blePageCode.ServiceClicked(item)">@item</button><br />
 
-            if (ThisGuidService == item)
+            if (blePageCode.ThisGuidService == item)
             {
                 if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any())
                 {
-                    <h2>Characteristics</h2>
+                    <h3>Characteristics</h3>
 
                     foreach (var bleChar in BluetoothLowEnergyDevicesModel.CharacteristicsUUID)
                     {
-                        <button class="btn btn-info" @onclick="() => EvaluteCharac(bleChar)">@bleChar</button><br />
+                        <button class="btn btn-info mt-2" @onclick="() => blePageCode.EvaluteCharac(bleChar)">@bleChar</button><br />
 
                         if (BluetoothLowEnergyDevicesModel.ThisGuidCharc == bleChar)
                         {
                             if (BluetoothLowEnergyDevicesModel.IsCharcReadable)
                             {
-                               <div><button class="btn btn-danger" @onclick="() => ReadCharac(bleChar)">Read</button></div>
+                                <div class="mt-2"><button class="btn btn-danger" @onclick="() => blePageCode.ReadCharac(bleChar)">Read <i class="bi bi-check"></i></button></div>
+                            }
+                            if (BluetoothLowEnergyDevicesModel.IsCharcNotify)
+                            {
+                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.NotifyCharac(bleChar)">Notify <i class="bi bi-check"></i></button></div>
                             }
                             if (BluetoothLowEnergyDevicesModel.IsCharcWritable)
                             {
-                               <div><button class="btn btn-danger" @onclick="() => WriteCharac(bleChar)">Write</button></div>
+                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteCharac(bleChar)">Write <i class="bi bi-check"></i></button></div>
                             }
                             if (BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse)
                             {
-                               <div><button class="btn btn-danger" @onclick="() => WriteWithoutResponseCharac(bleChar)">Write Without Response</button></div>
+                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteWithoutResponseCharac(bleChar)">Write Without Response <i class="bi bi-check"></i></button></div>
                             }
-                            else if(!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable)
+                            else if (!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable && !BluetoothLowEnergyDevicesModel.IsCharcNotify)
                             {
-                                <div class="text-danger">This Charcteristic has No Ability</div>
+                                <div class="text-danger mt-2 mb-2">This Charcteristic has No Ability</div>
                             }
                         }
                     }
@@ -119,37 +123,15 @@
 </div>
 @code {
     private BluetoothLowEnergyDevicesModel bluetoothLowEnergyDevicesModel = new BluetoothLowEnergyDevicesModel();
+    
+    private BluetoothWDevicesPageCode blePageCode = new BluetoothWDevicesPageCode();
 
-    private bool IsCheckedInfo { get; set; } = false;
-
-    private bool IsServiceClicked { get; set; } = false;
-
-    private bool IsCharcClicked { get; set; } = false;
-
-    private bool IsReadCharac { get; set; } = false;
-
-    private bool IsWriteCharac { get; set; } = false;
-
-    private bool IsWriteWithoutResponseCharac { get; set; } = false;
-
-    private Guid ThisGuidService { get; set; }
-
-
-    private async void ScanBledevices()
-    {
-        IsCheckedInfo = false;
-
-        await bluetoothLowEnergyDevicesModel.RunScanDevice();
-
-        StateHasChanged();
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
             await bluetoothLowEnergyDevicesModel.RunScanDevice();
-
         }
     }
     //    protected override async Task OnInitializedAsync()
@@ -157,70 +139,5 @@
     //    base.OnInitializedAsync();
     //    await bluetoothLowEnergyDevicesModel.RunScanDevice();
     //}
-    private async Task ConnectBledevice()
-    {
 
-        await bluetoothLowEnergyDevicesModel.RunConnectDevice();
-        StateHasChanged();
-        //BluetoothLE#BluetoothLEf8:b5:4d:66:a3:4f-64:6a:9d:44:66:9b
-        //0d54daa9-3114-528d-8dda-dc6934f39ed5
-
-    }
-    private async Task ServiceClicked(Guid thisGuid)
-    {
-
-        IsServiceClicked = true;
-
-        BluetoothLowEnergyDevicesModel.CharacteristicsUUID = new List<Guid>();
-
-        ThisGuidService = thisGuid;
-
-        BluetoothLowEnergyDevicesModel.DeviceGuid = thisGuid;
-
-        if (IsServiceClicked)
-        {
-
-            if (BluetoothLowEnergyDevicesModel.DeviceGuid != Guid.Empty)
-            {
-                await bluetoothLowEnergyDevicesModel.ShowDeviceCharcteristics();
-
-                IsServiceClicked = false;
-            }
-        }
-    }
-    private void EvaluteCharac(Guid thisCharac)
-    {
-        IsCharcClicked = true;
-
-        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
-
-        bluetoothLowEnergyDevicesModel.CharcteristicAbilities(thisCharac);
-    }
-    private async Task ReadCharac(Guid thisCharac)
-    {
-        IsReadCharac = true;
-
-        BluetoothLowEnergyDevicesModel. ThisGuidCharc = thisCharac;
-
-        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic(thisCharac);
-
-    }
-    private async Task WriteCharac(Guid thisCharac)
-    {
-        IsWriteCharac = true;
-
-        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
-
-        await bluetoothLowEnergyDevicesModel.ReadDeviceCharcteristic(thisCharac);
-
-    }
-    private async Task WriteWithoutResponseCharac(Guid thisCharac)
-    {
-        IsWriteWithoutResponseCharac = true;
-
-        BluetoothLowEnergyDevicesModel.ThisGuidCharc = thisCharac;
-
-        await bluetoothLowEnergyDevicesModel.WriteWithoutResponseDeviceCharcteristic(thisCharac);
-
-    }
 }
