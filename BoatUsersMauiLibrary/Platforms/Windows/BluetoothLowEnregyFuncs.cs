@@ -9,6 +9,7 @@ namespace BoatUsersMauiLibrary;
 public class BluetoothLowEnregyFuncs
 {
     string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
+
     public BluetoothLEDevice bluetoothLeDevice { get; set; }
 
     public List<GattDeviceService> bleServices = new List<GattDeviceService>();
@@ -17,12 +18,19 @@ public class BluetoothLowEnregyFuncs
 
     public List<Guid> bleCharcteristicsUUID = new List<Guid>();
 
+    private List<DeviceInformation> AllArgs = new List<DeviceInformation>();
+
     private GattCharacteristicProperties properties;
 
     private bool isConnectedDv { get; set; } = false;
+
+    private DeviceInformationCollection AllBleDevices;
+
     public BluetoothLowEnregyFuncs() { }
+
     public Task StartScan()
     {
+
         DeviceWatcher deviceWatcher =
               DeviceInformation.CreateWatcher(
                       BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
@@ -88,6 +96,7 @@ public class BluetoothLowEnregyFuncs
         {
             if (args.Properties.Count > 0)
             {
+
                 BluetoothLowEnergyDevicesModel.DevicesInfo = args.Properties;
             }
         }
@@ -101,9 +110,16 @@ public class BluetoothLowEnregyFuncs
     {
         if (args != null)
         {
+            var getResult = FindIndexDictionary(args);
+            if (!string.IsNullOrEmpty(getResult.Result.ToString()))
+            {
+                BluetoothLowEnergyDevicesModel.DeviceList.Add(AllArgs[getResult.Result].Properties["System.Devices.Aep.DeviceAddress"].ToString());
+                BluetoothLowEnergyDevicesModel.DeviceIsPair = AllArgs[getResult.Result].Properties["System.Devices.Aep.IsPaired"].ToString();
+                BluetoothLowEnergyDevicesModel.DeviceCanPair = AllArgs[getResult.Result].Properties["System.Devices.Aep.CanPair"].ToString();
+                BluetoothLowEnergyDevicesModel.BluetoothDId = AllArgs[getResult.Result].Id.ToString();
+                BluetoothLowEnergyDevicesModel.DeviceName = AllArgs[getResult.Result].Name.ToString();
+            }
 
-            BluetoothLowEnergyDevicesModel.DeviceInfo = args.Properties;
-            BluetoothLowEnergyDevicesModel.BluetoothDId = args.Id;
         }
         else
         {
@@ -111,14 +127,27 @@ public class BluetoothLowEnregyFuncs
             BluetoothLowEnergyDevicesModel.BluetoothDId = "Device ID Null";
         }
     }
+    private Task<int> FindIndexDictionary(DeviceInformation args)
+    {
+        AllArgs.Add(args);
+
+        for (int i = 0; i < AllArgs.Count; i++)
+        {
+            if (AllArgs[i].Properties["System.Devices.Aep.CanPair"].ToString() == true.ToString())
+            {
+                return Task.FromResult(i);
+            }
+        }
+        return Task.FromResult(-1);
+    }
     public async Task ConnectDevice()
     {
         if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
         {
             if (!isConnectedDv)
             {
-                var pairedBleDevices = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
-                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(pairedBleDevices[0].Id);
+                AllBleDevices = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
+                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(AllBleDevices[0].Id);
                 //var newSession = GattSession.FromDeviceIdAsync(bluetoothLeDevice.BluetoothDeviceId);
                 //newSession.MaintainConnection = true;
                 bluetoothLeDevice.ConnectionStatusChanged += DeviceConnectionStat;

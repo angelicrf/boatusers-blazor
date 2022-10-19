@@ -30,27 +30,36 @@
 
         <div>Bluetooth Device Complete: @BluetoothLowEnergyDevicesModel.DeviceEnumComplete</div>
     }
+    @if (BluetoothLowEnergyDevicesModel.DeviceList != null && BluetoothLowEnergyDevicesModel.DeviceList.Any())
+    {
+        var resultFound = from thisDevice in BluetoothLowEnergyDevicesModel.DeviceList
+                          select thisDevice;
+
+        if (resultFound != null)
+        {
+            foreach (var item in resultFound.Distinct())
+            {
+                <div class="text-info mt-2">Device Address: @item</div>
+            }
+            <div class="text-info">Device Id: @BluetoothLowEnergyDevicesModel.BluetoothDId</div>
+            <div class="text-info">Device Can Pair: @BluetoothLowEnergyDevicesModel.DeviceCanPair</div>
+            <div class="text-info">Device Is Paired: @BluetoothLowEnergyDevicesModel.DeviceIsPair</div>
+            <div class="text-info">Device Name: @(!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceName) ? BluetoothLowEnergyDevicesModel.DeviceName : "No Name")</div>
+        }
+
+    }
     @if (BluetoothLowEnergyDevicesModel.DeviceInfo.Any() && !blePageCode.IsCheckedInfo)
     {
+
+
         foreach (var item in BluetoothLowEnergyDevicesModel.DeviceInfo)
         {
             if (!string.IsNullOrEmpty(item.Key.ToString()))
             {
-                if (item.Key == "System.Devices.Aep.DeviceAddress")
-                {
-                    <div>Device Address: @item.Key: @item.Value</div>
-                }
-                if (item.Key == "System.Devices.Aep.IsPaired")
-                {
-                    BluetoothLowEnergyDevicesModel.DeviceIsPair = item.Value.ToString();
-                    <div>Device Is Paired: @item.Key: @item.Value</div>
-                }
-                if (item.Key == "System.Devices.Aep.CanPair")
-                {
-                    BluetoothLowEnergyDevicesModel.DeviceCanPair = item.Value.ToString();
-                    <div>Device Is Connected: @item.Key: @item.Value</div>
-                    blePageCode.IsCheckedInfo = true;
-                }
+
+                <div>Device Is Connected: @item.Key: @item.Value</div>
+                blePageCode.IsCheckedInfo = true;
+
             }
         }
     }
@@ -66,61 +75,61 @@
         }*@
     @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsConnected))
     {
-        <div>Connection Status: @BluetoothLowEnergyDevicesModel.DeviceIsConnected</div>
-    }
-    @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
-    {
-        <h2>Services</h2>
-        foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID.Distinct().ToList())
+            <div>Connection Status: @BluetoothLowEnergyDevicesModel.DeviceIsConnected</div>
+        }
+        @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
         {
-            <br />
-            <button class="btn btn-primary" @onclick="() => blePageCode.ServiceClicked(item)">@item</button><br />
-
-            if (blePageCode.ThisGuidService == item)
+            <h2>Services</h2>
+            foreach (var item in BluetoothLowEnergyDevicesModel.ServicesUUID.Distinct().ToList())
             {
-                if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any())
+                <br />
+                <button class="btn btn-primary" @onclick="() => blePageCode.ServiceClicked(item)">@item</button><br />
+
+                if (blePageCode.ThisGuidService == item)
                 {
-                    <h3>Characteristics</h3>
-
-                    foreach (var bleChar in BluetoothLowEnergyDevicesModel.CharacteristicsUUID)
+                    if (BluetoothLowEnergyDevicesModel.CharacteristicsUUID.Any())
                     {
-                        <button class="btn btn-info mt-2" @onclick="() => blePageCode.EvaluteCharac(bleChar)">@bleChar</button><br />
+                        <h3>Characteristics</h3>
 
-                        if (BluetoothLowEnergyDevicesModel.ThisGuidCharc == bleChar)
+                        foreach (var bleChar in BluetoothLowEnergyDevicesModel.CharacteristicsUUID)
                         {
-                            if (BluetoothLowEnergyDevicesModel.IsCharcReadable)
+                            <button class="btn btn-info mt-2" @onclick="() => blePageCode.EvaluteCharac(bleChar)">@bleChar</button><br />
+
+                            if (BluetoothLowEnergyDevicesModel.ThisGuidCharc == bleChar)
                             {
-                                <div class="mt-2"><button class="btn btn-danger" @onclick="() => blePageCode.ReadCharac(bleChar)">Read <i class="bi bi-check"></i></button></div>
-                            }
-                            if (BluetoothLowEnergyDevicesModel.IsCharcNotify)
-                            {
-                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.NotifyCharac(bleChar)">Notify <i class="bi bi-check"></i></button></div>
-                            }
-                            if (BluetoothLowEnergyDevicesModel.IsCharcWritable)
-                            {
-                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteCharac(bleChar)">Write <i class="bi bi-check"></i></button></div>
-                            }
-                            if (BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse)
-                            {
-                                <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteWithoutResponseCharac(bleChar)">Write Without Response <i class="bi bi-check"></i></button></div>
-                            }
-                            else if (!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable && !BluetoothLowEnergyDevicesModel.IsCharcNotify)
-                            {
-                                <div class="text-danger mt-2 mb-2">This Charcteristic has No Ability</div>
+                                if (BluetoothLowEnergyDevicesModel.IsCharcReadable)
+                                {
+                                    <div class="mt-2"><button class="btn btn-danger" @onclick="() => blePageCode.ReadCharac(bleChar)">Read <i class="bi bi-check"></i></button></div>
+                                }
+                                if (BluetoothLowEnergyDevicesModel.IsCharcNotify)
+                                {
+                                    <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.NotifyCharac(bleChar)">Notify <i class="bi bi-check"></i></button></div>
+                                }
+                                if (BluetoothLowEnergyDevicesModel.IsCharcWritable)
+                                {
+                                    <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteCharac(bleChar)">Write <i class="bi bi-check"></i></button></div>
+                                }
+                                if (BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse)
+                                {
+                                    <div class="mt-2 mb-2"><button class="btn btn-danger" @onclick="() => blePageCode.WriteWithoutResponseCharac(bleChar)">Write Without Response <i class="bi bi-check"></i></button></div>
+                                }
+                                else if (!BluetoothLowEnergyDevicesModel.IsCharcWritableWithoutResponse && !BluetoothLowEnergyDevicesModel.IsCharcWritable && !BluetoothLowEnergyDevicesModel.IsCharcReadable && !BluetoothLowEnergyDevicesModel.IsCharcNotify)
+                                {
+                                    <div class="text-danger mt-2 mb-2">This Charcteristic has No Ability</div>
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        <div class="text-secondary">No Characteristic</div>
+                    }
                 }
-                else
-                {
-                    <div class="text-secondary">No Characteristic</div>
-                }
+
             }
-
         }
-    }
 
-</div>
+    </div>
 @code {
     private BluetoothLowEnergyDevicesModel bluetoothLowEnergyDevicesModel = new BluetoothLowEnergyDevicesModel();
     

@@ -1,5 +1,4 @@
-﻿
-namespace BoatUsersMauiLibrary.Models;
+﻿namespace BoatUsersMauiLibrary.Models;
 
 public class BluetoothLowEnergyDevicesModel
 {
@@ -12,9 +11,11 @@ public class BluetoothLowEnergyDevicesModel
     public static string DeviceRemoveMsg { get; set; }
     public static string DeviceCanPair { get; set; }
     public static string DeviceIsPair { get; set; }
+    public static string DeviceName { get; set; }
     public static string DeviceBLEAddress { get; set; }
     public static string DeviceIsConnected { get; set; }
     public static Guid DeviceGuid { get; set; }
+    public static List<string> DeviceList { get; set; } = new List<string>();
 
     public static IReadOnlyDictionary<string, object> DevicesInfo = new Dictionary<string, object>();
 
@@ -30,6 +31,7 @@ public class BluetoothLowEnergyDevicesModel
     public static bool IsCharcWritableWithoutResponse { get; set; } = false;
     public static bool IsCharcNotify { get; set; } = false;
     public static Guid ThisGuidCharc { get; set; }
+
 
 #if WINDOWS
 
