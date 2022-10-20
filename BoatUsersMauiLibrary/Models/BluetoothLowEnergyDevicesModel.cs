@@ -26,6 +26,8 @@ public class BluetoothLowEnergyDevicesModel
     public static List<Guid> ServicesUUID = new List<Guid>();
 
     public static List<Guid> CharacteristicsUUID = new List<Guid>();
+
+    public static Dictionary<string, List<string>> PairableDevices = new Dictionary<string, List<string>>();
     public static bool IsCharcReadable { get; set; } = false;
     public static bool IsCharcWritable { get; set; } = false;
     public static bool IsCharcWritableWithoutResponse { get; set; } = false;
