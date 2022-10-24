@@ -47,17 +47,17 @@ public class BluetoothLowEnergyDevicesModel
 #endif
 
     }
-    public async Task RunConnectDevice()
+    public async Task RunConnectDevice(string thisDeviceId)
     {
 #if WINDOWS
-       await bluetoothLowenEnregyFuncs.ConnectDevice();
+       await bluetoothLowenEnregyFuncs.ConnectDevice(thisDeviceId);
 #endif
 
     }
-    public async Task ShowDeviceCharcteristics()
+    public async Task ShowDeviceCharcteristics(Guid thisGuid)
     {
 #if WINDOWS
-       await bluetoothLowenEnregyFuncs.DisplayCharcteristics();
+       await bluetoothLowenEnregyFuncs.DisplayCharcteristics(thisGuid);
 #endif
 
     }

@@ -32,10 +32,13 @@ public class BluetoothWDevicesPageCode
 
         //StateHasChanged();
     }
-    public async Task ConnectBledevice()
+    public async Task ConnectBledevice(string thisDeviceId)
     {
-
-        await bluetoothLowEnergyDevicesModel.RunConnectDevice();
+        var getResult = SetBleDeviceID(thisDeviceId);
+        if (getResult.IsCompleted)
+        {
+            await bluetoothLowEnergyDevicesModel.RunConnectDevice(thisDeviceId);
+        }
         //StateHasChanged();
         //BluetoothLE#BluetoothLEf8:b5:4d:66:a3:4f-64:6a:9d:44:66:9b
         //0d54daa9-3114-528d-8dda-dc6934f39ed5
@@ -50,16 +53,13 @@ public class BluetoothWDevicesPageCode
 
         ThisGuidService = thisGuid;
 
-        BluetoothLowEnergyDevicesModel.DeviceGuid = thisGuid;
 
         if (IsServiceClicked)
         {
 
-            if (BluetoothLowEnergyDevicesModel.DeviceGuid != Guid.Empty)
+            if (thisGuid != Guid.Empty)
             {
-                await bluetoothLowEnergyDevicesModel.ShowDeviceCharcteristics();
-
-                IsServiceClicked = false;
+                await bluetoothLowEnergyDevicesModel.ShowDeviceCharcteristics(thisGuid);
             }
         }
     }
@@ -106,5 +106,10 @@ public class BluetoothWDevicesPageCode
 
         await bluetoothLowEnergyDevicesModel.WriteWithoutResponseDeviceCharcteristic(thisCharac);
 
+    }
+    public Task SetBleDeviceID(string thisDeviceId)
+    {
+        BluetoothLowEnergyDevicesModel.BluetoothDId = thisDeviceId;
+        return Task.CompletedTask;
     }
 }

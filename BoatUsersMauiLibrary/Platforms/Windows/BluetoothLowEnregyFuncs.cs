@@ -126,11 +126,6 @@ public class BluetoothLowEnregyFuncs
                         getResult.Result.Name.ToString()
                     }
                     );
-                    //BluetoothLowEnergyDevicesModel.DeviceList.Add(getResult.Result.Properties["System.Devices.Aep.DeviceAddress"].ToString());
-                    //BluetoothLowEnergyDevicesModel.DeviceIsPair = getResult.Result.Properties["System.Devices.Aep.IsPaired"].ToString();
-                    //BluetoothLowEnergyDevicesModel.DeviceCanPair = getResult.Result.Properties["System.Devices.Aep.CanPair"].ToString();
-                    //BluetoothLowEnergyDevicesModel.BluetoothDId = getResult.Result.Id.ToString();
-                    //BluetoothLowEnergyDevicesModel.DeviceName = getResult.Result.Name.ToString();
 
                 }
             }
@@ -158,14 +153,16 @@ public class BluetoothLowEnregyFuncs
         //}
         //return Task.FromResult(-1);
     }
-    public async Task ConnectDevice()
+    public async Task ConnectDevice(string thisDeviceId)
     {
-        if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
+
+        if (!string.IsNullOrEmpty(thisDeviceId))
         {
             if (!isConnectedDv)
             {
-                AllBleDevices = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
-                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(AllBleDevices[0].Id);
+                //AllBleDevices = await DeviceInformation.FindAllAsync(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
+                //not hard code
+                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(thisDeviceId);
                 //var newSession = GattSession.FromDeviceIdAsync(bluetoothLeDevice.BluetoothDeviceId);
                 //newSession.MaintainConnection = true;
                 bluetoothLeDevice.ConnectionStatusChanged += DeviceConnectionStat;
@@ -184,10 +181,10 @@ public class BluetoothLowEnregyFuncs
         }
 
     }
-    public async Task DisplayCharcteristics()
+    public async Task DisplayCharcteristics(Guid thisGuid)
     {
 
-        await GetAllCharacteristics(BluetoothLowEnergyDevicesModel.DeviceGuid);
+        await GetAllCharacteristics(thisGuid);
         //display characteristics below each service
         //properties = bleCharacteristics[0].CharacteristicProperties;
         //await ReadFromChracteristic();
@@ -233,6 +230,7 @@ public class BluetoothLowEnregyFuncs
     {
         try
         {
+            //bleCharcteristicsUUID = new List<Guid>();
             foreach (var item in bleServices)
             {
                 if (item.Uuid == thisUUID)
@@ -244,7 +242,7 @@ public class BluetoothLowEnregyFuncs
                         if (result2.Status == GattCommunicationStatus.Success)
                         {
                             bleCharacteristics = result2.Characteristics;
-                            bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
+                            //bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
                             BluetoothLowEnergyDevicesModel.CharacteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
                         }
                     }

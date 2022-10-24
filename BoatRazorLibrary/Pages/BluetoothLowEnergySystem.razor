@@ -2,7 +2,6 @@
 <div class="container">
 
     <button id="btScan" class="btn btn-danger mt-4" @onclick="blePageCode.ScanBledevices">Scan Bluetooth Devices</button>
-    <button id="btScan" class="btn btn-info mt-4" @onclick="blePageCode.ConnectBledevice">Connect Device</button>
 
     @if (BluetoothLowEnergyDevicesModel.DeviceRemove.Any())
     {
@@ -16,7 +15,11 @@
     {
         foreach (var item in BluetoothLowEnergyDevicesModel.DevicesInfo)
         {
-            <div>Bluetooth Device Info: @item.Value</div>
+            if (item.Key == "System.Devices.Aep.IsConnected")
+            {
+                <div>Bluetooth Device IsConnected: @item.Value</div>
+            }
+
         }
 
     }
@@ -41,52 +44,23 @@
             {
                 if (thisResult.ContainsValue(item.Value))
                 {
-                <div class="text-info mt-2">Device Address: @item.Key</div>
-                    for (int i = 0; i < item.Value.Value.Count; i++)
-                    {
+                    <div class="text-info mt-2">Device Address: @item.Key</div>
+
                     <div class="text-info">Device Is Paired: @item.Value.Value[0]</div>
 
                     <div class="text-info">Device Can Pair: @item.Value.Value[1]</div>
 
-                    <div class="text-info">Device Id: @item.Value.Value[2]</div>
+                    <button class="text-info btn btn-danger" @onclick="() => blePageCode.ConnectBledevice(item.Value.Value[2])">Device Id: @item.Value.Value[2]</button>
 
                     <div class="text-info">Device Name: @(!string.IsNullOrEmpty(item.Value.Value[3]) ? item.Value.Value[3] : "No Name")</div>
-                    }
+
                 }
             }
 
         }
 
     }
-    @if (BluetoothLowEnergyDevicesModel.DeviceInfo.Any() && !blePageCode.IsCheckedInfo)
-    {
 
-        //connecting a device
-        foreach (var item in BluetoothLowEnergyDevicesModel.DeviceInfo)
-        {
-            if (!string.IsNullOrEmpty(item.Key.ToString()))
-            {
-
-                <div>Device Is Connected: @item.Key: @item.Value</div>
-                blePageCode.IsCheckedInfo = true;
-
-            }
-        }
-    }
-
-    @*@if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.BluetoothDId))
-        {
-            <div>Bluetooth Device ID: @BluetoothLowEnergyDevicesModel.BluetoothDId</div>
-        }
-
-        @if (IsCheckedInfo && !string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsPair))
-        {
-            <div>Pairing Status: @BluetoothLowEnergyDevicesModel.DeviceIsPair</div>
-        }*@
-    @if (!string.IsNullOrEmpty(BluetoothLowEnergyDevicesModel.DeviceIsConnected))
-    {
-        <div>Connection Status: @BluetoothLowEnergyDevicesModel.DeviceIsConnected</div>
-    }
     @if (BluetoothLowEnergyDevicesModel.ServicesUUID.Any())
     {
         <h2>Services</h2>
@@ -156,7 +130,6 @@
     //    protected override async Task OnInitializedAsync()
     //{
     //    base.OnInitializedAsync();
-    //    await bluetoothLowEnergyDevicesModel.RunScanDevice();
     //}
 
 }
