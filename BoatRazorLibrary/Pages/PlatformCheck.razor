@@ -8,9 +8,13 @@
     [Parameter]
     public EventCallback<bool> OnDisplayChanged { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> OnDesktopDisplayChanged { get; set; }
+
     private IJSObjectReference? funcModule;
 
     private bool testBool;
+
     public bool IsMobile
     {
         get => testBool;
@@ -18,6 +22,17 @@
         {
             testBool = value;
             OnDisplayChanged.InvokeAsync(value);
+        }
+    }
+    private bool desktopBool;
+
+    public bool IsDesktop
+    {
+        get => desktopBool;
+        set
+        {
+            desktopBool = value;
+            OnDesktopDisplayChanged.InvokeAsync(value);
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -30,6 +45,9 @@
 
             IsMobile = await funcModule.InvokeAsync<bool>
                 ("isDevice");
+
+            IsDesktop = await funcModule.InvokeAsync<bool>
+                ("isDesktop");
             StateHasChanged();
 
         }

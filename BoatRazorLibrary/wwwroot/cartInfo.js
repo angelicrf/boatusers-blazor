@@ -2,9 +2,13 @@ export const userInfo = (userName) => alert(userName)
 
 export const isDevice = () => {
     let deviceValue = /android|webos|iPhone|iPad|iPod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent)
-    return deviceValue
+    return deviceValue 
 }
-
+export const isDesktop = () => {
+    //desktop 34
+    let defineDesktop = (window.screenX == 34 && !(window.screenX > 80) && !(window.screenX < 25)) ? true : false
+    return defineDesktop
+}
 const loadAsync = (url, callback) => {
     var s = document.createElement('script');
     s.setAttribute('src', url); s.onload = callback;

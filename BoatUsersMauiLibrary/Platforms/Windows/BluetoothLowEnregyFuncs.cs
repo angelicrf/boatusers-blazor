@@ -230,7 +230,6 @@ public class BluetoothLowEnregyFuncs
     {
         try
         {
-            //bleCharcteristicsUUID = new List<Guid>();
             foreach (var item in bleServices)
             {
                 if (item.Uuid == thisUUID)
@@ -242,7 +241,7 @@ public class BluetoothLowEnregyFuncs
                         if (result2.Status == GattCommunicationStatus.Success)
                         {
                             bleCharacteristics = result2.Characteristics;
-                            //bleCharcteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
+
                             BluetoothLowEnergyDevicesModel.CharacteristicsUUID = (from e in bleCharacteristics select e.Uuid).ToList();
                         }
                     }

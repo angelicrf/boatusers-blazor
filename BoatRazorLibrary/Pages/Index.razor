@@ -7,22 +7,35 @@
 
 <BoatUsers />
 
-<PlatformCheck OnDisplayChanged="DisplayChanged" />
+<PlatformCheck OnDisplayChanged="DisplayChanged" OnDesktopDisplayChanged="DisplayDesktopChanged" />
 
 @if (OrderToDisplay)
 {
     <BUCalendarMaui />
 }
+else if (OrderDesktopToDisplay)
+{
+    <BluetoothLowEnergySystem />
+}
 else
 {
     @*<BluetoothDevicesInfo />*@
-    <BluetoothLowEnergySystem />
+
+    <div>This Is Windows</div>
+
 }
 
 @code{
     private bool OrderToDisplay { get; set; }
+
+    private bool OrderDesktopToDisplay { get; set; }
+
     public void DisplayChanged(bool thisValue)
     {
         OrderToDisplay = thisValue;
+    }
+    public void DisplayDesktopChanged(bool thisValue)
+    {
+        OrderDesktopToDisplay = thisValue;
     }
 }
