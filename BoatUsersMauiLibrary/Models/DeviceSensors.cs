@@ -20,6 +20,7 @@ public class DeviceSensors
     public bool IsCrashReported { get; set; } = false;
     public bool IsPermited { get; set; } = false;
 
+    private CancellationTokenSource _cancelTokenSource;
     //public List<BluetoothDevice> DeviceList = new List<BluetoothDevice>();
     public DeviceSensors() { }
     public void DisplayCounterValue(int thisInt)
@@ -28,7 +29,7 @@ public class DeviceSensors
     }
     public async Task DriveToNewLocation()
     {
-        var location = new Location(47.645160, -122.1306032);
+        var location = new Location(26.609859, -80.058571);
         var options = new MapLaunchOptions
         {
             Name = "School",
@@ -62,9 +63,12 @@ public class DeviceSensors
 
         try
         {
-            var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-
-            return await Geolocation.GetLocationAsync(request);
+            Location lct = new Location(0, 0);
+            var request = new GeolocationRequest(GeolocationAccuracy.Default, TimeSpan.FromMinutes(1));
+            _cancelTokenSource = new CancellationTokenSource();
+            Location thisLocation = await Geolocation.GetLocationAsync(request, _cancelTokenSource.Token);
+            bool thisBoolLocation = thisLocation.IsFromMockProvider;
+            return thisLocation;
         }
         catch (FeatureNotSupportedException fnsEx)
         {
@@ -177,15 +181,24 @@ public class DeviceSensors
     }
     public async Task<string> GetGeocodeReverseData(double latitude, double longitude)
     {
-        IEnumerable<Placemark> placemarks = await Geocoding.Default.GetPlacemarksAsync(latitude, longitude);
-
-        Placemark placemark = placemarks?.FirstOrDefault();
-
-        if (placemark != null)
+        try
         {
-            return
-               $"{placemark.FeatureName + ' ' + placemark.Locality + ", " + placemark.SubAdminArea + ",\n " + placemark.AdminArea + ", this" + placemark.PostalCode + ", " + placemark.CountryCode}";
+            IEnumerable<Placemark> placemarks = await Geocoding.Default.GetPlacemarksAsync(latitude, longitude);
+
+            Placemark placemark = placemarks?.FirstOrDefault();
+
+            if (placemark != null)
+            {
+                return
+                   $"{placemark.FeatureName + ' ' + placemark.Locality + ", " + placemark.SubAdminArea + ",\n " + placemark.AdminArea + ", this" + placemark.PostalCode + ", " + placemark.CountryCode}";
+            }
         }
+        catch (Exception e)
+        {
+
+            Console.WriteLine(e.Message);
+        }
+
 
         return "";
     }

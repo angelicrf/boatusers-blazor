@@ -7,6 +7,7 @@
 
 <BoatUsers />
 
+<div>Bluetooth Devices</div>
 <PlatformCheck OnDisplayChanged="DisplayChanged" OnDesktopDisplayChanged="DisplayDesktopChanged" />
 
 @if (OrderToDisplay)
@@ -19,10 +20,8 @@ else if (OrderDesktopToDisplay)
 }
 else
 {
-    @*<BluetoothDevicesInfo />*@
-
     <div>This Is Windows</div>
-
+    <BluetoothDevicesInfo />
 }
 
 @code{

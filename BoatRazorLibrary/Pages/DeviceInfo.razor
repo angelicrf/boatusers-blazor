@@ -1,4 +1,5 @@
 ﻿@page "/deviceinfo"
+@using Newtonsoft.Json;
 @inject IJSRuntime js
 @implements IAsyncDisposable
 
@@ -10,14 +11,15 @@
 {
     <div class="m-auto">
         <DeviceMauiLocationComponent />
-        @*<DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />*@
-        <BluetoothDevicesInfo />
+        <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />
+        @*<BluetoothDevicesInfo />*@
     </div>
 }
 else
 {
 
 <div class="m-auto">
+    <div>@UserLocationData.Latitude @UserLocationData.Longitude</div>
     <BUDateSelectorComponent />
 </div>
 
@@ -28,7 +30,15 @@ else
 
     private bool IsMobile { get; set; }
 
+    DeviceSensors instance = new DeviceSensors();
+
+    private object ThisObject { get; set; }
+
+    private MauiDeviceLocationModel UserLocationData = new MauiDeviceLocationModel();
+
     private IJSObjectReference? funcModule;
+
+    private string UserLocation { get; set; }
 
     FuncDeviceInfo funcDvi = new FuncDeviceInfo();
 
@@ -42,6 +52,15 @@ else
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
             IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+
+            ThisObject = await instance.GetCurrentLocation();
+
+            var receiveLocation = await CallFunc();
+            //if (receiveLocation)
+            //{
+            //    UserLocation = await instance.GetGeocodeReverseData(UserLocationData.Latitude, UserLocationData.Longitude);
+
+            //}
             StateHasChanged();
 
         }
@@ -55,6 +74,18 @@ else
         {
             await funcModule.DisposeAsync();
         }
+    }
+    private Task<bool> CallFunc()
+    {
+
+        var UserDataString = JsonConvert.SerializeObject(ThisObject);
+        UserLocationData = JsonConvert.DeserializeObject<MauiDeviceLocationModel>(UserDataString);
+        if (UserLocationData?.Longitude != 0.2)
+        {
+            return Task.FromResult(true);
+        }
+        return Task.FromResult(false);
+
     }
 
 }
