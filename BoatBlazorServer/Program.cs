@@ -31,6 +31,7 @@ builder.Services.AddControllers()
           {
               options.JsonSerializerOptions.WriteIndented = true;
               options.JsonSerializerOptions.IgnoreNullValues = true;
+
               options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
               options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
               options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -45,6 +46,8 @@ builder.Services.AddControllers().AddNewtonsoftJson().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Default;
 });
+builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
+
 //builder.Services.AddControllers(options =>
 //{
 //}).AddJsonOptions(options =>

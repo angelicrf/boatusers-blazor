@@ -17,7 +17,9 @@ namespace BoatMauiBlazorApp
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
+                })
+                .ConfigureEssentials(essential => essential.UseMapServiceToken("s45dMhh0pAiusDVwJ0sY~b2kicPVNhC0OujmLLYpsVA~Aofz5AaGRO5khLPq3FRxL9FQNlo6zXHPJTxB_puCIKMztKCAtj2Bq3Zcr7dn5g0R"));
+
 
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG

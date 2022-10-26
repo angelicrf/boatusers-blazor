@@ -4,7 +4,7 @@
 
 @if (instance.IsBatteryEventFired)
 {
- 
+
     <div>@message</div>
     <div class="m-auto">
         <div class="row mt-3">
@@ -48,8 +48,8 @@ else
 <div>@UserLocationData.Latitude @UserLocationData.Longitude</div>
 @code {
 
-        //26.609859 -80.058571
-        DeviceSensors instance = new DeviceSensors();
+    //26.609859 -80.058571
+    DeviceSensors instance = new DeviceSensors();
 
     private bool isDeviceLocation { get; set; } = false;
 
@@ -93,7 +93,7 @@ else
 
         var UserDataString = JsonConvert.SerializeObject(ThisObject);
         UserLocationData = JsonConvert.DeserializeObject<MauiDeviceLocationModel>(UserDataString);
-        if(UserLocationData?.Longitude != 0.2)
+        if (UserLocationData?.Longitude != 0.2)
         {
             return Task.FromResult(true);
         }

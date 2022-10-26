@@ -1,5 +1,5 @@
 ﻿@page "/deviceinfo"
-@using Newtonsoft.Json;
+@using System.Text.Json
 @inject IJSRuntime js
 @implements IAsyncDisposable
 
@@ -10,82 +10,84 @@
 @if (IsMobile)
 {
     <div class="m-auto">
-        <DeviceMauiLocationComponent />
-        <DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />
+        Mobile<DeviceMauiLocationComponent />
+        @*<DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />*@
         @*<BluetoothDevicesInfo />*@
+    </div>
+}
+else if (IsDesktop)
+{
+    //Take Out The charger To see the result in telemetry in desktop app
+    <div class="m-auto">
+        <DeviceMauiLocationComponent />
+        <BUDateSelectorComponent />
     </div>
 }
 else
 {
-
-<div class="m-auto">
-    <div>@UserLocationData.Latitude @UserLocationData.Longitude</div>
-    <BUDateSelectorComponent />
-</div>
+    if (LocationObj != null)
+    {
+        <div>@LocationLat @LocationLon</div>
+        <div>@DeviceLoc</div>
+    }
 
 }
 
 @code
 {
 
+
     private bool IsMobile { get; set; }
 
-    DeviceSensors instance = new DeviceSensors();
+    private bool IsDesktop { get; set; }
 
-    private object ThisObject { get; set; }
+    private object LocationObj { get; set; }
 
-    private MauiDeviceLocationModel UserLocationData = new MauiDeviceLocationModel();
+    private string LocationLat { get; set; }
+
+    private string LocationLon { get; set; }
+
+    private string DeviceLoc { get; set; }
 
     private IJSObjectReference? funcModule;
 
-    private string UserLocation { get; set; }
+    private IJSObjectReference? funcWModule;
 
-    FuncDeviceInfo funcDvi = new FuncDeviceInfo();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-
-        if (firstRender)
-        {
-
-            funcModule = await js.InvokeAsync<IJSObjectReference>(
+        funcModule = await js.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
-            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+        funcWModule = await js.InvokeAsync<IJSObjectReference>(
+         "import", "./_content/BoatRazorLibrary/deviceLocation.js");
 
-            ThisObject = await instance.GetCurrentLocation();
+        IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
 
-            var receiveLocation = await CallFunc();
-            //if (receiveLocation)
-            //{
-            //    UserLocation = await instance.GetGeocodeReverseData(UserLocationData.Latitude, UserLocationData.Longitude);
+        IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
 
-            //}
-            StateHasChanged();
+        LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
 
-        }
+        var LocationSerialize = JsonSerializer.Serialize(LocationObj);
 
+        var LocationDeserialize = JsonSerializer.Deserialize<DeviceLocationW>(LocationSerialize);
+
+        LocationLat = LocationDeserialize.LatCoordinate.ToString();
+
+        LocationLon = LocationDeserialize.LonCoordinate.ToString();
+
+        DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
+
+        StateHasChanged();
     }
-
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-
         if (funcModule is not null)
         {
             await funcModule.DisposeAsync();
         }
-    }
-    private Task<bool> CallFunc()
-    {
-
-        var UserDataString = JsonConvert.SerializeObject(ThisObject);
-        UserLocationData = JsonConvert.DeserializeObject<MauiDeviceLocationModel>(UserDataString);
-        if (UserLocationData?.Longitude != 0.2)
+        if (funcWModule is not null)
         {
-            return Task.FromResult(true);
+            await funcWModule.DisposeAsync();
         }
-        return Task.FromResult(false);
-
     }
-
 }
