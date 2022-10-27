@@ -30,7 +30,18 @@ else
         <div>@LocationLat @LocationLon</div>
         <div>@DeviceLoc</div>
     }
-
+    if (!string.IsNullOrEmpty(DeviceBatteryLevel))
+    {
+        <div>Device Battery Level: @DeviceBatteryLevel</div>
+    }
+    if (!string.IsNullOrEmpty(AppBrowserName))
+    {
+        <div>App Browser Name: @AppBrowserName</div>
+    }
+    if (DeviceNetworkInfoObj != null)
+    {
+        <div>Device Network Effective-Type: @DNetworkEType  Device Effective Bandwidth Estimate: @DNetworkDLink </div>
+    }
 }
 
 @code
@@ -48,6 +59,16 @@ else
     private string LocationLon { get; set; }
 
     private string DeviceLoc { get; set; }
+
+    private string DeviceBatteryLevel { get; set; }
+
+    private string AppBrowserName { get; set; }
+
+    private object DeviceNetworkInfoObj { get; set; }
+
+    private string DNetworkEType { get; set; }
+
+    private string DNetworkDLink { get; set; }
 
     private IJSObjectReference? funcModule;
 
@@ -76,6 +97,20 @@ else
         LocationLon = LocationDeserialize.LonCoordinate.ToString();
 
         DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
+
+        DeviceBatteryLevel = await funcWModule.InvokeAsync<string>("deviceBatterylevel");
+
+        AppBrowserName = await funcWModule.InvokeAsync<string>("deviceAgentInfo");
+
+        DeviceNetworkInfoObj = await funcWModule.InvokeAsync<object>("deviceNetworkInfo");
+
+        var DNetworkSerialize = JsonSerializer.Serialize(DeviceNetworkInfoObj);
+
+        var DNetworkDeserialize = JsonSerializer.Deserialize<DeviceNetworkInfoModel>(DNetworkSerialize);
+
+        DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
+
+        DNetworkDLink = DNetworkDeserialize.DNDownLink;
 
         StateHasChanged();
     }

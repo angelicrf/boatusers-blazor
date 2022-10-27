@@ -35,3 +35,61 @@ export const deviceGeocodeInfo = async (thisLat,thisLon) => {
 
     })
 }
+export const deviceBatterylevel = async () => {
+    let thisbatteryLevel = ""
+    return await new Promise((resolve, reject) => {
+        try {
+            navigator.getBattery().then(battery => {
+
+                thisbatteryLevel = (battery.level * 100) + "%"
+
+                battery.addEventListener('levelchange', () => {
+                    console.log((battery.level * 100) + "%")
+                   
+                    return resolve(thisbatteryLevel.toString())
+                })
+                return resolve(thisbatteryLevel.toString())
+            })
+        
+        } catch (e) {
+            console.log(e)
+            return reject(e)
+        }
+    })
+}
+export const deviceAgentInfo = async () => {
+    return await new Promise((resolve, reject) => {
+        try {
+            let thisBrandInfo = navigator.userAgentData.brands[0].brand
+            return resolve(thisBrandInfo)
+
+        } catch (e) {
+            console.log(e)
+            return reject(e)
+        } 
+    })
+}
+export const deviceNetworkInfo = async () => {
+    return await new Promise((resolve, reject) => {
+        try {
+          
+            let effectiveType = navigator.connection.effectiveType
+            let downLink = navigator.connection.downlink
+
+            navigator.connection.addEventListener('change', () => {
+
+                effectiveType = navigator.connection.effectiveType
+                downLink = navigator.connection.downlink
+
+                return resolve({ "effectiveType": effectiveType.toString(), "downLink": downLink.toString() })
+            })
+
+            return resolve({ "effectiveType": effectiveType.toString(), "downLink": downLink.toString() })
+
+        } catch (e) {
+            console.log(e)
+            return reject(e)
+        }
+    })
+}
+

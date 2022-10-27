@@ -13,3 +13,11 @@ public class DeviceLocationW
     [JsonPropertyName("deviceLoc")]
     public string DeviceAddress { get; set; }
 }
+public class DeviceNetworkInfoModel
+{
+    [JsonPropertyName("effectiveType")]
+    public string DNetworkEffectiveType { get; set; }
+
+    [JsonPropertyName("downLink")]
+    public string DNDownLink { get; set; }
+}
