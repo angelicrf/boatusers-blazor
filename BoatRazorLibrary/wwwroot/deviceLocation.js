@@ -1,4 +1,7 @@
-export const deviceLocationInfo = async() => {
+import 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'
+import 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js'
+
+export const deviceLocationInfo = async () => {
     return await new Promise((resolve, reject) => {
         try {
             navigator.geolocation.getCurrentPosition(async (position) => {
@@ -72,7 +75,7 @@ export const deviceAgentInfo = async () => {
 export const deviceNetworkInfo = async () => {
     return await new Promise((resolve, reject) => {
         try {
-          
+           
             let effectiveType = navigator.connection.effectiveType
             let downLink = navigator.connection.downlink
 
@@ -93,3 +96,25 @@ export const deviceNetworkInfo = async () => {
     })
 }
 
+export const getApplicationName = async () => {
+    return await new Promise((resolve, reject) => {
+        try {
+            //work on
+            //requirejs(["path"], (lodash) => {
+            //alert(thisRequire)
+            //})
+            window.webkitRequestFileSystem(PERSISTENT, 0, (fs) => {
+                alert(fs.root.toURL())
+            }, () => { alert("error") })
+
+            let scripts = document.getElementsByTagName('script')
+            let lastScript = scripts[6]
+            return resolve(lastScript.src.toString().split('/')[4])
+            //}
+        } catch (e) {
+            console.log(e)
+            return reject(e)
+        }
+   
+    })
+}

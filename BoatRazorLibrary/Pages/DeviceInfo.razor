@@ -42,6 +42,10 @@ else
     {
         <div>Device Network Effective-Type: @DNetworkEType  Device Effective Bandwidth Estimate: @DNetworkDLink </div>
     }
+    if (!string.IsNullOrEmpty(DAppName))
+    {
+        <div>App Name: @DAppName </div>
+    }
 }
 
 @code
@@ -69,6 +73,8 @@ else
     private string DNetworkEType { get; set; }
 
     private string DNetworkDLink { get; set; }
+
+    private string DAppName { get; set; }
 
     private IJSObjectReference? funcModule;
 
@@ -111,6 +117,8 @@ else
         DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
 
         DNetworkDLink = DNetworkDeserialize.DNDownLink;
+
+        DAppName = await funcWModule.InvokeAsync<string>("getApplicationName");
 
         StateHasChanged();
     }
