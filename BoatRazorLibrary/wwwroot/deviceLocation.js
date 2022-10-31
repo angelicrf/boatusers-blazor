@@ -1,5 +1,3 @@
-import 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js'
-import 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js'
 
 export const deviceLocationInfo = async () => {
     return await new Promise((resolve, reject) => {
@@ -93,28 +91,5 @@ export const deviceNetworkInfo = async () => {
             console.log(e)
             return reject(e)
         }
-    })
-}
-
-export const getApplicationName = async () => {
-    return await new Promise((resolve, reject) => {
-        try {
-            //work on
-            //requirejs(["path"], (lodash) => {
-            //alert(thisRequire)
-            //})
-            window.webkitRequestFileSystem(PERSISTENT, 0, (fs) => {
-                alert(fs.root.toURL())
-            }, () => { alert("error") })
-
-            let scripts = document.getElementsByTagName('script')
-            let lastScript = scripts[6]
-            return resolve(lastScript.src.toString().split('/')[4])
-            //}
-        } catch (e) {
-            console.log(e)
-            return reject(e)
-        }
-   
     })
 }

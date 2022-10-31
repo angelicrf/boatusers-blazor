@@ -80,6 +80,8 @@ else
 
     private IJSObjectReference? funcWModule;
 
+    private IJSObjectReference? funcBWModule;
+
     protected override async Task OnInitializedAsync()
     {
         funcModule = await js.InvokeAsync<IJSObjectReference>(
@@ -87,6 +89,9 @@ else
 
         funcWModule = await js.InvokeAsync<IJSObjectReference>(
          "import", "./_content/BoatRazorLibrary/deviceLocation.js");
+
+        //funcBWModule = await js.InvokeAsync<IJSObjectReference>(
+        //"import", "./_content/BoatRazorLibrary/deviceBundleInfo.js");
 
         IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
 
@@ -118,7 +123,8 @@ else
 
         DNetworkDLink = DNetworkDeserialize.DNDownLink;
 
-        DAppName = await funcWModule.InvokeAsync<string>("getApplicationName");
+        DAppName = await js.InvokeAsync<string>("MyLib.displayDeviceName");
+            //await funcWModule.InvokeAsync<string>("getApplicationName");
 
         StateHasChanged();
     }

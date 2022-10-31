@@ -1,0 +1,21 @@
+{
+  "name": "npm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack ../Shared/src/index.js --output-path ../wwwroot --output-filename deviceNameTest.js",
+    "devbuild": "webpack --mode production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.19.6",
+    "babel-loader": "^9.0.0",
+    "path": "^0.12.7",
+    "process": "^0.11.10",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  }
+}
