@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
+    //target: 'node',
     module: {
         rules: [
             {
@@ -13,6 +14,9 @@ module.exports = {
             }
         ]
     },
+    externals: {
+        path: 'path'
+     },
     output: {
         path: path.resolve(__dirname, '../wwwroot/'),
         filename: "deviceBundleInfo.js",
@@ -27,6 +31,7 @@ module.exports = {
         }),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"production"',
+            'process.env.PATH': '"/myNewPath"',
         }),
     ],
     resolve: {

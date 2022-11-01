@@ -42,7 +42,7 @@ else
     {
         <div>Device Network Effective-Type: @DNetworkEType  Device Effective Bandwidth Estimate: @DNetworkDLink </div>
     }
-    if (!string.IsNullOrEmpty(DAppName))
+    if (!string.IsNullOrEmpty(DAppName) && DAppName != "empty")
     {
         <div>App Name: @DAppName </div>
     }
@@ -123,10 +123,25 @@ else
 
         DNetworkDLink = DNetworkDeserialize.DNDownLink;
 
-        DAppName = await js.InvokeAsync<string>("MyLib.displayDeviceName");
-            //await funcWModule.InvokeAsync<string>("getApplicationName");
+        DAppName = await FindDName();
+        //await js.InvokeAsync<string>("MyLib.displayDeviceName");
+        //await funcWModule.InvokeAsync<string>("getApplicationName");
 
         StateHasChanged();
+    }
+    public async Task<string> FindDName()
+    {
+        string phrase = Path.GetFullPath("DeviceInfo.razor").ToString();
+        string[] words = phrase.Split('\\');
+
+        foreach (var word in words)
+        {
+            if (word == "BoatBlazorServer")
+            {
+                return await Task.FromResult(word);
+            }
+        }
+        return await Task.FromResult("empty");
     }
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

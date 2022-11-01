@@ -1,12 +1,13 @@
 const thisPath = require('path')
-const thisprocess = require('process')
+//const thisprocess = require('process')
 
-export const getApplicationName = async () => {
+const getApplicationName = async () => {
     return await new Promise((resolve, reject) => {
         try {
-            alert(`DirName ${thisprocess.cwd()}`)
-            const directoryName = thisPath.dirname(__filename)
-            alert(`Name is ${directoryName}`)
+           
+            alert(thisPath.dirname(__filename))
+            //alert(thisPath.win32.resolve('deviceNameInfo.js'))
+                //'C:\\Users\\\angel\\Desktop\\BoatMauiPlazer\\BoatMauiBlazorApp\\boatusers-blazor\\BoatBlazorServer\\wwwroot\\css\\site.css'))
 
             //window.webkitRequestFileSystem(PERSISTENT, 0, (fs) => {
             //    alert(`Url is ${fs.root.toURL() }`)
@@ -23,3 +24,4 @@ export const getApplicationName = async () => {
 
     })
 }
+module.exports = { getApplicationName }
