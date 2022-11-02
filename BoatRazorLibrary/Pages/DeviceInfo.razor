@@ -7,7 +7,7 @@
 
 @*<Button Type="@ButtonType.Primary">Click</Button>*@
 
-@if (IsMobile)
+@if (dvCode.IsMobile)
 {
     <div class="m-auto">
         Mobile<DeviceMauiLocationComponent />
@@ -15,9 +15,8 @@
         @*<BluetoothDevicesInfo />*@
     </div>
 }
-else if (IsDesktop)
+else if (dvCode.IsDesktop)
 {
-    //Take Out The charger To see the result in telemetry in desktop app
     <div class="m-auto">
         <DeviceMauiLocationComponent />
         <BUDateSelectorComponent />
@@ -25,62 +24,37 @@ else if (IsDesktop)
 }
 else
 {
-    if (LocationObj != null)
+    if (dvCode.LocationObj != null)
     {
-        <div>@LocationLat @LocationLon</div>
-        <div>@DeviceLoc</div>
+        <div>@dvCode.LocationLat @dvCode.LocationLon</div>
+        <div>@dvCode.DeviceLoc</div>
     }
-    if (!string.IsNullOrEmpty(DeviceBatteryLevel))
+    if (!string.IsNullOrEmpty(dvCode.DeviceBatteryLevel))
     {
-        <div>Device Battery Level: @DeviceBatteryLevel</div>
+        <div>Device Battery Level: @dvCode.DeviceBatteryLevel</div>
     }
-    if (!string.IsNullOrEmpty(AppBrowserName))
+    if (!string.IsNullOrEmpty(dvCode.AppBrowserName))
     {
-        <div>App Browser Name: @AppBrowserName</div>
+        <div>App Browser Name: @dvCode.AppBrowserName</div>
     }
-    if (DeviceNetworkInfoObj != null)
+    if (dvCode.DeviceNetworkInfoObj != null)
     {
-        <div>Device Network Effective-Type: @DNetworkEType  Device Effective Bandwidth Estimate: @DNetworkDLink </div>
+        <div>Device Network Effective-Type: @dvCode.DNetworkEType  Device Effective Bandwidth Estimate: @dvCode.DNetworkDLink </div>
     }
-    if (!string.IsNullOrEmpty(DAppName) && DAppName != "empty")
+    if (dvCode.IsDNameVersion)
     {
-        <div>App Name: @DAppName </div>
+        <div>App Name: @dvCode.DAppName </div>
+        <div>App Version: @dvCode.DAppVersion </div>
     }
 }
 
 @code
 {
-
-
-    private bool IsMobile { get; set; }
-
-    private bool IsDesktop { get; set; }
-
-    private object LocationObj { get; set; }
-
-    private string LocationLat { get; set; }
-
-    private string LocationLon { get; set; }
-
-    private string DeviceLoc { get; set; }
-
-    private string DeviceBatteryLevel { get; set; }
-
-    private string AppBrowserName { get; set; }
-
-    private object DeviceNetworkInfoObj { get; set; }
-
-    private string DNetworkEType { get; set; }
-
-    private string DNetworkDLink { get; set; }
-
-    private string DAppName { get; set; }
-
     private IJSObjectReference? funcModule;
 
     private IJSObjectReference? funcWModule;
 
-    private IJSObjectReference? funcBWModule;
+    private DeviceInfoWCode dvCode = new DeviceInfoWCode();
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,59 +64,47 @@ else
         funcWModule = await js.InvokeAsync<IJSObjectReference>(
          "import", "./_content/BoatRazorLibrary/deviceLocation.js");
 
-        //funcBWModule = await js.InvokeAsync<IJSObjectReference>(
-        //"import", "./_content/BoatRazorLibrary/deviceBundleInfo.js");
+        dvCode.IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
 
-        IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+        dvCode.IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
 
-        IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
+        dvCode.LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
 
-        LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
-
-        var LocationSerialize = JsonSerializer.Serialize(LocationObj);
+        var LocationSerialize = JsonSerializer.Serialize(dvCode.LocationObj);
 
         var LocationDeserialize = JsonSerializer.Deserialize<DeviceLocationW>(LocationSerialize);
 
-        LocationLat = LocationDeserialize.LatCoordinate.ToString();
+        dvCode.LocationLat = LocationDeserialize.LatCoordinate.ToString();
 
-        LocationLon = LocationDeserialize.LonCoordinate.ToString();
+        dvCode.LocationLon = LocationDeserialize.LonCoordinate.ToString();
 
-        DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
+        dvCode.DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
 
-        DeviceBatteryLevel = await funcWModule.InvokeAsync<string>("deviceBatterylevel");
+        dvCode.DeviceBatteryLevel = await funcWModule.InvokeAsync<string>("deviceBatterylevel");
 
-        AppBrowserName = await funcWModule.InvokeAsync<string>("deviceAgentInfo");
+        dvCode.AppBrowserName = await funcWModule.InvokeAsync<string>("deviceAgentInfo");
 
-        DeviceNetworkInfoObj = await funcWModule.InvokeAsync<object>("deviceNetworkInfo");
+        dvCode.DeviceNetworkInfoObj = await funcWModule.InvokeAsync<object>("deviceNetworkInfo");
 
-        var DNetworkSerialize = JsonSerializer.Serialize(DeviceNetworkInfoObj);
+        var DNetworkSerialize = JsonSerializer.Serialize(dvCode.DeviceNetworkInfoObj);
 
         var DNetworkDeserialize = JsonSerializer.Deserialize<DeviceNetworkInfoModel>(DNetworkSerialize);
 
-        DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
+        dvCode.DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
 
-        DNetworkDLink = DNetworkDeserialize.DNDownLink;
+        dvCode.DNetworkDLink = DNetworkDeserialize.DNDownLink;
 
-        DAppName = await FindDName();
+        var thisTuple = await dvCode.FindDName();
+
+        var displayResult = await dvCode.GetTupleValues(thisTuple);
+
+        dvCode.IsDNameVersion = await dvCode.GetDeviceVersion(displayResult);
+
         //await js.InvokeAsync<string>("MyLib.displayDeviceName");
-        //await funcWModule.InvokeAsync<string>("getApplicationName");
 
         StateHasChanged();
     }
-    public async Task<string> FindDName()
-    {
-        string phrase = Path.GetFullPath("DeviceInfo.razor").ToString();
-        string[] words = phrase.Split('\\');
 
-        foreach (var word in words)
-        {
-            if (word == "BoatBlazorServer")
-            {
-                return await Task.FromResult(word);
-            }
-        }
-        return await Task.FromResult("empty");
-    }
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
         if (funcModule is not null)
