@@ -17,6 +17,7 @@
 }
 else if (dvCode.IsDesktop)
 {
+    <div>Is Desktop</div>
     <div class="m-auto">
         <DeviceMauiLocationComponent />
         <BUDateSelectorComponent />
@@ -68,38 +69,41 @@ else
 
         dvCode.IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
 
-        dvCode.LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
 
-        var LocationSerialize = JsonSerializer.Serialize(dvCode.LocationObj);
+        if (!dvCode.IsDesktop && !dvCode.IsMobile)
+        {
+            dvCode.LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
+            var LocationSerialize = JsonSerializer.Serialize(dvCode.LocationObj);
 
-        var LocationDeserialize = JsonSerializer.Deserialize<DeviceLocationW>(LocationSerialize);
+            var LocationDeserialize = JsonSerializer.Deserialize<DeviceLocationW>(LocationSerialize);
 
-        dvCode.LocationLat = LocationDeserialize.LatCoordinate.ToString();
+            dvCode.LocationLat = LocationDeserialize.LatCoordinate.ToString();
 
-        dvCode.LocationLon = LocationDeserialize.LonCoordinate.ToString();
+            dvCode.LocationLon = LocationDeserialize.LonCoordinate.ToString();
 
-        dvCode.DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
+            dvCode.DeviceLoc = LocationDeserialize.DeviceAddress.ToString();
 
-        dvCode.DeviceBatteryLevel = await funcWModule.InvokeAsync<string>("deviceBatterylevel");
+            dvCode.DeviceBatteryLevel = await funcWModule.InvokeAsync<string>("deviceBatterylevel");
 
-        dvCode.AppBrowserName = await funcWModule.InvokeAsync<string>("deviceAgentInfo");
+            dvCode.AppBrowserName = await funcWModule.InvokeAsync<string>("deviceAgentInfo");
 
-        dvCode.DeviceNetworkInfoObj = await funcWModule.InvokeAsync<object>("deviceNetworkInfo");
+            dvCode.DeviceNetworkInfoObj = await funcWModule.InvokeAsync<object>("deviceNetworkInfo");
 
-        var DNetworkSerialize = JsonSerializer.Serialize(dvCode.DeviceNetworkInfoObj);
+            var DNetworkSerialize = JsonSerializer.Serialize(dvCode.DeviceNetworkInfoObj);
 
-        var DNetworkDeserialize = JsonSerializer.Deserialize<DeviceNetworkInfoModel>(DNetworkSerialize);
+            var DNetworkDeserialize = JsonSerializer.Deserialize<DeviceNetworkInfoModel>(DNetworkSerialize);
 
-        dvCode.DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
+            dvCode.DNetworkEType = DNetworkDeserialize.DNetworkEffectiveType;
 
-        dvCode.DNetworkDLink = DNetworkDeserialize.DNDownLink;
+            dvCode.DNetworkDLink = DNetworkDeserialize.DNDownLink;
 
-        var thisTuple = await dvCode.FindDName();
+            var thisTuple = await dvCode.FindDName();
 
-        var displayResult = await dvCode.GetTupleValues(thisTuple);
+            var displayResult = await dvCode.GetTupleValues(thisTuple);
 
-        dvCode.IsDNameVersion = await dvCode.GetDeviceVersion(displayResult);
+            dvCode.IsDNameVersion = await dvCode.GetDeviceVersion(displayResult);
 
+        }
         //await js.InvokeAsync<string>("MyLib.displayDeviceName");
 
         StateHasChanged();

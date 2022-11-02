@@ -5,8 +5,9 @@ export const isDevice = () => {
     return deviceValue 
 }
 export const isDesktop = () => {
-    //desktop 34
-    let defineDesktop = (window.screenX == 34 && !(window.screenX > 80) && !(window.screenX < 25)) ? true : false
+    //1575 inner windows
+    //1424 inner desktop
+    let defineDesktop = (window.innerWidth == 1424) ? true : false 
     return defineDesktop
 }
 const loadAsync = (url, callback) => {
