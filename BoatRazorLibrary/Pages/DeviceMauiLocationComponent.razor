@@ -2,7 +2,7 @@
 @implements IDisposable
 
 
-@if (instance.IsBatteryEventFired)
+@if (!string.IsNullOrEmpty(UserLocation))
 {
 
     <div>@message</div>
@@ -45,7 +45,7 @@ else
         <span class="visually-hidden">Loading...</span>
     </div>
 }
-<div>@UserLocationData.Latitude @UserLocationData.Longitude</div>
+
 @code {
 
     //26.609859 -80.058571

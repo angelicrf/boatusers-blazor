@@ -3,16 +3,14 @@
 <div style="background-color:aquamarine; margin-top:50px;">
     <EditForm Model="@dateSelector">
         <DataAnnotationsValidator />
-        <DateTimepicker Label="Select a day" Position="Position.RightTop"  @bind-Value="@dateSelector.Timestamp" ValidationFor="() => dateSelector.Timestamp"></DateTimepicker>
+        <DateTimepicker Label="Select a day" @bind-Value="dateSelector.Timestamp" MinimumValue="@minimum" MaximumValue="@maximum" HelpText="@($"The selected date/time is {dateSelector.Timestamp.ToString()}")" ValidationFor="() => dateSelector.Timestamp"></DateTimepicker>
     </EditForm>
 </div>
 
-@if (dateSelector.Timestamp != null)
-{
-<div class="row bg-info mt-3 mx-1" style="width:50%;height:50px;">
-    <div class="m-auto fw-bold"><span class="text-black">Selected Date: </span><span class=" text-primary">@dateSelector.Timestamp</span></div>
-</div>
-}
 @code {
-    private DateSelector dateSelector = new DateSelector();
+    private DateSelector dateSelector = new DateSelector { Timestamp = DateTime.Now, MinOnlyTimestamp = DateTime.Now, MaxOnlyTimestamp = DateTime.Now };
+    private DateTime minimum = DateTime.Today.AddMonths(-1).AddHours(-1);
+
+    private DateTime maximum = DateTime.Today.AddMonths(1).AddHours(1);
+
 }
