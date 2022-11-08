@@ -10,6 +10,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatMauiBlazorApp", "BoatMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatUsersMauiLibrary", "BoatUsersMauiLibrary\BoatUsersMauiLibrary.csproj", "{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatUsersAWSLambda", "BoatUsersAWSLambda\BoatUsersAWSLambda.csproj", "{685EDFD6-EA45-4A8B-AA2C-02809819D502}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoatUsersAWSLambda.Tests", "BoatUsersAWSLambda.Tests\BoatUsersAWSLambda.Tests.csproj", "{FF502129-9885-4848-9165-D71F830CEE52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +58,22 @@ Global
 		{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}.Release|x64.ActiveCfg = Release|Any CPU
 		{7AEDFDF2-4489-4F95-AFCD-38565AAC533E}.Release|x64.Build.0 = Release|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Debug|x64.Build.0 = Debug|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Release|x64.ActiveCfg = Release|Any CPU
+		{685EDFD6-EA45-4A8B-AA2C-02809819D502}.Release|x64.Build.0 = Release|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Debug|x64.Build.0 = Debug|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Release|x64.ActiveCfg = Release|Any CPU
+		{FF502129-9885-4848-9165-D71F830CEE52}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
