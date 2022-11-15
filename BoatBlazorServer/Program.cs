@@ -46,6 +46,7 @@ builder.Services.AddControllers().AddNewtonsoftJson().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Default;
 });
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
 //builder.Services.AddControllers(options =>

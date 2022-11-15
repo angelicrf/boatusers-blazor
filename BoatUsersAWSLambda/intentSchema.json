@@ -1,0 +1,13 @@
+{
+  "intents": [
+    {
+      "intent": "AddIntent",
+      "slots": [
+        {
+          "name": "alphabet",
+          "type": "AMAZON.SearchQuery"
+        }
+      ]
+    }
+  ]
+}
