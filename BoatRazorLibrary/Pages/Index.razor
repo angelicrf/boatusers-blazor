@@ -21,7 +21,8 @@ else if (OrderDesktopToDisplay)
 else
 {
     <div>This Is Windows</div>
-    <BluetoothDevicesInfo />
+    @*<BluetoothDevicesInfo />*@
+    <button class="btn btn-info p-0" @onclick="() => { TestAlexaPostRequest(); }">AlexaRequest</button>
 }
 
 @code{
@@ -29,6 +30,11 @@ else
 
     private bool OrderDesktopToDisplay { get; set; }
 
+    private AlexaApiRequests thisAlexa = new AlexaApiRequests();
+    private async void TestAlexaPostRequest()
+    {
+        await thisAlexa.PostAlexaAPIPowerControlEvent("Atza|IwEBINIERNrzVPfKDvqlUlJ_7ldzbHD0lxoE_5DtdcvC2W0y6Zh1OvXpIuZ-OngNFI8QnKIYbZuaA0yXKAcsjylsjTEZ_bIklWFNw_bSPFNQnwfKoNZl3JW4EgG-HKCE8uOoBRdTKdmKNYsulDUn3vI-2xcvLBx2CSHRaXgfVGfW9XcKHgQU1Sy10Nhuepc0l2ujPGqIaFH0ocq8UNm93vcpl2EOu0yKub8Bx6cw7lzoV6NGWMUK9CDHChxOqbHrpjiEvanajD78nZ7eNNuhkpi12-73WmT4G-eXOqvLMF_Pw-6TBN1FxJDnO5IOeEMzgJF6eLRzMkobAG7JV_plbkFU5mBD5uiqNK4vZe5W9hlLoEge-gcFjyszxfy4hKN-GISa8Of6Nsk13tI8X6-2usXjINJmF2AWT9jufJEmFnGdaXTSJLbAALkDhZWGD24380A0V_s56EVfu2WjLoMUtWOsXUP1yGb7bLXgwraGd1uVQWhebQ");
+    }
     public void DisplayChanged(bool thisValue)
     {
         OrderToDisplay = thisValue;
