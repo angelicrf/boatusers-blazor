@@ -8,11 +8,17 @@ public class AlexaApiRequests
 {
     private readonly HttpClient _httpClient;
     private string ThisUri = "https://76ewqh4kz26525z22jjuyzooqy0ziulc.lambda-url.us-east-1.on.aws/?alexaMsg=PowerController";
-    private object[] getProperties { get; set; }
+    public object[] GetProperties { get; set; }
+    private string GetAToken { get; set; }
     public AlexaApiRequests()
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(ThisUri);
+    }
+    public AlexaApiRequests(string setUrl)
+    {
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(setUrl);
     }
     public async Task<object[]> PostAlexaAPIPowerControlEvent(string thisAccessToken)
     {
@@ -59,11 +65,60 @@ public class AlexaApiRequests
                             var newResult = resultContent.Result;
                             result = System.Text.Json.JsonSerializer.Deserialize<AlexaAPIDataModel>(resultContent.Result, options);
                             var getDeviceData = result.DeviceData;
-                            getProperties = getDeviceData.PRproperties;
-                            for (int i = 0; i < getProperties.Length; i++)
+                            GetProperties = getDeviceData.PRproperties;
+                        }
+                }
+            }
+        }
+        catch (Exception env)
+        {
+
+            Console.WriteLine(env.Message);
+        }
+        return GetProperties;
+    }
+    public async Task<string> PostAlexaGenerateAToken(string thisCode)
+    {
+        AlexaAPIDataModel resultData = new AlexaAPIDataModel();
+
+        try
+        {
+            Guid myuuid = Guid.NewGuid();
+            string myuuidAsString = myuuid.ToString();
+
+            string payload = JsonConvert.SerializeObject(new
+            {
+                grant_type = "authorization_code",
+                code = $"{thisCode}",
+                client_id = "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4",
+                client_secret = "55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899",
+                redirect_uri = "https://localhost:7016"
+            });
+            //x-www-form-urlencoded
+            using (HttpContent content = new StringContent(payload, Encoding.UTF8, "application/json"))
+            using (HttpRequestMessage request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = _httpClient.BaseAddress,
+                Content = content
+            })
+            using (HttpResponseMessage response = await _httpClient.SendAsync(request))
+            {
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (var resultContent = response.Content.ReadAsStringAsync())
+
+                        if (resultContent.Result != null)
+                        {
+                            var options = new JsonSerializerOptions
                             {
-                                Console.WriteLine($"all properties : {getProperties[i]}");
-                            }
+                                PropertyNameCaseInsensitive = true
+
+                            };
+                            var newResult = resultContent.Result;
+                            resultData = System.Text.Json.JsonSerializer.Deserialize<AlexaAPIDataModel>(resultContent.Result, options);
+                            GetAToken = resultData.AlexaAToken;
 
                         }
                 }
@@ -74,7 +129,6 @@ public class AlexaApiRequests
 
             Console.WriteLine(env.Message);
         }
-        return getProperties;
+        return GetAToken;
     }
-
 }

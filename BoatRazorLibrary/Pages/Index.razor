@@ -1,5 +1,5 @@
 ﻿@page "/"
-
+@inject NavigationManager NavigationManager
 
 <PageTitle>Main</PageTitle>
 
@@ -22,7 +22,16 @@ else
 {
     <div>This Is Windows</div>
     @*<BluetoothDevicesInfo />*@
-    <button class="btn btn-info p-0" @onclick="() => { TestAlexaPostRequest(); }">AlexaRequest</button>
+    <a class="btn btn-primary" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899">Login here</a>
+    <br />
+    //https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF
+    if (OneTimeRun)
+    {
+        for (int i = 0; i < thisAlexa.GetProperties.Length; i++)
+        {
+           <div class="text-danger">@thisAlexa.GetProperties[i]</div>
+        }
+    }
 }
 
 @code{
@@ -31,9 +40,14 @@ else
     private bool OrderDesktopToDisplay { get; set; }
 
     private AlexaApiRequests thisAlexa = new AlexaApiRequests();
+
+    private AlexaApiRequests thisAlexaToken = new AlexaApiRequests("https://api.amazon.com/auth/o2/token");
+
+    private bool OneTimeRun { get; set; } = false;
+
     private async void TestAlexaPostRequest()
     {
-        await thisAlexa.PostAlexaAPIPowerControlEvent("Atza|IwEBINIERNrzVPfKDvqlUlJ_7ldzbHD0lxoE_5DtdcvC2W0y6Zh1OvXpIuZ-OngNFI8QnKIYbZuaA0yXKAcsjylsjTEZ_bIklWFNw_bSPFNQnwfKoNZl3JW4EgG-HKCE8uOoBRdTKdmKNYsulDUn3vI-2xcvLBx2CSHRaXgfVGfW9XcKHgQU1Sy10Nhuepc0l2ujPGqIaFH0ocq8UNm93vcpl2EOu0yKub8Bx6cw7lzoV6NGWMUK9CDHChxOqbHrpjiEvanajD78nZ7eNNuhkpi12-73WmT4G-eXOqvLMF_Pw-6TBN1FxJDnO5IOeEMzgJF6eLRzMkobAG7JV_plbkFU5mBD5uiqNK4vZe5W9hlLoEge-gcFjyszxfy4hKN-GISa8Of6Nsk13tI8X6-2usXjINJmF2AWT9jufJEmFnGdaXTSJLbAALkDhZWGD24380A0V_s56EVfu2WjLoMUtWOsXUP1yGb7bLXgwraGd1uVQWhebQ");
+        await thisAlexa.PostAlexaAPIPowerControlEvent("Atza|IwEBIHMQTQUp41CvXK7gGJbKZ7XJA-3D3oOuzNSFamVFNmFQfaY9VgjK2GPZt-SkahGoLz4hShM9xoXqXhlPUJRIQKUOJOEzVejth2gIPPwHs1WKNNGvMStG_gjKkPwSMtNAhunIeVHRPXdJhzF9eK7JgLiHznZmpDqZBscinB4W1NYoCvkabTjxvctO6ZO7pmn1d5j9eIsEyiHCEyO6Ydm4u441XdJgn1MKsxC0BBaOv-hkgEpXrLQKV9Ftsedzp5OuMiJs-zG_Fs5b3ibkSf5aGWC8lX9-_UVgNy07NnbiETkZ3OxrJEWzJtVHYo4xdxbogYRACBoQ1tvWr2CcyU3wiE7mSmlDp75aHZVjpS85PjY2_X7rADTarFDa5gX07ajrTISGOtn01S4vPy0THAEJi4jv9LfVFP201BC4_wiReC04O95yPmxq5dKBq7SCIG5yb5BLVAkNrH0gD5kW5CUnyM8okFTKuFkISOyC3yrGscM7pX_l_GtUIQMq91LrLxA2raQ");
     }
     public void DisplayChanged(bool thisValue)
     {
@@ -42,5 +56,30 @@ else
     public void DisplayDesktopChanged(bool thisValue)
     {
         OrderDesktopToDisplay = thisValue;
+    }
+    private async Task<string> GetCodeFromUrl()
+    {
+        var currentUrl = NavigationManager.Uri;
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+        if(Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var param))
+        {
+            return param;
+        }
+        return "";
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var getCode = await GetCodeFromUrl();
+        if (!OneTimeRun)
+        {
+            if (!string.IsNullOrEmpty(getCode))
+            {
+                var thisAToken = await thisAlexaToken.PostAlexaGenerateAToken(getCode);
+                await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken);
+                OneTimeRun = true;
+                StateHasChanged();
+            }
+        }
     }
 }
