@@ -20,7 +20,7 @@ public class AlexaApiRequests
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(setUrl);
     }
-    public async Task<object[]> PostAlexaAPIPowerControlEvent(string thisAccessToken)
+    public async Task<object[]> PostAlexaAPIPowerControlEvent(string thisAccessToken, string thisName)
     {
         AlexaAPIDataModel result = new AlexaAPIDataModel();
 
@@ -34,7 +34,7 @@ public class AlexaApiRequests
                 powerHeader = new
                 {
                     namespacedm = "Alexa.PowerController",
-                    name = "TurnOff",
+                    name = $"{thisName}",
                     messageId = myuuidAsString
                 },
 

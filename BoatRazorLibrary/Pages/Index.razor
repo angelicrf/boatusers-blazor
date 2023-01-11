@@ -25,6 +25,7 @@ else
     <a class="btn btn-primary" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899">Login here</a>
     <br />
     //https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF
+    <button class="btn btn-info" onclick="@TestMongo">InsertData</button>
     if (OneTimeRun)
     {
         for (int i = 0; i < thisAlexa.GetProperties.Length; i++)
@@ -39,16 +40,14 @@ else
 
     private bool OrderDesktopToDisplay { get; set; }
 
+    private AlexaDataStorageMNDB alexaDB = new AlexaDataStorageMNDB();
+
     private AlexaApiRequests thisAlexa = new AlexaApiRequests();
 
     private AlexaApiRequests thisAlexaToken = new AlexaApiRequests("https://api.amazon.com/auth/o2/token");
 
     private bool OneTimeRun { get; set; } = false;
 
-    private async void TestAlexaPostRequest()
-    {
-        await thisAlexa.PostAlexaAPIPowerControlEvent("Atza|IwEBIHMQTQUp41CvXK7gGJbKZ7XJA-3D3oOuzNSFamVFNmFQfaY9VgjK2GPZt-SkahGoLz4hShM9xoXqXhlPUJRIQKUOJOEzVejth2gIPPwHs1WKNNGvMStG_gjKkPwSMtNAhunIeVHRPXdJhzF9eK7JgLiHznZmpDqZBscinB4W1NYoCvkabTjxvctO6ZO7pmn1d5j9eIsEyiHCEyO6Ydm4u441XdJgn1MKsxC0BBaOv-hkgEpXrLQKV9Ftsedzp5OuMiJs-zG_Fs5b3ibkSf5aGWC8lX9-_UVgNy07NnbiETkZ3OxrJEWzJtVHYo4xdxbogYRACBoQ1tvWr2CcyU3wiE7mSmlDp75aHZVjpS85PjY2_X7rADTarFDa5gX07ajrTISGOtn01S4vPy0THAEJi4jv9LfVFP201BC4_wiReC04O95yPmxq5dKBq7SCIG5yb5BLVAkNrH0gD5kW5CUnyM8okFTKuFkISOyC3yrGscM7pX_l_GtUIQMq91LrLxA2raQ");
-    }
     public void DisplayChanged(bool thisValue)
     {
         OrderToDisplay = thisValue;
@@ -57,6 +56,10 @@ else
     {
         OrderDesktopToDisplay = thisValue;
     }
+    private async Task TestMongo()
+        {
+        await alexaDB.InsertDocument();
+        }
     private async Task<string> GetCodeFromUrl()
     {
         var currentUrl = NavigationManager.Uri;
@@ -71,12 +74,16 @@ else
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var getCode = await GetCodeFromUrl();
+        //db.getCollection("COLLECTION_NAME").find({"createdAt":{$gt:new Date(Date.now() - 24*60*60 * 1000)}})
+
         if (!OneTimeRun)
         {
             if (!string.IsNullOrEmpty(getCode))
             {
                 var thisAToken = await thisAlexaToken.PostAlexaGenerateAToken(getCode);
-                await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken);
+                // if button on or off and thisToken is not null, 
+                await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken, "TurnOff");
+                //await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken, "TurnOn");
                 OneTimeRun = true;
                 StateHasChanged();
             }
