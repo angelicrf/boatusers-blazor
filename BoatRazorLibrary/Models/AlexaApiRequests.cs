@@ -77,7 +77,7 @@ public class AlexaApiRequests
         }
         return GetProperties;
     }
-    public async Task<string> PostAlexaGenerateAToken(string thisCode)
+    public async Task<string> PostAlexaGenerateAToken(string thisCode, string buCommand)
     {
         AlexaAPIDataModel resultData = new AlexaAPIDataModel();
 
@@ -92,7 +92,7 @@ public class AlexaApiRequests
                 code = $"{thisCode}",
                 client_id = "amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4",
                 client_secret = "55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899",
-                redirect_uri = "https://localhost:7016"
+                redirect_uri = $"https://localhost:7016/?bu_command={buCommand}"
             });
             //x-www-form-urlencoded
             using (HttpContent content = new StringContent(payload, Encoding.UTF8, "application/json"))
