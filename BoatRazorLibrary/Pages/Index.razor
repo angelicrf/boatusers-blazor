@@ -33,20 +33,16 @@ else
     else
     {
         <div>NULL JSON</div>  
-        <a class="btn btn-danger" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOn&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899">Turn On</a>
-        <a class="btn btn-info" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOff&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899">Turn Off</a>
+        <a class="btn btn-danger" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOn&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899" @onclick="@(() => { IsAlexaTurnOn = true; IsAlexaTurnOff = false; })">Turn On</a>
+        <a class="btn btn-info" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOff&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899" @onclick="@(() => { IsAlexaTurnOff = true; IsAlexaTurnOff = false; })">Turn Off</a>
     }
 
     <br />
     //https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF
-    <!--if (IsAlexaTurnOn)
-    {-->
-
-        @*for (int i = 0; i < thisAlexa.GetProperties.Length; i++)
-            {
-                <div class="text-danger">@thisAlexa.GetProperties[i]</div>
-            }*@
-    <!--}-->
+    if (!string.IsNullOrEmpty(DisplayDelteResult))
+                {
+                    <div>@DisplayDelteResult</div>
+                }
 }
 
 @code{
@@ -65,6 +61,7 @@ else
     private AlexaApiRequests thisAlexaToken = new AlexaApiRequests("https://api.amazon.com/auth/o2/token");
 
     private MNdata GetLtSDate { get; set; }
+    private string DisplayDelteResult { get; set; }
 
     private string SetHref { get; set; }
 
@@ -131,7 +128,7 @@ else
         var getCode = await GetCodeFromUrl();
         var getBuCommand = await GetBUCommandFromUrl();
 
-        if (!string.IsNullOrEmpty(getCode))
+        if (!string.IsNullOrEmpty(getCode) && !string.IsNullOrEmpty(getBuCommand))
         {
             if (string.IsNullOrEmpty(AlexaAToken))
             {
@@ -140,19 +137,21 @@ else
             if (!InsertedMNData && !string.IsNullOrEmpty(AlexaAToken))
             {
                 InsertedMNData = await alexaDB.InsertDocument(AlexaAToken);
+                DisplayDelteResult = await alexaDB.DeleteMNDocument();
             }
-            if (getBuCommand == "TurnOff" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken))
+            if (getBuCommand == "TurnOff" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken)
+            || IsAlexaTurnOff)
             {
                 await thisAlexa.PostAlexaAPIPowerControlEvent(AlexaAToken, getBuCommand);
-                IsAlexaTurnOff = false;
 
             }
-            if (getBuCommand == "TurnOn" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken) && thisAlexa.GetProperties == null)
+            if (getBuCommand == "TurnOn" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken) && thisAlexa.GetProperties == null
+                || IsAlexaTurnOn)
             {
                 await thisAlexa.PostAlexaAPIPowerControlEvent(AlexaAToken, getBuCommand);
-                IsAlexaTurnOn = false;
 
             }
+
             StateHasChanged();
 
         }

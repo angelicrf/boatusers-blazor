@@ -54,16 +54,11 @@ public class AlexaDataStorageMNDB
             return false;
         }
 
-    } // get
+    }
     public async Task<MNdata> GetMNDocument()
     {
         DateTime now = DateTime.Now;
         DateTime yesterday = now.AddDays(-1);
-
-        //var filter = Builders<BsonDocument>.Filter.Eq("alexaBUName", "BoatUsersMNApi");
-        //Builders<BsonDocument>.Filter.("alexaBUName", "BoatUsersMNApi");
-        //var getData = _mongoCollection.Find(filter).FirstOrDefault();
-
         var resultData = from buData in _mongoDatabase.GetCollection<MNdata>("bublazerstorage").AsQueryable()
                          where buData.LastUpdated > yesterday && buData.LastUpdated <= now
                          select buData;
@@ -82,6 +77,21 @@ public class AlexaDataStorageMNDB
             }
         }
         return new MNdata();
+
+    }
+    public async Task<string> DeleteMNDocument()
+    {
+        DateTime now = DateTime.Now;
+        DateTime yesterday = now.AddDays(-1);
+
+        var filter = Builders<BsonDocument>.Filter.Lt(new StringFieldDefinition<BsonDocument, BsonDateTime>("LastUpdated"), new BsonDateTime(yesterday));
+
+        var getDelData = _mongoCollection.DeleteMany(filter);
+        if (filter != null)
+        {
+            return $"Item is deleted {getDelData.DeletedCount} and {getDelData.IsAcknowledged}";
+        }
+        return "";
 
     }
 }
