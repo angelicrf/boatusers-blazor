@@ -1,14 +1,14 @@
 ﻿@page "/bumenu"
 @inject IBoatsProducts boatProducts
-@inject IJSRuntime js
-@implements IAsyncDisposable
+@inject IPlatformCheck iplatformcheck
 
+<PlatformCheck />
 <h3>Menu</h3>
 
-<div>@IsMobile</div>
-
-@if (IsMobile)
+@if (iplatformcheck.IsPCheckStart)
 {
+    if (iplatformcheck.IsMobilePlatform)
+    {
     <div class="container m-auto bg-light">
         <div class="row row-cols-1 row-cols-md-2 g-4">
 
@@ -30,6 +30,7 @@
             }
         </div>
     </div>
+    }
 }
 else
 {
@@ -59,8 +60,8 @@ else
 
     private List<BoatMenuModel> BoatItems;
     private List<BoatMenuModel> BoatMauiItems;
-    private bool IsMobile { get; set; }
-    public IJSObjectReference? funcModule;
+    //private bool IsMobile { get; set; }
+    //public IJSObjectReference? funcModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,25 +74,25 @@ else
     //    GenerateRoute();
     //}
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await base.OnAfterRenderAsync(firstRender);
-            funcModule = await js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await base.OnAfterRenderAsync(firstRender);
+    //        funcModule = await js.InvokeAsync<IJSObjectReference>(
+    //        "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
-            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
-            StateHasChanged();
-        }
+    //        IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+    //        StateHasChanged();
+    //    }
 
-    }
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
+    //}
+    //async ValueTask IAsyncDisposable.DisposeAsync()
+    //{
 
-        if (funcModule is not null)
-        {
-            await funcModule.DisposeAsync();
-        }
-    }
+    //    if (funcModule is not null)
+    //    {
+    //        await funcModule.DisposeAsync();
+    //    }
+    //}
 }

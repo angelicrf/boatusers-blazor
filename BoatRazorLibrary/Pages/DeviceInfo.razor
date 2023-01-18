@@ -1,21 +1,26 @@
 ﻿@page "/deviceinfo"
 @using System.Text.Json
 @inject IJSRuntime js
+@inject IPlatformCheck iplatformcheck
 @implements IAsyncDisposable
 
+<PlatformCheck />
 <h3>DeviceInfo</h3>
 
 @*<Button Type="@ButtonType.Primary">Click</Button>*@
 
-@if (dvCode.IsMobile)
+@if (iplatformcheck.IsPCheckStart)
 {
+    if (iplatformcheck.IsMobilePlatform)
+    {
     <div class="m-auto">
         Mobile<DeviceMauiLocationComponent />
         @*<DatePicker TValue="DateTime?" Picker="@DatePickerType.Date" />*@
         @*<BluetoothDevicesInfo />*@
     </div>
+    }
 }
-else if (dvCode.IsDesktop)
+else if (iplatformcheck.IsDesktopPlatform)
 {
     <div>Is Desktop</div>
     <div class="m-auto">
@@ -52,7 +57,7 @@ else
 
 @code
 {
-    private IJSObjectReference? funcModule;
+    //private IJSObjectReference? funcModule;
 
     private IJSObjectReference? funcWModule;
 
@@ -60,18 +65,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        funcModule = await js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+        //funcModule = await js.InvokeAsync<IJSObjectReference>(
+        //    "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
         funcWModule = await js.InvokeAsync<IJSObjectReference>(
          "import", "./_content/BoatRazorLibrary/deviceLocation.js");
 
-        dvCode.IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+        //dvCode.IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
 
-        dvCode.IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
+        //dvCode.IsDesktop = await funcModule.InvokeAsync<bool>("isDesktop");
 
 
-        if (!dvCode.IsDesktop && !dvCode.IsMobile)
+        if (!iplatformcheck.IsMobilePlatform && !iplatformcheck.IsDesktopPlatform)
         {
             dvCode.LocationObj = await funcWModule.InvokeAsync<object>("deviceLocationInfo");
             var LocationSerialize = JsonSerializer.Serialize(dvCode.LocationObj);
@@ -112,10 +117,10 @@ else
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (funcModule is not null)
-        {
-            await funcModule.DisposeAsync();
-        }
+        //if (funcModule is not null)
+        //{
+        //    await funcModule.DisposeAsync();
+        //}
         if (funcWModule is not null)
         {
             await funcWModule.DisposeAsync();

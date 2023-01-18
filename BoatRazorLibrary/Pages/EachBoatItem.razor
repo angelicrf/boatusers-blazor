@@ -1,17 +1,19 @@
 ﻿@page "/bumenu/{BoatUrl}"
 @inject IBoatsProducts boatProduct
-@inject IJSRuntime js
-@implements IAsyncDisposable
+@inject IPlatformCheck iplatformcheck
 
+<PlatformCheck />
 <div class="container">
-    @if (IsMobile)
+    @if (iplatformcheck.IsPCheckStart)
     {
-        @if (BoatMauiItems.Any())
+        if (iplatformcheck.IsMobilePlatform)
         {
-            var thisItem = BoatMauiItems.Find(item => item.BoatIdentity == BoatUrl);
-
-            if (thisItem != null)
+            if (BoatMauiItems.Any())
             {
+                var thisItem = BoatMauiItems.Find(item => item.BoatIdentity == BoatUrl);
+
+                if (thisItem != null)
+                {
                 <div class="card" style="width: 50rem;">
                     <img src=@thisItem.BoatImgSrc class="card-img-top" alt=@thisItem.BoatImgAlt>
                     <div class="card-body">
@@ -21,8 +23,8 @@
                     </div>
                 </div>
 
-                foreach (var access in thisItem.BoatAccessory)
-                {
+                    foreach (var access in thisItem.BoatAccessory)
+                    {
                     <div class="mt-5">
                         <div class="card" style="width: 18rem;">
                             <img src=@access.AccessoryImgSrc class="card-img-top" alt=@access.AccessoryName>
@@ -35,11 +37,11 @@
                             </div>
                         </div>
                     </div>
+                    }
                 }
             }
+
         }
-
-
     }
     else
     {
@@ -85,8 +87,8 @@
     private List<BoatMenuModel> BoatItems;
     private List<BoatMenuModel> BoatMauiItems;
     private List<BoatAccesssoriesModel> BoatCartItems;
-    private bool IsMobile { get; set; }
-    public IJSObjectReference? funcModule;
+    //private bool IsMobile { get; set; }
+    //public IJSObjectReference? funcModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,23 +102,23 @@
     {
         BoatCartItems.Add(new BoatAccesssoriesModel { AccessoryDesc = thisDesc, AccessoryImgSrc = thisImg, AccessoryName = thisName, AccessoryPrice = thisPrice });
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            funcModule = await js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BoatRazorLibrary/cartInfo.js");
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        funcModule = await js.InvokeAsync<IJSObjectReference>(
+    //        "import", "./_content/BoatRazorLibrary/cartInfo.js");
 
-            IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
-            StateHasChanged();
-        }
-    }
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
+    //        IsMobile = await funcModule.InvokeAsync<bool>("isDevice");
+    //        StateHasChanged();
+    //    }
+    //}
+    //async ValueTask IAsyncDisposable.DisposeAsync()
+    //{
 
-        if (funcModule is not null)
-        {
-            await funcModule.DisposeAsync();
-        }
-    }
+    //    if (funcModule is not null)
+    //    {
+    //        await funcModule.DisposeAsync();
+    //    }
+    //}
 }

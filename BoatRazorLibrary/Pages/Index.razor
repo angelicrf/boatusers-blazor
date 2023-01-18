@@ -1,159 +1,41 @@
 ﻿@page "/"
-@inject NavigationManager NavigationManager
+@inject IPlatformCheck iplatformcheck
 
+<PlatformCheck />
 <PageTitle>Main</PageTitle>
 
-<h1>Boat Users Web App</h1>
+<h1>Boat Users Main Page</h1>
 
 <BoatUsers />
 
-<div>Bluetooth Devices</div>
-<PlatformCheck OnDisplayChanged="DisplayChanged" OnDesktopDisplayChanged="DisplayDesktopChanged" />
-
-@if (OrderToDisplay)
+@if (iplatformcheck.IsPCheckStart)
 {
-    <BUCalendarMaui />
-}
-else if (OrderDesktopToDisplay)
-{
-    <BluetoothLowEnergySystem />
-}
-else
-{
-    <div>This Is Windows</div>@*<BluetoothDevicesInfo />*@
-    if (GetLtSDate != null && GetLtSDate.AlexaBUName != null)
+    @if (iplatformcheck.IsMobilePlatform)
     {
-        <div>Has Data</div>
-        <div>GetLtSDate: @GetLtSDate.AlexaBUName</div>
-        <div>JSON DATA: @GetLtSDate.AlexaBUToken</div>
-        <div>JSON DATA: @GetLtSDate.Id</div>
-        <a class="btn btn-danger" href="" @onclick="@(e => TurnOnUsingAToken(GetLtSDate.AlexaBUToken))">Turn On</a>
-        <a class="btn btn-info" href="" @onclick="@(e => TurnOffUsingAToken(GetLtSDate.AlexaBUToken))">Turn Off</a>
+        //OnDisplayChanged = "DisplayChanged" OnDesktopDisplayChanged = "DisplayDesktopChanged"
+        <div>Mobile App Platform</div>
+        <BUCalendarMaui />
+    }
+    else if (iplatformcheck.IsDesktopPlatform)
+    {
+        <div>Desktop Platform</div>
+
+        <BluetoothLowEnergySystem />
     }
     else
     {
-        <div>NULL JSON</div>  
-        <a class="btn btn-danger" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOn&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899" @onclick="@(() => { IsAlexaTurnOn = true; IsAlexaTurnOff = false; })">Turn On</a>
-        <a class="btn btn-info" href="https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOff&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899" @onclick="@(() => { IsAlexaTurnOff = true; IsAlexaTurnOff = false; })">Turn Off</a>
+        <div>Windows Platform</div>
+        <SmartHomeW />
     }
-
-    <br />
-    //https://skills-store.amazon.com/api/skill/link/M2FC9FL6SREJQF
-    if (!string.IsNullOrEmpty(DisplayDelteResult))
-                {
-                    <div>@DisplayDelteResult</div>
-                }
 }
 
 @code{
-    private bool OrderToDisplay { get; set; }
-
-    private bool OrderDesktopToDisplay { get; set; }
-
-    private bool IsAlexaTurnOn { get; set; } = false;
-
-    private bool IsAlexaTurnOff { get; set; } = false;
-
-    private AlexaDataStorageMNDB alexaDB = new AlexaDataStorageMNDB();
-
-    private AlexaApiRequests thisAlexa = new AlexaApiRequests();
-
-    private AlexaApiRequests thisAlexaToken = new AlexaApiRequests("https://api.amazon.com/auth/o2/token");
-
-    private MNdata GetLtSDate { get; set; }
-    private string DisplayDelteResult { get; set; }
-
-    private string SetHref { get; set; }
-
-    private string AlexaAToken { get; set; }
-
-    private bool PostedAToken { get; set; }
-
-    private bool InsertedMNData { get; set; }
 
 
-    public void DisplayChanged(bool thisValue)
-    {
-        OrderToDisplay = thisValue;
-    }
-    public void DisplayDesktopChanged(bool thisValue)
-    {
-        OrderDesktopToDisplay = thisValue;
-    }
-    private async Task TurnOnUsingAToken(string thisAToken)
-    {
-        await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken, "TurnOn");
-    }
-    private async Task TurnOffUsingAToken(string thisAToken)
-    {
-        //await thisAlexa.PostAlexaAPIPowerControlEvent(thisAToken, "TurnOff");
-    }
-    private async Task<string> GetCodeFromUrl()
-    {
-        var currentUrl = NavigationManager.Uri;
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-
-        if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var param))
-        {
-            return param;
-        }
-        return "";
-    }
-    private async Task<string> GetBUCommandFromUrl()
-    {
-        var currentUrl = NavigationManager.Uri;
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-
-        if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("bu_command", out var param))
-        {
-            return param;
-        }
-        return "";
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        GetLtSDate = await alexaDB.GetMNDocument();
-        StateHasChanged();
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-        //GetLtSDate == null && GetLtSDate.AlexaBUName == null &&
-        //var getres = IsAlexaTurnOn ?
-        //         (SetHref = "https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOn&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899")
-        //         : IsAlexaTurnOff ?
-        //         (SetHref = "https://www.amazon.com/ap/oa?client_id=amzn1.application-oa2-client.8e364cf34cb649508a1746e26a4429d4&scope=alexa%3A%3Aask%3Askills%3Areadwrite%20alexa%3A%3Aask%3Amodels%3Areadwrite%20alexa%3A%3Aask%3Askills%3Atest&redirect_uri=https://localhost:7016/?bu_command=TurnOff&response_type=code&client_secret=55e478a258cc7e74ad623dd3a5439e501dfad27c8ef710daa7f73b391c98a899")
-        //         : (SetHref = "");
-        var getCode = await GetCodeFromUrl();
-        var getBuCommand = await GetBUCommandFromUrl();
-
-        if (!string.IsNullOrEmpty(getCode) && !string.IsNullOrEmpty(getBuCommand))
-        {
-            if (string.IsNullOrEmpty(AlexaAToken))
-            {
-                AlexaAToken = await thisAlexaToken.PostAlexaGenerateAToken(getCode,getBuCommand);
-            }
-            if (!InsertedMNData && !string.IsNullOrEmpty(AlexaAToken))
-            {
-                InsertedMNData = await alexaDB.InsertDocument(AlexaAToken);
-                DisplayDelteResult = await alexaDB.DeleteMNDocument();
-            }
-            if (getBuCommand == "TurnOff" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken)
-            || IsAlexaTurnOff)
-            {
-                await thisAlexa.PostAlexaAPIPowerControlEvent(AlexaAToken, getBuCommand);
-
-            }
-            if (getBuCommand == "TurnOn" && InsertedMNData && !string.IsNullOrEmpty(AlexaAToken) && thisAlexa.GetProperties == null
-                || IsAlexaTurnOn)
-            {
-                await thisAlexa.PostAlexaAPIPowerControlEvent(AlexaAToken, getBuCommand);
-
-            }
-
-            StateHasChanged();
-
-        }
+        StateHasChanged();
+        await base.OnAfterRenderAsync(firstRender);
     }
-}
+
+    }

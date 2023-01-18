@@ -41,6 +41,7 @@ namespace BoatMauiBlazorApp
             builder.Services.AddSingleton<IShellyLampModeService, ShellyLampModeService>();
             builder.Services.AddSingleton<IBULogin, BULoginService>();
             builder.Services.AddSingleton<IBoatsProducts, BoatsProductsServices>();
+            builder.Services.AddSingleton<IPlatformCheck, PlatFormCheckService>();
             builder.Services.AddOptions<ProSettings>()
            .Configure<IConfiguration>((options, configuration) =>
             configuration.GetSection("ProSettings").Bind(options));

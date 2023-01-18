@@ -1,11 +1,14 @@
 ﻿@inject ShellyDevicesData shellyDeviceDataService
 @inject ShellyDeviceSwitchModeService shellySwitchModeService
 @inject ShellyLampModeService shellyLampModeService
+@inject IPlatformCheck iplatformcheck
 
-<PlatformCheck OnDisplayChanged="DisplayChanged" />
+<PlatformCheck />
 
-@if (OrderToDisplay)
+@if (iplatformcheck.IsPCheckStart)
 {
+    if (iplatformcheck.IsMobilePlatform)
+    {
     <div class="container">
 
             @if (!string.IsNullOrEmpty(shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id))
@@ -15,8 +18,8 @@
                     <div class="card-body">
                         <h5 class="card-title">Shelly Device @shellyDeviceDataModel?.DeviceData?.DeviceStatus?.id</h5>
                         <p class="card-text">Shelly Plug</p>
-                        <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false;  LampBtnOff = false;LampBtnOn = false; TurnOnShellyD();  }">Turn On</button>
-                        <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false;LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
+                        <button class="btn btn-info p-0" @onclick="() => { SwitchBtnOn = true; SwitchBtnOff = false; LampBtnOff = false; LampBtnOn = false; TurnOnShellyD(); }">Turn On</button>
+                        <button class="btn btn-danger p-0" @onclick="() => { SwitchBtnOff = true; SwitchBtnOn = false; LampBtnOff = false; LampBtnOn = false; TurnOffShellyD(); }">Turn Off</button>
                     </div>
                 </div>
             }
@@ -34,6 +37,7 @@
             }
 
     </div>
+    }
 }
 else
 {
@@ -68,7 +72,6 @@ else
 }
 
 @code{
-    private bool OrderToDisplay { get; set; }
 
     private bool SwitchBtnOn { get; set; } = false;
 
@@ -78,10 +81,10 @@ else
 
     private bool LampBtnOff { get; set; } = false;
 
-    public void DisplayChanged(bool thisValue)
-    {
-        OrderToDisplay = thisValue;
-    }
+    //public void DisplayChanged(bool thisValue)
+    //{
+    //    OrderToDisplay = thisValue;
+    //}
 
     private ShellyDeviceDataModel? shellyDeviceDataModel;
 

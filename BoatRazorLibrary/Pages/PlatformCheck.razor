@@ -1,57 +1,54 @@
 ﻿@inject IJSRuntime js
 @implements IAsyncDisposable
+@inject IPlatformCheck iplatformCheck
 
-<div bind="@IsMobile"></div>
 
 @code {
 
-    [Parameter]
-    public EventCallback<bool> OnDisplayChanged { get; set; }
+    //[Parameter]
+    //public EventCallback<bool> OnDisplayChanged { get; set; }
 
-    [Parameter]
-    public EventCallback<bool> OnDesktopDisplayChanged { get; set; }
+    //[Parameter]
+    //public EventCallback<bool> OnDesktopDisplayChanged { get; set; }
 
     private IJSObjectReference? funcModule;
 
-    private bool testBool;
+    //private bool testBool;
 
-    public bool IsMobile
+    //public bool IsMobile
+    //{
+    //    get => testBool;
+    //    set
+    //    {
+    //        testBool = value;
+    //        OnDisplayChanged.InvokeAsync(value);
+    //    }
+    //}
+    //private bool desktopBool;
+
+    //public bool IsDesktop
+    //{
+    //    get => desktopBool;
+    //    set
+    //    {
+    //        desktopBool = value;
+    //        OnDesktopDisplayChanged.InvokeAsync(value);
+    //    }
+    //}
+    protected override async Task OnInitializedAsync()
     {
-        get => testBool;
-        set
-        {
-            testBool = value;
-            OnDisplayChanged.InvokeAsync(value);
-        }
-    }
-    private bool desktopBool;
 
-    public bool IsDesktop
-    {
-        get => desktopBool;
-        set
-        {
-            desktopBool = value;
-            OnDesktopDisplayChanged.InvokeAsync(value);
-        }
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
+        await base.OnInitializedAsync();
 
-        if (firstRender)
-        {
+        funcModule = await js.InvokeAsync<IJSObjectReference>("import", "./_content/BoatRazorLibrary/cartInfo.js");
 
-            funcModule = await js.InvokeAsync<IJSObjectReference>("import", "./_content/BoatRazorLibrary/cartInfo.js");
+        iplatformCheck.IsMobilePlatform = await funcModule.InvokeAsync<bool>
+            ("isDevice");
 
-            IsMobile = await funcModule.InvokeAsync<bool>
-                ("isDevice");
-
-            IsDesktop = await funcModule.InvokeAsync<bool>
-                ("isDesktop");
-            StateHasChanged();
-
-        }
-
+        iplatformCheck.IsDesktopPlatform = await funcModule.InvokeAsync<bool>
+            ("isDesktop");
+        iplatformCheck.IsPCheckStart = true;
+        StateHasChanged();
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
